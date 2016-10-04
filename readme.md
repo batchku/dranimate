@@ -1,5 +1,10 @@
 # Dranimate
 
+### Setup
+
+`source venv/bin/activate`
+`pip install -r requirements.txt`
+
 How to run the Dranimate server: `python manage.py runserver`
 
 ### Image segmentation + Mesh generation
