@@ -5,6 +5,7 @@ Markdown==2.6.7
 djangorestframework==3.4.7
 django-filter==0.15.2
 boto==2.38.0
+Pillow==2.8.2
 
 
 
