@@ -3,7 +3,7 @@ node_modules/
 
 *.pyc
 db.sqlite3
-
+dranimate_visualized.png
 
 .idea/
 static/
@@ -11,3 +11,4 @@ dranimate-demo-server.pem
 
 server/imgs/
 server/meshes/
+
