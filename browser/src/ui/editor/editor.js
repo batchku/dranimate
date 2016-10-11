@@ -23,145 +23,180 @@
  *   puppetIsSelected: fn returning if a puppet is selected or not
  */
 
-(function() {
+(function () {
 
-var edMod = angular.module('dran.editor', [
-  'ngMaterial',
-  'dran.editor.puppetDashboard',
-  'dran.editor.zoompanner',
-  'dran.model'
-]);
+    var edMod = angular.module('dran.editor', [
+        'ngMaterial',
+        'dran.editor.puppetDashboard',
+        'dran.editor.zoompanner',
+        'dran.model'
+    ]);
 
 
-/* this function has been placed here for convenience
- * It goes with dran-new-puppet-from-json */
-/* for quickfixes: change arguments and contents of function w/in this one
- * to match changes made to the more canvas-y side of the codebase.
- * (function arguments are curried because i'm FP trash)
- */
-function loadFile(model, element) {
-  return function(e) {
-    
-    var imageTypes = ["image/jpeg", "image/jpg", "image/gif", "image/png"];
-    var jsonTypes = ["application/json"];
+    /* this function has been placed here for convenience
+     * It goes with dran-new-puppet-from-json */
+    /* for quickfixes: change arguments and contents of function w/in this one
+     * to match changes made to the more canvas-y side of the codebase.
+     * (function arguments are curried because i'm FP trash)
+     */
+    function loadFile(model, element) {
+        return function (e) {
 
-    var filetype = element[0].files[0].type;
+            var imageTypes = ["image/jpeg", "image/jpg", "image/gif", "image/png"];
+            var jsonTypes = ["application/json"];
 
-    /* this section is to deal with a strange bug on some windows machines where
-     * uploaded files have their file types listed as an empty string. */
-    if (filetype == "") {
-      filetype = element[0].files[0].name.split(".");
-      filetype = filetype[filetype.length - 1];
-      if (filetype == "json") {
-      	filetype = "application/json";
-      }
-      if (["jpeg","jpg","gif","png"].indexOf(filetype) !== -1) {
-        filetype = "image/" + filetype;
-      }
-    }
+            var filetype = element[0].files[0].type;
 
-    if (jsonTypes.indexOf(filetype) !== -1) {
-      loadJSONPuppet(element, e);
-    } else if (imageTypes.indexOf(filetype) !== -1) {
-      loadImage(element, e);
-    } else {
-      console.log("loadFile() called for unsupported filetype: " + element[0].files[0].type);
-    }
-  };
-};
+            /* this section is to deal with a strange bug on some windows machines where
+             * uploaded files have their file types listed as an empty string. */
+            if (filetype == "") {
+                filetype = element[0].files[0].name.split(".");
+                filetype = filetype[filetype.length - 1];
+                if (filetype == "json") {
+                    filetype = "application/json";
+                }
+                if (["jpeg", "jpg", "gif", "png"].indexOf(filetype) !== -1) {
+                    filetype = "image/" + filetype;
+                }
+            }
 
-function loadJSONPuppet(element, e) {
-  var reader = new FileReader();
-  reader.onload = function (e) {
-    var puppetData = JSON.parse(e.target.result);
-    var image = new Image();
-    image.onload = function () {
-      var imageNoBG = new Image();
-      imageNoBG.onload = function () {
-        var p = new Puppet(image);
-        p.setImageToMeshData(imageNoBG, puppetData.controlPointPositions, puppetData.backgroundRemovalData);
-        p.generateMesh(puppetData.verts, puppetData.faces, puppetData.controlPoints);
-        dranimate.addPuppet(p);
-      };
-      imageNoBG.src = puppetData.imageNoBGData;
+            if (jsonTypes.indexOf(filetype) !== -1) {
+                loadJSONPuppet(element, e);
+            } else if (imageTypes.indexOf(filetype) !== -1) {
+                loadImage(element, e);
+            } else {
+                console.log("loadFile() called for unsupported filetype: " + element[0].files[0].type);
+            }
+        };
     };
-    image.src = puppetData.imageData;
-  };
-  reader.readAsText(element[0].files[0]);
-}
 
-function loadImage(element, e) {
-  var reader = new FileReader();
-  reader.onload = function (e) {
-    //open puppet edit window here !!!
-    //console.log(reader.result);
-    imageToMesh.editImage(reader.result);
-  }
-  reader.readAsDataURL(element[0].files[0]);
-}
-
-/* dran-stage-container */
-
-edMod.directive('dranStageContainer', ['model', function(model) {
-  return {
-    restrict: 'AE',
-    link: function(scope, element) {
-      /* element[0] gets the raw DOM reference from the jqlite object */
-      model.setup(element[0]);
+    function loadJSONPuppet(element, e) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var puppetData = JSON.parse(e.target.result);
+            var image = new Image();
+            image.onload = function () {
+                var imageNoBG = new Image();
+                imageNoBG.onload = function () {
+                    var p = new Puppet(image);
+                    p.setImageToMeshData(imageNoBG, puppetData.controlPointPositions, puppetData.backgroundRemovalData);
+                    p.generateMesh(puppetData.verts, puppetData.faces, puppetData.controlPoints);
+                    dranimate.addPuppet(p);
+                };
+                imageNoBG.src = puppetData.imageNoBGData;
+            };
+            image.src = puppetData.imageData;
+        };
+        reader.readAsText(element[0].files[0]);
     }
-  };
-}]);
 
-
-/* dran-file-upload-container */
-
-edMod.directive('dranFileUploadContainer', function() {
-  return {
-    restrict: 'AE',
-    link: function(scope, element) {
-      var input = element.find('input');
-      var button = element.find('button');
-      if (input.length && button.length) {
-        button.bind('click', function(ev) {
-          input[0].click();
-        });
-      };
+    function loadImage(element, e) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            //open puppet edit window here !!!
+            //console.log(reader.result);
+            imageToMesh.editImage(reader.result);
+        }
+        reader.readAsDataURL(element[0].files[0]);
     }
-  };
-});
+
+    /* dran-stage-container */
+
+    edMod.directive('dranStageContainer', ['model', function (model) {
+        return {
+            restrict: 'AE',
+            link: function (scope, element) {
+                /* element[0] gets the raw DOM reference from the jqlite object */
+                model.setup(element[0]);
+            }
+        };
+    }]);
 
 
-/* dran-new-puppet-from-json */
+    /* dran-file-upload-container */
 
-edMod.directive('dranNewPuppetFromJson', ['model', function(model) {
-  return {
-    restrict: 'A',
-    link: function(scope, element) {
-      element.bind('change', loadFile(model, element));
+    edMod.directive('dranFileUploadContainer', function () {
+        return {
+            restrict: 'AE',
+            link: function (scope, element) {
+                var input = element.find('input');
+                var button = element.find('button');
+                if (input.length && button.length) {
+                    button.bind('click', function (ev) {
+                        input[0].click();
+                    });
+                }
+                ;
+            }
+        };
+    });
+
+
+    /* dran-new-puppet-from-json */
+
+    edMod.directive('dranNewPuppetFromJson', ['model', function (model) {
+        return {
+            restrict: 'A',
+            link: function (scope, element) {
+                element.bind('change', loadFile(model, element));
+            }
+        };
+    }]);
+
+
+    /* dran-editor */
+
+    EditorCtrl.$inject = ['model', '$scope', '$mdDialog'];
+    function EditorCtrl(model, $scope, $mdDialog) {
+        var $ctrl = this;
+
+        $ctrl.zoomIn = model.zoomIn;
+        $ctrl.zoomOut = model.zoomOut;
+        $ctrl.togglePan = function () {
+            model.setPanEnabled(!model.getPanEnabled());
+        };
+        $ctrl.getPanEnabled = model.getPanEnabled;
+
+        $ctrl.puppetIsSelected = function () {
+            return model.getSelectedPuppet() !== null;
+        };
+
+
+
+        $scope.showAdvanced = function (ev) {
+            $mdDialog.show({
+                controller: DialogController,
+                templateUrl: 'src/ui/editor/loginDialog.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: true,
+                fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+            })
+                .then(function (answer) {
+                    $scope.status = 'You said the information was "' + answer + '".';
+                }, function () {
+                    $scope.status = 'You cancelled the dialog.';
+                });
+        };
+
+        function DialogController($scope, $mdDialog) {
+            $scope.hide = function () {
+                $mdDialog.hide();
+            };
+
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
+
+            $scope.answer = function (answer) {
+                $mdDialog.hide(answer);
+            };
+        }
     }
-  };
-}]);
 
-
-/* dran-editor */
-
-EditorCtrl.$inject = [ 'model' ];
-function EditorCtrl(model) {
-  var $ctrl = this;
-
-  $ctrl.zoomIn = model.zoomIn;
-  $ctrl.zoomOut = model.zoomOut;
-  $ctrl.togglePan = function() { model.setPanEnabled(!model.getPanEnabled()); };
-  $ctrl.getPanEnabled = model.getPanEnabled;
-
-  $ctrl.puppetIsSelected = function() {
-    return model.getSelectedPuppet() !== null;
-  }
-}
-
-edMod.component('dranEditor', {
-  templateUrl: 'src/ui/editor/editor.html',
-  controller: EditorCtrl
-});
+    edMod.component('dranEditor', {
+        templateUrl: 'src/ui/editor/editor.html',
+        controller: EditorCtrl
+    });
 
 })();

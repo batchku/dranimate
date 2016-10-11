@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from datetime import datetime
-from django.contrib.postgres.fields import ArrayField
 from django.utils.safestring import mark_safe
 import os
 

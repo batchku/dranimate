@@ -21,7 +21,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class PuppetSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Puppet
-        fields = ('name', 'description', 'date', 'mesh', 'rig', 'image')
+        fields = ('name', 'user', 'description', 'date', 'mesh', 'rig', 'image')
 
 
 # ViewSets define the view behavior.
