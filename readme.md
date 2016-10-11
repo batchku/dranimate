@@ -3,12 +3,15 @@
 ### Setup
 
 `virtualenv init venv`
+* Note: some versions of virtualenv don't require the 'init' command arg
 
 `source venv/bin/activate`
 
-`pip install -r requirements.txt`
+`pip install -r server/requirements.txt`
 
-How to run the Dranimate server: `python manage.py runserver`
+How to run the Dranimate server:
+* `python server/manage.py migrate`
+* `python server/manage.py runserver`
 
 ### Image segmentation + Mesh generation
 * Click and drag to select area; control-click and drag to subtract area
