@@ -1,10 +1,14 @@
 build:
-	python3 server/manage.py collectstatic --no-input
+	python server/manage.py collectstatic --no-input
 
 run:
-	python3 server/manage.py runserver
+	python server/manage.py runserver
 
 graph:
-	python3 server/manage.py graph_models -a -g -o dranimate_visualized.png
+	python server/manage.py graph_models -a -g -o dranimate_visualized.png
 
+install:
+	pip install -r server/requirements.txt
 
+venv:
+	source server/venv/bin/activate
