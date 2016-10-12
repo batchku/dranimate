@@ -1,8 +1,8 @@
 import EditorController from './EditorController';
 
-import NewPuppetFromJsonDirective from './NewPuppetFromJsonDirective';
-import FileUploadContainerDirective from './FileUploadContainerDirective';
-import StageContainerDirective from './StageContainerDirective';
+import NewPuppetFromJson from './NewPuppetFromJson';
+import FileUploadContainer from './FileUploadContainer';
+import StageContainer from './StageContainer';
 
 const app = angular
   .module('dranimate.editor', [
@@ -12,12 +12,12 @@ const app = angular
     'dranimate.model'
   ])
   .component([
-    templateUrl: 'editor/editor.html',
+    templateUrl: require('./editor.html'),
     controller: EditorController,
   ]);
 
-app.directive('dranimateNewPuppetFromJson', NewPuppetFromJsonDirective);
-app.directive('dranimateFileUploadContainer', FileUploadContainerDirective);
-app.directive('dranimateStageContainer', StageContainerDirective);
+app.directive('dranimateNewPuppetFromJson', NewPuppetFromJson);
+app.directive('dranimateFileUploadContainer', FileUploadContainer);
+app.directive('dranimateStageContainer', StageContainer);
 
 export default app;
