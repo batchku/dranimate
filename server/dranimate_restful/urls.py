@@ -5,10 +5,10 @@ from rest_framework import routers, serializers, viewsets
 
 
 # Serializers define the API representation.
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('id', 'username', 'email')
 
 
 # ViewSets define the view behavior.
@@ -17,10 +17,10 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-class PuppetSerializer(serializers.HyperlinkedModelSerializer):
+class PuppetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Puppet
-        fields = ('name', 'user', 'description', 'date', 'mesh', 'rig', 'image')
+        fields = ('id', 'name', 'user', 'description', 'date', 'mesh', 'rig', 'image')
 
 
 # ViewSets define the view behavior.
@@ -29,10 +29,10 @@ class PuppetViewSet(viewsets.ModelViewSet):
     serializer_class = PuppetSerializer
 
 
-class RecordingSerializer(serializers.HyperlinkedModelSerializer):
+class RecordingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recording
-        fields = ('name', 'user', 'description', 'puppet')
+        fields = ('id', 'name', 'user', 'description', 'puppet')
 
 
 # ViewSets define the view behavior.
@@ -41,10 +41,10 @@ class RecordingViewSet(viewsets.ModelViewSet):
     serializer_class = RecordingSerializer
 
 
-class SceneSerializer(serializers.HyperlinkedModelSerializer):
+class SceneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scene
-        fields = ('name', 'user', 'description', 'date')
+        fields = ('id', 'name', 'user', 'description', 'date')
 
 
 # ViewSets define the view behavior.
@@ -53,10 +53,10 @@ class SceneViewSet(viewsets.ModelViewSet):
     serializer_class = SceneSerializer
 
 
-class RecordSceneAssociationSerializer(serializers.HyperlinkedModelSerializer):
+class RecordSceneAssociationSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecordSceneAssociation
-        fields = ('user', 'record', 'scene', 'puppet_x_position',
+        fields = ('id', 'user', 'record', 'scene', 'puppet_x_position',
                   'puppet_y_position', 'puppet_x_scale', 'puppet_y_scale', 'puppet_rotate')
 
 

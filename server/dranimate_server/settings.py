@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'dranimate_restful',
     'rest_framework',
     'django_extensions',
+    # 'rest_framework_docs',
 )
 
 MIDDLEWARE_CLASSES = (

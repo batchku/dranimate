@@ -9,15 +9,15 @@ import os
 class Puppet(models.Model):
     user = models.ForeignKey(User)
 
-    def update_filename(instance, filename):
+    def update_filename(self, filename):
         time = datetime.utcnow()
-        filename = instance.user.username + time.strftime("%Y_%m_%d_%H_%M_%S.%f")
+        filename = self.user.username + time.strftime("%Y_%m_%d_%H_%M_%S.%f")
         path = os.path.join(filename)
         return path
 
-    def update_meshname(instance, filename):
+    def update_meshname(self, filename):
         time = datetime.utcnow()
-        filename = instance.user.username + time.strftime("%Y_%m_%d_%H_%M_%S.%f")
+        filename = self.user.username + time.strftime("%Y_%m_%d_%H_%M_%S.%f")
         path = os.path.join("meshes", filename + ".ply")
         return path
 
