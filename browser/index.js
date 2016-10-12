@@ -1,4 +1,4 @@
-import editor from './editor';
+import { editor } from './editor';
 
 angular
   .module('dranimate', [
