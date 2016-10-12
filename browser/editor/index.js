@@ -1,4 +1,4 @@
-import EditorController from './controller';
+import EditorController from './EditorController';
 
 import NewPuppetFromJsonDirective from './NewPuppetFromJsonDirective';
 import FileUploadContainerDirective from './FileUploadContainerDirective';
