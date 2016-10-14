@@ -1,7 +1,4 @@
-export default [NewPuppetFromJson];
-
 // TODO: Load this stuff from the server instead of the json file
-
 function loadJSONPuppet(element, e) {
   var reader = new FileReader();
   reader.onload = function (e) {
@@ -32,40 +29,38 @@ function loadImage(element, e) {
   reader.readAsDataURL(element[0].files[0]);
 }
 
-const NewPuppetFromJson = () => {
-  restrict: 'A',
-  link: ($scope, $element) => {
-    $element.bind('change', e => {
-      var imageTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/png'];
+module.exports = [NewPuppetFromJson];
 
-      var filetype = element[0].files[0].type;
+var NewPuppetFromJson = function() {
+  return {
+    restrict: 'A',
+    link: ($scope, $element) => {
+      $element.bind('change', e => {
+        var imageTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/png'];
 
-      /* this section is to deal with a strange bug on some windows machines where
-       * uploaded files have their file types listed as an empty string. */
-      if (filetype == '') {
-        filetype = element[0].files[0].name.split('.');
-        filetype = filetype[filetype.length - 1];
-        if (filetype == 'json') {
-          filetype = 'application/json';
+        var filetype = element[0].files[0].type;
+
+        /* this section is to deal with a strange bug on some windows machines where
+         * uploaded files have their file types listed as an empty string. */
+        if (filetype == '') {
+          filetype = element[0].files[0].name.split('.');
+          filetype = filetype[filetype.length - 1];
+          if (filetype == 'json') {
+            filetype = 'application/json';
+          }
+          if (['jpeg', 'jpg', 'gif', 'png'].indexOf(filetype) !== -1) {
+            filetype = 'image/' + filetype;
+          }
         }
-        if (['jpeg', 'jpg', 'gif', 'png'].indexOf(filetype) !== -1) {
-          filetype = 'image/' + filetype;
+
+        if (['application/json'].indexOf(filetype) !== -1) {
+          loadJSONPuppet(element, e);
+        } else if (imageTypes.indexOf(filetype) !== -1) {
+          loadImage(element, e);
+        } else {
+          console.log('loadFile() called for unsupported filetype: ' + element[0].files[0].type);
         }
-      }
-
-      if (['application/json'].indexOf(filetype) !== -1) {
-        loadJSONPuppet(element, e);
-      } else if (imageTypes.indexOf(filetype) !== -1) {
-        loadImage(element, e);
-      } else {
-        console.log('loadFile() called for unsupported filetype: ' + element[0].files[0].type);
-      }
-
-
-
-
-
-
-    });
-  },
-};
+      });
+    },
+  };
+}

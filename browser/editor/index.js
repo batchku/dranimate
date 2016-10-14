@@ -1,8 +1,12 @@
-import EditorController from './EditorController';
+//require('./edit_puppet_dialog');
+//require('./puppet_dashboard');
+//require('./zoompanner');
 
-import NewPuppetFromJson from './NewPuppetFromJson';
-import FileUploadContainer from './FileUploadContainer';
-import StageContainer from './StageContainer';
+var EditorCtrl = require('./EditorCtrl');
+
+var NewPuppetFromJson = require('./NewPuppetFromJson');
+var FileUploadContainer = require('./FileUploadContainer');
+var StageContainer = require('./StageContainer');
 
 const app = angular
   .module('dranimate.editor', [
@@ -10,14 +14,8 @@ const app = angular
     'dranimate.editor.puppetDashboard',
     'dranimate.editor.zoompanner',
     'dranimate.model'
-  ])
-  .component([
-    templateUrl: require('./editor.html'),
-    controller: EditorController,
   ]);
 
 app.directive('dranimateNewPuppetFromJson', NewPuppetFromJson);
 app.directive('dranimateFileUploadContainer', FileUploadContainer);
 app.directive('dranimateStageContainer', StageContainer);
-
-export default app;
