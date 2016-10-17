@@ -7,14 +7,14 @@ const app = angular
     'dranimate.editor',
     'ui.router'
   ])
-  .config($mdThemingProvider => {
+  .config(['$mdThemingProvider', function($mdThemingProvider) {
     $mdThemingProvider.theme('default')
       .primaryPalette('green')
       .accentPalette('amber')
       .warnPalette('red');
-  });
+  }]);
 
-app.config($stateProvider => {
+app.config(['$stateProvider', function($stateProvider) {
   $stateProvider
     .state('editor', {
       url: '/',
@@ -22,4 +22,4 @@ app.config($stateProvider => {
       controller: 'EditorCtrl',
       controllerAs: 'Editor',
     });
-});
+}]);

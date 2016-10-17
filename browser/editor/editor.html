@@ -1,6 +1,6 @@
 <div layout='column' class='container'>
   <md-toolbar layout='row' flex='none' class='md-toolbar-tools' md-whiteframe='2'>
-    <md-button class='md-icon-button' dran-toggle-pupdash hide-gt-sm>
+    <md-button class='md-icon-button' dranimate-toggle-pupdash hide-gt-sm>
       <md-icon md-font-set='material-icons'>menu</md-icon>
     </md-button>
 
@@ -16,24 +16,24 @@
       md-is-open='$ctrl.puppetIsSelected()'
       md-disable-backdrop md-whiteframe='{{ $mdMedia('gt-sm') ? 2 : 4 }}'
     >
-      <dran-puppet-dashboard></dran-puppet-dashboard>
+      <dranimate-puppet-parameters></dranimate-puppet-parameters>
     </md-sidenav>
     <div flex class='position-root'>
-      <dran-stage-container></dran-stage-container>
+      <dranimate-stage-container></dranimate-stage-container>
       <div class='md-padding bottom-left-pos'>
-        <dran-zoompanner
+        <dranimate-zoompanner
           on-zoom-in='$ctrl.zoomIn'
           on-zoom-out='$ctrl.zoomOut'
           on-pan-toggle='$ctrl.togglePan'
           pan-enabled-getter='$ctrl.getPanEnabled'>
-        </dran-zoompanner>
+        </dranimate-zoompanner>
       </div>
-      <dran-file-upload-container layout='column' class='md-padding bottom-right-pos'>
-      <input type='file' class='ng-hide' dran-new-puppet-from-json />
+      <dranimate-file-upload-container layout='column' class='md-padding bottom-right-pos'>
+      <input type='file' class='ng-hide' dranimate-new-puppet-from-json />
       <md-button class='md-fab'>
         <md-icon md-font-set='material-icons'>add</md-icon>
       </md-button>
-      </dran-file-upload-container>
+      </dranimate-file-upload-container>
     </div>
   </div>
 </div>

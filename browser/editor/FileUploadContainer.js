@@ -1,11 +1,11 @@
-export default [FileUploadContainer];
+module.exports = [FileUploadContainer];
 
-const FileUploadContainer = () => {
+function FileUploadContainer() {
   return {
     restrict: 'E',
     link: ($scope, $element) => {
-      const $input = $element.find('input');
-      const button = $element.find('button');
+      var $input = $element.find('input');
+      var button = $element.find('button');
 
       if ($input.length && button.length) {
         button.bind('click', () => {

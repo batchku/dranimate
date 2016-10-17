@@ -1,4 +1,6 @@
-edPupDogMod.directive('dranCancelEditPuppetDialog', ['$mdDialog', function($mdDialog) {
+module.exports = ['$mdDialog', CancelEditPuppetDialog];
+
+function CancelEditPuppetDialog($mdDialog) {
   return {
     restrict: 'A',
     link: function(scope, element) {
@@ -7,4 +9,4 @@ edPupDogMod.directive('dranCancelEditPuppetDialog', ['$mdDialog', function($mdDi
       });
     }
   };
-}]);
+}

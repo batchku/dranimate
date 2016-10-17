@@ -1,21 +1,28 @@
-//require('./edit_puppet_dialog');
-//require('./puppet_dashboard');
-//require('./zoompanner');
+require('./create_puppet_window');
 
-var EditorCtrl = require('./EditorCtrl');
+const app = angular.module('dranimate.editor', [
+  'ngMaterial',
+  'dranimate.editor.createPuppetWindow'
+]);
 
-var NewPuppetFromJson = require('./NewPuppetFromJson');
-var FileUploadContainer = require('./FileUploadContainer');
-var StageContainer = require('./StageContainer');
+app.controller('EditorCtrl', require('./EditorCtrl'));
+app.controller('PuppetParametersCtrl', require('./PuppetParametersCtrl'));
 
-const app = angular
-  .module('dranimate.editor', [
-    'ngMaterial',
-    'dranimate.editor.puppetDashboard',
-    'dranimate.editor.zoompanner',
-    'dranimate.model'
-  ]);
+app.directive('dranimateNewPuppetFromJson', require('./NewPuppetFromJson'));
+app.directive('dranimateFileUploadContainer', require('./FileUploadContainer'));
+app.directive('dranimateStageContainer', require('./StageContainer'));
 
-app.directive('dranimateNewPuppetFromJson', NewPuppetFromJson);
-app.directive('dranimateFileUploadContainer', FileUploadContainer);
-app.directive('dranimateStageContainer', StageContainer);
+app.component('dranimateZoompanner', {
+  templateUrl: 'editor/zoompanner.html',
+  bindings: {
+    zoomIn: '<onZoomIn',
+    zoomOut: '<onZoomOut',
+    togglePan: '<onPanToggle',
+    getPanEnabled: '<panEnabledGetter'
+  }
+});
+
+app.component('dranimatePuppetParameters', {
+  templateUrl: 'editor/puppet_parameters.html',
+  controller: 'PuppetParametersCtrl',
+});

@@ -3,7 +3,7 @@
   <md-toolbar layout="row" class="md-toolbar-tools">
     <h2>Edit puppet</h2>
     <span flex></span>
-    <md-button class="md-icon-button" dran-cancel-edit-puppet-dialog>
+    <md-button class="md-icon-button" dranimate-cancel-edit-puppet-dialog>
       <md-icon md-font-set="material-icons">close</md-icon>
     </md-button>
   </md-toolbar>
@@ -11,15 +11,15 @@
   <div layout="row" flex>
 
     <div flex class="position-root">
-      <canvas dran-image-to-mesh-container></canvas><!-- delete this line and uncomment next one when container can be any element -->
+      <canvas dranimate-image-to-mesh-container></canvas><!-- delete this line and uncomment next one when container can be any element -->
       <!--<dran-image-to-mesh-container></dran-image-to-mesh-container>-->
       <div class="md-padding bottom-left-pos">
-        <dran-zoompanner
+        <dranimate-zoompanner
           on-zoom-in="$ctrl.zoomIn"
           on-zoom-out="$ctrl.zoomOut"
           on-pan-toggle="$ctrl.togglePan"
           pan-enabled-getter="$ctrl.getPanEnabled">
-        </dran-zoompanner>
+        </dranimate-zoompanner>
       </div>
     </div>
 
@@ -73,8 +73,8 @@
 
       <md-dialog-actions layout="row">
         <span flex></span>
-        <md-button dran-cancel-edit-puppet-dialog>Cancel</md-button>
-        <md-button class="md-primary" dran-finish-edit-puppet-dialog>Save</md-button>
+        <md-button dranimate-cancel-edit-puppet-dialog>Cancel</md-button>
+        <md-button class="md-primary" dranimate-finish-edit-puppet-dialog>Save</md-button>
       </md-dialog-actions>
     </md-sidenav>
 

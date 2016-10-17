@@ -1,48 +1,48 @@
-    EditorCtrl.$inject = ['model', '$scope', '$mdDialog'];
-    function EditorCtrl(model, $scope, $mdDialog) {
-        var $ctrl = this;
+module.exports = ['$scope', '$mdDialog', EditorCtrl];
 
-        $ctrl.zoomIn = model.zoomIn;
-        $ctrl.zoomOut = model.zoomOut;
-        $ctrl.togglePan = function () {
-            model.setPanEnabled(!model.getPanEnabled());
-        };
-        $ctrl.getPanEnabled = model.getPanEnabled;
+function EditorCtrl($scope, $mdDialog) {
+  var $scope = this;
 
-        $ctrl.puppetIsSelected = function () {
-            return model.getSelectedPuppet() !== null;
-        };
+  $scope.zoomIn = model.zoomIn;
+  $scope.zoomOut = model.zoomOut;
+  $scope.togglePan = function () {
+    model.setPanEnabled(!model.getPanEnabled());
+  };
+  $scope.getPanEnabled = model.getPanEnabled;
 
+  $scope.puppetIsSelected = function () {
+    return model.getSelectedPuppet() !== null;
+  };
 
+  /*
+  $scope.showAdvanced = function (ev) {
+    $mdDialog.show({
+      controller: DialogController,
+      templateUrl: 'src/ui/editor/loginDialog.html',
+      parent: angular.element(document.body),
+      targetEvent: ev,
+      clickOutsideToClose: true,
+      fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+    })
+    .then(function (answer) {
+      $scope.status = 'You said the information was "' + answer + '".';
+    }, function () {
+      $scope.status = 'You cancelled the dialog.';
+    });
+  };
 
-        $scope.showAdvanced = function (ev) {
-            $mdDialog.show({
-                controller: DialogController,
-                templateUrl: 'src/ui/editor/loginDialog.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose: true,
-                fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
-            })
-                .then(function (answer) {
-                    $scope.status = 'You said the information was "' + answer + '".';
-                }, function () {
-                    $scope.status = 'You cancelled the dialog.';
-                });
-        };
+  function DialogController($scope, $mdDialog) {
+    $scope.hide = function () {
+      $mdDialog.hide();
+    };
 
-        function DialogController($scope, $mdDialog) {
-            $scope.hide = function () {
-                $mdDialog.hide();
-            };
+    $scope.cancel = function () {
+      $mdDialog.cancel();
+    };
 
-            $scope.cancel = function () {
-                $mdDialog.cancel();
-            };
-
-            $scope.answer = function (answer) {
-                $mdDialog.hide(answer);
-            };
-        }
-    }
-
+    $scope.answer = function (answer) {
+      $mdDialog.hide(answer);
+    };
+  }
+  */
+}

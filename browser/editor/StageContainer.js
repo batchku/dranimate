@@ -1,6 +1,6 @@
-export default [StageContainer];
+module.exports = [StageContainer];
 
-const StageContainer = () => {
+function StageContainer() {
   return {
     restrict: 'AE',
     link: function (scope, element) {
