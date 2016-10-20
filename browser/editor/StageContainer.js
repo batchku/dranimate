@@ -1,6 +1,6 @@
-module.exports = [StageContainer];
+module.exports = ['model', StageContainer];
 
-function StageContainer() {
+function StageContainer(model) {
   return {
     restrict: 'AE',
     link: function (scope, element) {

@@ -1,6 +1,6 @@
-module.exports = ['$scope', '$mdDialog', EditorCtrl];
+module.exports = ['$scope', '$mdDialog', 'model', EditorCtrl];
 
-function EditorCtrl($scope, $mdDialog) {
+function EditorCtrl($scope, $mdDialog, model) {
   var $scope = this;
 
   $scope.zoomIn = model.zoomIn;
