@@ -34,7 +34,7 @@ module.exports = [NewPuppetFromJson];
 var NewPuppetFromJson = function() {
   return {
     restrict: 'A',
-    link: ($scope, $element) => {
+    link: function($scope, $element) {
       $element.bind('change', e => {
         var imageTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/png'];
 
