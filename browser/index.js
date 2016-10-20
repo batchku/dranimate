@@ -17,12 +17,19 @@ const app = angular
 app.factory('model', require('./models_remove_me/model'));
 app.factory('imageToMesh', require('./models_remove_me/imageToMesh'));
 
-app.config(['$stateProvider', function($stateProvider) {
+app.config(['$locationProvider', '$stateProvider', function($locationProvider, $stateProvider) {
+  $locationProvider.html5Mode({
+    enabled: true,
+    requireBase: false,
+  });
+
   $stateProvider
     .state('editor', {
       url: '/',
-      templateUrl: '/editor/editor.html',
+      templateUrl: 'editor/editor.html',
       controller: 'EditorCtrl',
       controllerAs: 'Editor',
     });
 }]);
+
+app.run();
