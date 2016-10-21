@@ -1,0 +1,2 @@
+#!/bin/sh
+uwsgi --http :8000 --module=dranimate_server.wsgi

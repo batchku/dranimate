@@ -4,3 +4,7 @@ dist/
 
 *.pem
 *.pyc
+
+\#*\#
+*~
+static
