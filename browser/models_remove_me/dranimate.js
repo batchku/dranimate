@@ -1,5 +1,4 @@
 var Dranimate = function () {
-
     /* debugging memory issue */
 
     var that = this;

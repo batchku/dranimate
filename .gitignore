@@ -14,6 +14,7 @@ dranimate-demo-server.pem
 server/imgs/
 server/meshes/
 
+debug/
 dist/
 
 bundle.js

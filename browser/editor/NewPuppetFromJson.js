@@ -1,3 +1,5 @@
+var Puppet = require('../models_remove_me/puppet');
+
 // TODO: Load this stuff from the server instead of the json file
 function loadJSONPuppet(element, e) {
   var reader = new FileReader();
@@ -31,19 +33,19 @@ function loadImage(element, e) {
 
 module.exports = [NewPuppetFromJson];
 
-var NewPuppetFromJson = function() {
+function NewPuppetFromJson() {
   return {
     restrict: 'A',
     link: function($scope, $element) {
       $element.bind('change', e => {
         var imageTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/png'];
 
-        var filetype = element[0].files[0].type;
+        var filetype = $element[0].files[0].type;
 
         /* this section is to deal with a strange bug on some windows machines where
          * uploaded files have their file types listed as an empty string. */
         if (filetype == '') {
-          filetype = element[0].files[0].name.split('.');
+          filetype = $element[0].files[0].name.split('.');
           filetype = filetype[filetype.length - 1];
           if (filetype == 'json') {
             filetype = 'application/json';
@@ -54,9 +56,9 @@ var NewPuppetFromJson = function() {
         }
 
         if (['application/json'].indexOf(filetype) !== -1) {
-          loadJSONPuppet(element, e);
+          loadJSONPuppet($element, e);
         } else if (imageTypes.indexOf(filetype) !== -1) {
-          loadImage(element, e);
+          loadImage($element, e);
         } else {
           console.log('loadFile() called for unsupported filetype: ' + element[0].files[0].type);
         }

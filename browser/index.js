@@ -1,6 +1,8 @@
 require('./editor');
 require('angular-ui-router');
 
+require('./debug/watch-polyfill');
+
 const app = angular
   .module('dranimate', [
     'ngMaterial',

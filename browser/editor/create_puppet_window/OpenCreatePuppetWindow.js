@@ -1,4 +1,5 @@
 var CreatePuppetWindowCtrl = require('./CreatePuppetWindowCtrl');
+var Puppet = require('../../models_remove_me/puppet');
 
 module.exports = ['$mdMedia', '$mdDialog', 'imageToMesh', 'model', OpenCreatePuppetWindow];
 

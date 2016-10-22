@@ -14,7 +14,6 @@ function EditorCtrl($scope, $mdDialog, model) {
     return model.getSelectedPuppet() !== null;
   };
 
-  /*
   $scope.showAdvanced = function (ev) {
     $mdDialog.show({
       controller: DialogController,
@@ -44,5 +43,4 @@ function EditorCtrl($scope, $mdDialog, model) {
       $mdDialog.hide(answer);
     };
   }
-  */
 }
