@@ -1,6 +1,6 @@
 # Dranimate
 
-### Setup
+### Setup and installation
 
 `virtualenv init venv`
 * Note: some versions of virtualenv don't require the 'init' command arg
@@ -9,9 +9,13 @@
 
 `pip install -r server/requirements.txt`
 
-How to run the Dranimate server:
+### Dranimate server:
 * `python server/manage.py migrate`
 * `python server/manage.py runserver`
+
+### Dranimate client:
+* `webpack ./index.js bundle/dist.js`
+* NOTE: the build process currently assumes ES5, but babel transformer should be added
 
 ### Image segmentation + Mesh generation
 * Click and drag to select area; control-click and drag to subtract area
@@ -22,4 +26,3 @@ How to run the Dranimate server:
 
 ### Browser Web-Cam Handtracking
 * to use with Chrome you need to host the webpage on a webserver (Chrome doesnt allow video streams otherwise). Follow the instructions above to create a python simple server.
-
