@@ -30,7 +30,7 @@ app.config(['$locationProvider', '$stateProvider', function($locationProvider, $
       url: '/',
       templateUrl: 'editor/editor.html',
       controller: 'EditorCtrl',
-      controllerAs: 'Editor',
+      controllerAs: '$ctrl',
     });
 }]);
 

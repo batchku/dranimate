@@ -1,4 +1,5 @@
 var Puppet = require('../models_remove_me/puppet');
+var dranimate = require('../models_remove_me/dranimate');
 
 // TODO: Load this stuff from the server instead of the json file
 function loadJSONPuppet(element, e) {
@@ -22,6 +23,7 @@ function loadJSONPuppet(element, e) {
 }
 
 function loadImage(element, e) {
+  console.log('CALLED LOADIMAGE');
   var reader = new FileReader();
   reader.onload = function (e) {
     //open puppet edit window here !!!
@@ -54,6 +56,9 @@ function NewPuppetFromJson() {
             filetype = 'image/' + filetype;
           }
         }
+
+        console.log('ft:');
+        console.log(filetype);
 
         if (['application/json'].indexOf(filetype) !== -1) {
           loadJSONPuppet($element, e);

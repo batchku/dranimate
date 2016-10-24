@@ -392,4 +392,4 @@ var Dranimate = function () {
 
 };
 
-module.exports = Dranimate;
+module.exports = new Dranimate();
