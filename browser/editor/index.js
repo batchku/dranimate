@@ -7,7 +7,7 @@ const app = angular.module('dranimate.editor', [
 
 app.controller('EditorCtrl', require('./EditorCtrl'));
 
-app.controller('PuppetParametersCtrl', require('./PuppetParametersCtrl'));
+//app.controller('PuppetParametersCtrl', require('./PuppetParametersCtrl'));
 
 app.directive('dranimateNewPuppetFromJson', require('./NewPuppetFromJson'));
 app.directive('dranimateFileUploadContainer', require('./FileUploadContainer'));
@@ -25,5 +25,5 @@ app.component('dranimateZoompanner', {
 
 app.component('dranimatePuppetParameters', {
   templateUrl: 'editor/puppet_parameters.html',
-  controller: 'PuppetParametersCtrl',
+  controller: require('./PuppetParametersCtrl'),
 });

@@ -51,9 +51,10 @@ function mkRestrict(min, max) {
   };
 };
 
-module.exports = ['$scope', 'model', PuppetParametersCtrl];
+module.exports = ['model', PuppetParametersCtrl];
 
-function PuppetParametersCtrl($scope, model) {
+function PuppetParametersCtrl(model) {
+  var $scope = this;
   var mkGetterSetter = mkGenericGetterSetter(model);
 
   $scope.x = mkGetterSetter('x', { transToCtrl: Math.round });
