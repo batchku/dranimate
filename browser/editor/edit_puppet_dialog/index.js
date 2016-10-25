@@ -1,4 +1,4 @@
-var app = angular.module('dranimate.editor.createPuppetWindow', [
+var app = angular.module('dranimate.editor.editPuppetDialog', [
   'ngMaterial'
 ]);
 
@@ -7,4 +7,4 @@ app.controller('EditPuppetCtrl', require('./EditPuppetCtrl'));
 app.directive('dranimateCancelEditPuppetDialog', require('./CancelEditPuppetDialog'));
 app.directive('dranimateFinishEditPuppetDialog', require('./FinishEditPuppetDialog'));
 app.directive('dranimateImageToMeshContainer', require('./ImageToMeshContainer'));
-app.directive('dranimateOpenEditPuppetDialog', require('./OpenEditPuppetDialog'));
+//app.directive('dranimateOpenEditPuppetDialog', require('./OpenEditPuppetDialog'));

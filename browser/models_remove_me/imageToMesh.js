@@ -1,9 +1,11 @@
 // XXX WTS is this? Get it out
-module.exports = ['$rootScope', ImageToMesh];
+module.exports = ['$rootScope', ImageToMeshWrapper];
 
-function ImageToMesh($rootScope) {
-  //var imageToMesh = window.imageToMesh; // for debug. comment out for prod!
-  var imageToMesh = new imageToMesh(); // uncomment for production!
+window.imageToMesh = new ImageToMesh();
+
+function ImageToMeshWrapper($rootScope) {
+  var imageToMesh = window.imageToMesh; // for debug. comment out for prod!
+  //var imageToMesh = new imageToMesh(); // uncomment for production!
   imageToMesh.onChange(function() {
     /* $evalAsync forces a digest (i.e. angular update) cycle
      * when called while one isn't already happening.

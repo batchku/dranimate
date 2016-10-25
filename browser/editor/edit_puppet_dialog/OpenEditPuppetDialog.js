@@ -1,7 +1,7 @@
 var EditPuppetCtrl = require('./EditPuppetCtrl');
 var Puppet = require('../../models_remove_me/puppet');
 
-module.exports = ['$mdMedia', '$mdDialog', 'imageToMesh', 'model', OpenEditPuppetDialog];
+module.exports = ['$mdMedia', '$mdDialog', 'model', OpenEditPuppetDialog];
 
 function makePuppetFromImageToMesh(imageToMesh, model) {
   return function() {
@@ -22,20 +22,20 @@ function makePuppetFromImageToMesh(imageToMesh, model) {
   };
 };
 
-function OpenEditPuppetDialog($mdMedia, $mdDialog, imageToMesh, model) {
+function OpenEditPuppetDialog($mdMedia, $mdDialog, model) {
   return {
     restrict: 'A',
     link: function(scope, $element) {
       $element.bind('click', function(e) {
         $mdDialog.show({
-          controller: CreatePuppetWindowCtrl,
+          controller: EditPuppetCtrl,
           controllerAs: '$ctrl',
-          templateUrl: 'editor/create_puppet_window/create_puppet_window.html',
+          templateUrl: 'editor/edit_puppet_dialog/edit_puppet_dialog.html',
           parent: angular.element(document.body),
-          closeTo: element,
+          closeTo: $element,
           fullscreen: $mdMedia('xs')
         });
-      }).then(makePuppetFromImageToMesh(imageToMesh, model));
+      });//.then(makePuppetFromImageToMesh(imageToMesh, model));
     }
   };
 }
