@@ -7,8 +7,6 @@ const app = angular.module('dranimate.editor', [
 
 app.controller('EditorCtrl', require('./EditorCtrl'));
 
-//app.controller('PuppetParametersCtrl', require('./PuppetParametersCtrl'));
-
 app.directive('dranimateNewPuppetFromJson', require('./NewPuppetFromJson'));
 app.directive('dranimateFileUploadContainer', require('./FileUploadContainer'));
 app.directive('dranimateStageContainer', require('./StageContainer'));

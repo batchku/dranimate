@@ -1,7 +1,7 @@
-var CreatePuppetWindowCtrl = require('./CreatePuppetWindowCtrl');
+var EditPuppetCtrl = require('./EditPuppetCtrl');
 var Puppet = require('../../models_remove_me/puppet');
 
-module.exports = ['$mdMedia', '$mdDialog', 'imageToMesh', 'model', OpenCreatePuppetWindow];
+module.exports = ['$mdMedia', '$mdDialog', 'imageToMesh', 'model', OpenEditPuppetDialog];
 
 function makePuppetFromImageToMesh(imageToMesh, model) {
   return function() {
@@ -22,7 +22,7 @@ function makePuppetFromImageToMesh(imageToMesh, model) {
   };
 };
 
-function OpenCreatePuppetWindow($mdMedia, $mdDialog, imageToMesh, model) {
+function OpenEditPuppetDialog($mdMedia, $mdDialog, imageToMesh, model) {
   return {
     restrict: 'A',
     link: function(scope, $element) {

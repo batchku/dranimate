@@ -14,33 +14,35 @@ function transSelectModeFromCtrl(v) {
   };
 };
 
-module.exports = ['$scope', CreatePuppetWindowCtrl];
+module.exports = ['$scope', 'imageToMesh', EditPuppetCtrl];
 
-function CreatePuppetWindowCtrl($scope) {
+function EditPuppetCtrl($scope, imageToMesh) {
+  var $ctrl = this;
+
   /* zoompanner controls */
-  $scope.zoomIn = imageToMesh.zoomIn;
-  $scope.zoomOut = imageToMesh.zoomOut;
-  $scope.togglePan = function() {
+  $ctrl.zoomIn = imageToMesh.zoomIn;
+  $ctrl.zoomOut = imageToMesh.zoomOut;
+  $ctrl.togglePan = function() {
     imageToMesh.setPanEnabled(!imageToMesh.getPanEnabled());
   };
-  $scope.getPanEnabled = imageToMesh.getPanEnabled;
+  $ctrl.getPanEnabled = imageToMesh.getPanEnabled;
 
   // dummy model for threshold. TODO: hook it up yo!
-  $scope.threshold = 25;
+  $ctrl.threshold = 25;
 
-  $scope.editMode = function(newVal) {
+  $ctrl.editMode = function(newVal) {
     return arguments.length
       ? imageToMesh.setAddControlPoints(transEditModeFromCtrl(newVal))
       : transEditModeToCtrl(imageToMesh.getAddControlPoints());
   };
 
-  $scope.selectMode = function(newVal) {
+  $ctrl.selectMode = function(newVal) {
     return arguments.length
       ? imageToMesh.setAddPixels(transSelectModeFromCtrl(newVal))
       : transSelectModeToCtrl(imageToMesh.getAddPixels());
   };
 
-  $scope.notCropImgMode = function() {
+  $ctrl.notCropImgMode = function() {
     return imageToMesh.getAddControlPoints();
   };
 }
