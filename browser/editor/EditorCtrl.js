@@ -1,5 +1,7 @@
 module.exports = ['$scope', '$mdDialog', 'model', EditorCtrl];
 
+var $ = require('jquery');
+
 function EditorCtrl($scope, $mdDialog, model) {
   var $scope = this;
 
@@ -12,6 +14,10 @@ function EditorCtrl($scope, $mdDialog, model) {
 
   $scope.puppetIsSelected = function () {
     return model.getSelectedPuppet() !== null;
+  };
+
+  $scope.uploadFile = function(e) {
+    $('#file-picker').click();
   };
 
   $scope.showAdvanced = function (ev) {

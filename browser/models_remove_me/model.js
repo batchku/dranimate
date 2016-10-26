@@ -16,3 +16,4 @@ function Model($rootScope) {
   });
   return dranimate;
 }
+

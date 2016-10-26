@@ -15,6 +15,7 @@ server/imgs/
 server/meshes/
 
 debug/
+npm-debug.log
 dist/
 
 bundle.js

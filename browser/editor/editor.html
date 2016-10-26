@@ -28,12 +28,12 @@
           pan-enabled-getter='$ctrl.getPanEnabled'>
         </dranimate-zoompanner>
       </div>
-      <dranimate-file-upload-container layout='column' class='md-padding bottom-right-pos'>
-      <input type='file' class='ng-hide' dranimate-new-puppet-from-json />
-      <md-button class='md-fab'>
-        <md-icon md-font-set='material-icons'>add</md-icon>
-      </md-button>
-      </dranimate-file-upload-container>
+      <div layout='column' class='md-padding bottom-right-pos'>
+        <input type='file' id='file-picker' ng-model='file' class='ng-hide' dranimate-new-puppet-from-json />
+        <md-button class='md-fab' ng-click='$ctrl.uploadFile()'>
+          <md-icon md-font-set='material-icons'>add</md-icon>
+        </md-button>
+    </div>
     </div>
   </div>
 </div>
