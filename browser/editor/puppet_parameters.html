@@ -25,33 +25,17 @@
     </div>
 
     <md-slider-container layout="row" layout-margin>
-      <h1 class="md-subhead">SX</h1>
+      <h1 class="md-subhead">Scale</h1>
       <md-slider flex="40"
-        aria-label="scaleX"
+        aria-label="scale"
         min="0" max="300"
-        ng-model="$ctrl.scaleX"
+        ng-model="$ctrl.scale"
         ng-disabled="$ctrl.noPuppetSelected()">
       </md-slider>
       <md-input-container>
         <input type="number"
-          aria-label="scaleX"
-          ng-model="$ctrl.scaleX"
-          ng-disabled="$ctrl.noPuppetSelected()"/>
-      </md-input-container>
-    </md-slider-container>
-
-    <md-slider-container layout="row" layout-margin>
-      <h1 class="md-subhead">SY</h1>
-      <md-slider flex="40"
-        aria-label="scaleY"
-        min="0" max="300"
-        ng-model="$ctrl.scaleY"
-        ng-disabled="$ctrl.noPuppetSelected()">
-      </md-slider>
-      <md-input-container>
-        <input type="number"
-          aria-label="scaleY"
-          ng-model="$ctrl.scaleY"
+          aria-label="scale"
+          ng-model="$ctrl.scale"
           ng-disabled="$ctrl.noPuppetSelected()"/>
       </md-input-container>
     </md-slider-container>
