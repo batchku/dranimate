@@ -3,24 +3,26 @@ module.exports = ['model', PuppetParametersCtrl];
 function PuppetParametersCtrl(model) {
   var $scope = this;
 
-  $scope.rotation = 0;
+  $scope.rotation = function(value) {
+    var puppet = model.getSelectedPuppet();
+    return (puppet && puppet.rotation(value)) || 0;
+  };
 
   $scope.x = function(value) {
     var puppet = model.getSelectedPuppet();
-    if (!value) return (puppet && puppet['x']) || 0;
-    puppet['x'] = value;
+    return (puppet && Math.floor(puppet.x(value))) || 0;
   };
 
   $scope.y = function(value) {
     var puppet = model.getSelectedPuppet();
-    if (!value) return (puppet && puppet['y']) || 0;
-    puppet['y'] = value;
+    return (puppet && Math.floor(puppet.y(value))) || 0;
   };
 
   $scope.scale = function(value) {
     var puppet = model.getSelectedPuppet();
-    if (!value) return (puppet && puppet['scale'] * 100) || 100;
-    puppet['scale'] = value / 100;
+    if (!puppet) return 100;
+
+    return value ? puppet.scale(value / 100) : puppet.scale() * 100;
   };
 
   $scope.noPuppetSelected = function() {

@@ -2,14 +2,15 @@ var Puppet = function (image) {
   this.image = image;
 
   this.name = "The Puppet With No Name";
-  this.x = 0.0;
-  this.y = 0.0;
-  this.rotation = 0.0;
-  this.scale = 1.0;
+  this._x = 0.0;
+  this._y = 0.0;
+  this._rotation = 0.0;
+  this._scale = 1.0;
 
-  this.prevx = this.x;
-  this.prevy = this.y;
-  this.prevScale = this.scale;
+  this.prevx = this._x;
+  this.prevy = this._y;
+  this.prevScale = this._scale;
+  this.prevRotation = this._rotation;
 
   this.isRecording = false;
   this.recordedFrames = [];
@@ -64,16 +65,29 @@ Puppet.prototype.getName = function() {
 };
 
 Puppet.prototype.getPosition = function() {
-  return {x: this.x, y: this.y};
+  return {x: this._x, y: this._y};
 };
 
-Puppet.prototype.getRotation = function() {
-  return this.rotation;
-};
+// doIncrement flag allows you to pass in an incremental value and add it to the
+// preexisting value; if false, the value is erased and updated. Defaults to
+// false.
+Puppet.prototype.x = function(value, doIncrement = false) {
+  var baseValue = doIncrement ? this._x : 0;
+  return value ? (this._x = baseValue + value) : this._x;
+}
 
-Puppet.prototype.getScale = function() {
-  return this.scale;
-};
+Puppet.prototype.y = function(value, doIncrement = false) {
+  var baseValue = doIncrement ? this._y : 0;
+  return value ? (this._y = baseValue + value) : this._y;
+}
+
+Puppet.prototype.scale = function(value) {
+  return value ? (this._scale = value) : this._scale;
+}
+
+Puppet.prototype.rotation = function(value) {
+  return value ? (this._rotation = value) : this._rotation;
+}
 
 Puppet.prototype.setRenderWireframe = function (renderWireframe) {
   if(renderWireframe) {
@@ -250,25 +264,33 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
 
 Puppet.prototype.update = function() {
 
-  var dx = this.x - this.prevx;
-  var dy = this.y - this.prevy;
+  var dx = this._x - this.prevx;
+  var dy = this._y - this.prevy;
 
   if(dx != 0 || dy != 0) {
     if(this.controlPoints) {
       for(var i = 0; i < this.controlPoints.length; i++) {
         var cpx = this.threeMesh.geometry.vertices[this.controlPoints[i]].x;
         var cpy = this.threeMesh.geometry.vertices[this.controlPoints[i]].y;
-        this.setControlPointPosition(i, cpx + (dx/this.scale), cpy + (dy/this.scale));
+        this.setControlPointPosition(i, cpx + (dx/this._scale),
+            cpy + (dy/this._scale));
       }
     }
   }
 
-  this.prevx = this.x;
-  this.prevy = this.y;
+  this.prevx = this._x;
+  this.prevy = this._y;
 
-  if(this.prevScale != this.scale) {
-    this.threeMesh.scale.set(this.scale, this.scale, 1);
-    this.prevScale = this.scale;
+  if (this.prevScale != this._scale) {
+    this.threeMesh.scale.set(this._scale, this._scale, 1);
+    this.prevScale = this._scale;
+    this.needsUpdate = true;
+  }
+
+  if (this.prevRotation != this._rotation) {
+    var rad = THREE.Math.degToRad(this._rotation);
+    this.threeMesh.rotation.set(0, 0, rad);
+    this.prevRotation = this._rotation;
     this.needsUpdate = true;
   }
 
@@ -296,8 +318,8 @@ Puppet.prototype.update = function() {
     for(var i = 0; i < this.controlPoints.length; i++) {
       var cpi = this.controlPoints[i];
       var v = this.threeMesh.geometry.vertices[cpi];
-      this.controlPointSpheres[i].position.x = v.x * this.scale;
-      this.controlPointSpheres[i].position.y = v.y * this.scale;
+      this.controlPointSpheres[i].position.x = v.x * this._scale;
+      this.controlPointSpheres[i].position.y = v.y * this._scale;
     }
 
     this.needsUpdate = false;
@@ -351,8 +373,8 @@ Puppet.prototype.setSelectionGUIVisible = function (visible) {
 
 Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {
 
-  var x = xUntransformed / this.scale;
-  var y = yUntransformed / this.scale;
+  var x = xUntransformed / this._scale;
+  var y = yUntransformed / this._scale;
 
   //http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
 
