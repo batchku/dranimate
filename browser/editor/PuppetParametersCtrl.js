@@ -17,11 +17,10 @@ function PuppetParametersCtrl(model) {
     puppet['y'] = value;
   };
 
-  // TODO: merge scaleX and scaleY on the model
   $scope.scale = function(value) {
     var puppet = model.getSelectedPuppet();
-    if (!value) return (puppet && puppet['scaleX'] * 100) || 100;
-    puppet['scaleX'] = puppet['scaleY'] = value / 100;
+    if (!value) return (puppet && puppet['scale'] * 100) || 100;
+    puppet['scale'] = value / 100;
   };
 
   $scope.noPuppetSelected = function() {

@@ -5,13 +5,11 @@ var Puppet = function (image) {
   this.x = 0.0;
   this.y = 0.0;
   this.rotation = 0.0;
-  this.scaleX = 1.0;
-  this.scaleY = 1.0;
+  this.scale = 1.0;
 
   this.prevx = this.x;
   this.prevy = this.y;
-  this.prevScaleX = this.scaleX;
-  this.prevScaleY = this.scaleY;
+  this.prevScale = this.scale;
 
   this.isRecording = false;
   this.recordedFrames = [];
@@ -73,12 +71,8 @@ Puppet.prototype.getRotation = function() {
   return this.rotation;
 };
 
-Puppet.prototype.getScaleX = function() {
-  return this.scaleX;
-};
-
-Puppet.prototype.getScaleY = function() {
-  return this.scaleY;
+Puppet.prototype.getScale = function() {
+  return this.scale;
 };
 
 Puppet.prototype.setRenderWireframe = function (renderWireframe) {
@@ -264,7 +258,7 @@ Puppet.prototype.update = function() {
       for(var i = 0; i < this.controlPoints.length; i++) {
         var cpx = this.threeMesh.geometry.vertices[this.controlPoints[i]].x;
         var cpy = this.threeMesh.geometry.vertices[this.controlPoints[i]].y;
-        this.setControlPointPosition(i, cpx + (dx/this.scaleX), cpy + (dy/this.scaleY));
+        this.setControlPointPosition(i, cpx + (dx/this.scale), cpy + (dy/this.scale));
       }
     }
   }
@@ -272,10 +266,9 @@ Puppet.prototype.update = function() {
   this.prevx = this.x;
   this.prevy = this.y;
 
-  if(this.prevScaleX != this.scaleX || this.prevScaleY != this.scaleY) {
-    this.threeMesh.scale.set(this.scaleX, this.scaleY, 1);
-    this.prevScaleX = this.scaleX;
-    this.prevScaleY = this.scaleY;
+  if(this.prevScale != this.scale) {
+    this.threeMesh.scale.set(this.scale, this.scale, 1);
+    this.prevScale = this.scale;
     this.needsUpdate = true;
   }
 
@@ -303,8 +296,8 @@ Puppet.prototype.update = function() {
     for(var i = 0; i < this.controlPoints.length; i++) {
       var cpi = this.controlPoints[i];
       var v = this.threeMesh.geometry.vertices[cpi];
-      this.controlPointSpheres[i].position.x = v.x * this.scaleX;
-      this.controlPointSpheres[i].position.y = v.y * this.scaleY;
+      this.controlPointSpheres[i].position.x = v.x * this.scale;
+      this.controlPointSpheres[i].position.y = v.y * this.scale;
     }
 
     this.needsUpdate = false;
@@ -358,8 +351,8 @@ Puppet.prototype.setSelectionGUIVisible = function (visible) {
 
 Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {
 
-  var x = xUntransformed / this.scaleX;
-  var y = yUntransformed / this.scaleY;
+  var x = xUntransformed / this.scale;
+  var y = yUntransformed / this.scale;
 
   //http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
 
