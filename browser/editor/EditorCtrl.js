@@ -3,7 +3,7 @@ module.exports = ['$scope', '$mdDialog', 'model', EditorCtrl];
 var $ = require('jquery');
 
 function EditorCtrl($scope, $mdDialog, model) {
-  var $scope = this;
+
 
   $scope.zoomIn = model.zoomIn;
   $scope.zoomOut = model.zoomOut;
@@ -21,9 +21,10 @@ function EditorCtrl($scope, $mdDialog, model) {
   };
 
   $scope.showAdvanced = function (ev) {
+
     $mdDialog.show({
       controller: DialogController,
-      templateUrl: 'src/ui/editor/loginDialog.html',
+      templateUrl: 'editor/loginDialog.html',
       parent: angular.element(document.body),
       targetEvent: ev,
       clickOutsideToClose: true,

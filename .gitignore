@@ -19,3 +19,7 @@ npm-debug.log
 dist/
 
 bundle.js
+
+browser/admin/
+browser/django_extensions/
+browser/rest_framework/

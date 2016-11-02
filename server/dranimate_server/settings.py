@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'browser')
 STATIC_URL = '/browser/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '..', 'browser'),
+    # os.path.join(BASE_DIR, '..', 'browser'),
 ]
 
 WHITENOISE_ROOT = os.path.join(BASE_DIR, '..', 'browser')
