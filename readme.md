@@ -14,7 +14,7 @@
 * `python server/manage.py runserver`
 
 ### Dranimate client:
-* `webpack ./index.js bundle/dist.js`
+* `webpack ./index.js dist/bundle.js`
 * NOTE: the build process currently assumes ES5, but babel transformer should be added
 
 ### Image segmentation + Mesh generation
