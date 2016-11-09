@@ -1,53 +1,77 @@
-module.exports = ['$scope', '$mdDialog', 'model', EditorCtrl];
+module.exports = ['$scope', '$mdDialog', '$cookies', 'model', EditorCtrl];
 
 var $ = require('jquery');
 
-function EditorCtrl($scope, $mdDialog, model) {
+function EditorCtrl($scope, $mdDialog, $cookies, model) {
 
+    var editorScope = $scope;
+    $scope.zoomIn = model.zoomIn;
+    $scope.zoomOut = model.zoomOut;
+    $scope.togglePan = function () {
+        model.setPanEnabled(!model.getPanEnabled());
+    };
+    $scope.getPanEnabled = model.getPanEnabled;
 
-  $scope.zoomIn = model.zoomIn;
-  $scope.zoomOut = model.zoomOut;
-  $scope.togglePan = function () {
-    model.setPanEnabled(!model.getPanEnabled());
-  };
-  $scope.getPanEnabled = model.getPanEnabled;
-
-  $scope.puppetIsSelected = function () {
-    return model.getSelectedPuppet() !== null;
-  };
-
-  $scope.uploadFile = function(e) {
-    $('#file-picker').click();
-  };
-
-  $scope.showAdvanced = function (ev) {
-
-    $mdDialog.show({
-      controller: DialogController,
-      templateUrl: 'editor/loginDialog.html',
-      parent: angular.element(document.body),
-      targetEvent: ev,
-      clickOutsideToClose: true,
-      fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
-    })
-    .then(function (answer) {
-      $scope.status = 'You said the information was "' + answer + '".';
-    }, function () {
-      $scope.status = 'You cancelled the dialog.';
-    });
-  };
-
-  function DialogController($scope, $mdDialog) {
-    $scope.hide = function () {
-      $mdDialog.hide();
+    $scope.puppetIsSelected = function () {
+        return model.getSelectedPuppet() !== null;
     };
 
-    $scope.cancel = function () {
-      $mdDialog.cancel();
+    $scope.uploadFile = function (e) {
+        $('#file-picker').click();
     };
 
-    $scope.answer = function (answer) {
-      $mdDialog.hide(answer);
+    if ($cookies.get('usernameDisplayed')) {
+        $scope.usernameDisplayed = 'Logout ' + $cookies.get('usernameDisplayed');
+    } else {
+        $scope.usernameDisplayed = 'Login';
+    }
+
+    $scope.showLogin = function (ev) {
+
+        if (!$cookies.get('usernameDisplayed')) {
+            $mdDialog.show({
+                controller: LoginDialogCtrl,
+                templateUrl: 'editor/loginDialog.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: true,
+                fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+            })
+        } else {
+            $cookies.remove('usernameDisplayed');
+            $cookies.remove('token');
+            $scope.usernameDisplayed = 'Login';
+        }
     };
-  }
+
+    function LoginDialogCtrl($scope, $http, $cookies, $mdDialog) {
+        $scope.hide = function () {
+            $mdDialog.hide();
+        };
+
+        $scope.cancel = function () {
+            $mdDialog.cancel();
+        };
+
+        $scope.login = function () {
+            var req = {
+                method: 'POST',
+                url: 'rest-auth/login/',
+                data: {
+                    username: $scope.user.name,
+                    password: $scope.user.passwd
+                }
+            };
+            $http(req).then(function (response) {
+                $cookies.put('token', response.data.key);
+                $cookies.put('usernameDisplayed', $scope.user.name);
+                $http.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
+                editorScope.usernameDisplayed = 'Logout ' + $scope.user.name;
+                $mdDialog.hide();
+            }, function (error) {
+                alert('Auth failed!')
+            });
+
+        };
+    }
 }

@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
+
 from .models import Puppet, Recording, Scene, RecordSceneAssociation
 
 from rest_framework import routers, serializers, viewsets
@@ -8,7 +10,7 @@ from rest_framework import routers, serializers, viewsets
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
+        fields = ('id', 'username')
 
 
 # ViewSets define the view behavior.
@@ -18,6 +20,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class PuppetSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Puppet
         fields = ('id', 'name', 'user', 'description', 'date', 'mesh', 'rig', 'image')
@@ -25,6 +28,7 @@ class PuppetSerializer(serializers.ModelSerializer):
 
 # ViewSets define the view behavior.
 class PuppetViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
     queryset = Puppet.objects.all()
     serializer_class = PuppetSerializer
 

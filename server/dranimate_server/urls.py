@@ -9,9 +9,11 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^rest-auth/', include('rest_auth.urls'))
     # url(r'^docs/', include('rest_framework_docs.urls')),
 
 ]
 
 urlpatterns = urlpatterns + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns.append(url(r'^$', TemplateView.as_view(template_name='index.html'), name='home'))
+
