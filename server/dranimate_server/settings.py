@@ -43,13 +43,18 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'dranimate_restful',
     'rest_framework',
     'django_extensions',
     'rest_framework.authtoken',
-    'rest_auth'
-)
+    'rest_auth',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
 
+)
+SITE_ID = 1
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -61,6 +66,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware'
 )
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ROOT_URLCONF = 'dranimate_server.urls'
 
