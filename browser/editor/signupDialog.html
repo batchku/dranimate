@@ -2,7 +2,7 @@
     <form ng-cloak>
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h2>Login</h2>
+                <h2>Signup</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="cancel()">
                     <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
@@ -24,8 +24,23 @@
 
                     <md-input-container>
                         <!-- Use floating label instead of placeholder -->
+                        <label>Email</label>
+                        <input ng-model="user.email" type="email">
+                    </md-input-container>
+                </div>
+                <div layout-gt-sm="row">
+
+                    <md-input-container>
+                        <!-- Use floating label instead of placeholder -->
                         <label>Password</label>
-                        <input ng-model="user.passwd" type="password">
+                        <input ng-model="user.passwd1" type="password">
+                    </md-input-container>
+                </div>
+                <div layout-gt-sm="row">
+                    <md-input-container>
+                        <!-- Use floating label instead of placeholder -->
+                        <label>Password Again</label>
+                        <input ng-model="user.passwd2" type="password">
                     </md-input-container>
                 </div>
             </div>
@@ -34,8 +49,8 @@
 
         <md-dialog-actions layout="row">
             <span flex></span>
-            <md-button ng-click="login()">
-                Login
+            <md-button ng-click="register()">
+                Register
             </md-button>
             <md-button ng-click="cancel()">
                 Cancel
