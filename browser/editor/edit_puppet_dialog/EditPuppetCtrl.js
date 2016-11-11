@@ -1,3 +1,5 @@
+var $ = require('jquery');
+
 /* to translate properties from/to imageToMesh to/from the controller */
 function transEditModeToCtrl(v) { return v ? 'editCtrlPt' : 'cropImg'; };
 function transEditModeFromCtrl(v) {

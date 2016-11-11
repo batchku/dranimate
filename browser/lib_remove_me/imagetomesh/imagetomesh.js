@@ -1,5 +1,5 @@
-/*       
- *        ImageToMesh 
+/*
+ *        ImageToMesh
  *
  * lil app made to:
  *  - superpixel segment images
@@ -105,7 +105,7 @@ var ImageToMesh = function () {
         }, false);
 
         canvas.addEventListener('mousedown', function(evt) {
-            evt.preventDefault(); 
+            evt.preventDefault();
 
             panFromPosition = {x:mouseAbs.x, y:mouseAbs.y};
 
@@ -148,7 +148,7 @@ var ImageToMesh = function () {
 
     this.generateMesh = function () {
 
-        this.recalculateCentroids(); 
+        this.recalculateCentroids();
         this.findEdgesOfImage();
         this.removeBackgroundFromImage();
         this.recalculateContourPoints();
@@ -225,13 +225,13 @@ var ImageToMesh = function () {
             canvas.height = normHeight;
 
             dummyContext.clearRect(
-                0, 0, 
+                0, 0,
                 dummyCanvas.width, dummyCanvas.height);
             dummyContext.drawImage(
-                image, 
-                0, 0, 
+                image,
+                0, 0,
                 image.width, image.height,
-                0, 0, 
+                0, 0,
                 dummyCanvas.width, dummyCanvas.height);
 
             image.src = dummyCanvas.toDataURL("image/png");
@@ -239,7 +239,7 @@ var ImageToMesh = function () {
                 that.doSLICOnImage();
             }
 
-            
+
         }
         image.src = imageData;
 
@@ -359,7 +359,7 @@ var ImageToMesh = function () {
     this.recalculateContourPoints = function () {
 
         var contourPointsRaw = [];
-        
+
         /* Convert contour image into list of points */
 
         for (var x = 0; x < contourData.width; ++x) {
@@ -696,7 +696,7 @@ var ImageToMesh = function () {
             if(!vertexIsPartOfATriangle) {
                 vertices.splice(vi, 1)
 
-                /* Since we removed a vertex from the verts array, we need to update the 
+                /* Since we removed a vertex from the verts array, we need to update the
                  * control points and triangles because they point to the vertices by index. */
 
                 for(var ti = 0; ti < triangles.length; ti++) {
@@ -725,15 +725,15 @@ var ImageToMesh = function () {
         context.globalAlpha = 1.0;
         context.drawImage(image, 0, 0, image.width, image.height,
                                 0, 0, canvas.width, canvas.height);
-        context.drawImage(highlightImage, 
+        context.drawImage(highlightImage,
                                                 0, 0, highlightImage.width, highlightImage.height,
                                                 0, 0, canvas.width, canvas.height);
         context.globalAlpha = 0.8;
-        context.drawImage(imageNoBackgroundImage, 
+        context.drawImage(imageNoBackgroundImage,
                                                 0, 0, imageNoBackgroundImage.width, imageNoBackgroundImage.height,
                                                 0, 0, canvas.width, canvas.height);
         context.globalAlpha = 1.0;
-        context.drawImage(contourImage, 
+        context.drawImage(contourImage,
                                                 0, 0, contourImage.width, contourImage.height,
                                                 0, 0, canvas.width, canvas.height);
 

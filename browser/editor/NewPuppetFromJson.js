@@ -1,3 +1,5 @@
+var $ = require('jquery');
+var EditPuppetCtrl = require('./edit_puppet_dialog/EditPuppetCtrl');
 var Puppet = require('../models_remove_me/puppet');
 var dranimate = require('../models_remove_me/dranimate');
 
@@ -22,19 +24,9 @@ function loadJSONPuppet(element, e) {
   reader.readAsText(element[0].files[0]);
 }
 
-function loadImage(element, e) {
-  var reader = new FileReader();
-  reader.onload = function (e) {
-    //open puppet edit window here !!!
-    //console.log(reader.result);
-    imageToMesh.editImage(reader.result);
-  }
-  reader.readAsDataURL(element[0].files[0]);
-}
+module.exports = ['$mdMedia', '$mdDialog', 'imageToMesh', NewPuppetFromJson];
 
-module.exports = [NewPuppetFromJson];
-
-function NewPuppetFromJson() {
+function NewPuppetFromJson($mdMedia, $mdDialog, imageToMesh) {
   return {
     restrict: 'A',
     link: function($scope, $element) {
@@ -59,7 +51,21 @@ function NewPuppetFromJson() {
         if (['application/json'].indexOf(filetype) !== -1) {
           loadJSONPuppet($element, e);
         } else if (imageTypes.indexOf(filetype) !== -1) {
-          loadImage($element, e);
+
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            $mdDialog.show({
+              controller: EditPuppetCtrl,
+              controllerAs: '$ctrl',
+              templateUrl: 'editor/edit_puppet_dialog/edit_puppet_dialog.html',
+              onComplete: function() {
+                imageToMesh.setup($('#edit-mesh-canvas')[0]),
+                imageToMesh.editImage(reader.result)
+              },
+              fullscreen: $mdMedia('xs')
+            });
+          };
+          reader.readAsDataURL($element[0].files[0]);
         } else {
           console.log('loadFile() called for unsupported filetype: ' + element[0].files[0].type);
         }

@@ -13,7 +13,7 @@
   <div layout='row' flex>
     <md-sidenav
       class='md-sidenav-left'
-      md-is-open='$ctrl.puppetIsSelected()'
+      md-is-open='puppetIsSelected()'
       md-disable-backdrop md-whiteframe='{{ $mdMedia('gt-sm') ? 2 : 4 }}'
     >
       <dranimate-puppet-parameters></dranimate-puppet-parameters>
@@ -22,15 +22,15 @@
       <dranimate-stage-container></dranimate-stage-container>
       <div class='md-padding bottom-left-pos'>
         <dranimate-zoompanner
-          on-zoom-in='$ctrl.zoomIn'
-          on-zoom-out='$ctrl.zoomOut'
-          on-pan-toggle='$ctrl.togglePan'
-          pan-enabled-getter='$ctrl.getPanEnabled'>
+          on-zoom-in='zoomIn'
+          on-zoom-out='zoomOut'
+          on-pan-toggle='togglePan'
+          pan-enabled-getter='getPanEnabled'>
         </dranimate-zoompanner>
       </div>
       <div layout='column' class='md-padding bottom-right-pos'>
         <input type='file' id='file-picker' ng-model='file' class='ng-hide' dranimate-new-puppet-from-json />
-        <md-button class='md-fab' ng-click='$ctrl.uploadFile()'>
+        <md-button class='md-fab' ng-click='uploadFile()'>
           <md-icon md-font-set='material-icons'>add</md-icon>
         </md-button>
     </div>
