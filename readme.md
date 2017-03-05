@@ -1,9 +1,9 @@
 # Dranimate
 
-### Setup
+### OS X Setup
 
 
-#### Install pip if you don't have it
+#### Install xcode command line tools and pip if you don't have them
 ```
 xcode-select --install
 sudo easy_install pip
