@@ -26,11 +26,11 @@ pip install -r server/requirements.txt
 
 `source venv/bin/activate`
 
-
 ### How to run the Dranimate server:
-* `python server/manage.py migrate`
-* `python server/manage.py runserver`
-
+```
+python server/manage.py migrate
+python server/manage.py runserver
+```
 ### Image segmentation + Mesh generation
 * Click and drag to select area; control-click and drag to subtract area
 * Press 'p' to add a new control point
