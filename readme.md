@@ -6,13 +6,17 @@
 `brew install pyenv-virtualenv`
 
 #### Install pip if you don't have it
-`xcode-select --install`
-`sudo easy_install pip`
+```
+xcode-select --install
+sudo easy_install pip
+```
 
 #### Clone repo and install dependencies
-`git clone https://github.com/cmuartfab/dranimate.git`
-`cd dranimate`
-`pip install -r server/requirements.txt`
+```
+git clone https://github.com/cmuartfab/dranimate.git
+cd dranimate
+pip install -r server/requirements.txt
+```
 
 #### Setup virtual env
 `virtualenv init venv`
