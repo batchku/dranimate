@@ -2,14 +2,16 @@
 
 ### Setup
 
-#### Install virtualenv if you don't have it
-`brew install pyenv-virtualenv`
 
 #### Install pip if you don't have it
 ```
 xcode-select --install
 sudo easy_install pip
 ```
+
+#### Install virtualenv if you don't have it
+`sudo pip install virtualenv`
+
 
 #### Clone repo and install dependencies
 ```
