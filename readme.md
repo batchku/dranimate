@@ -10,7 +10,9 @@ sudo easy_install pip
 ```
 
 #### Install virtualenv if you don't have it
-`sudo pip install virtualenv`
+```
+sudo pip install virtualenv
+```
 
 
 #### Clone repo and install dependencies
