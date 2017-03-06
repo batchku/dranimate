@@ -7,11 +7,16 @@
 
 ### Setup
 - user Terminal to navigate to the folder where you wish to install this app
-- clone this repo with `https://github.com/cmuartfab/dranimate.git`
-- switch to the `beta` branch with `git checkout beta`
-- switch to browser folder with `cd browser` 
-- install node dependencies with `npm install`
-- run the python SimpleHTTPServer with `python -m SimpleHTTPServer 8000`
+- clone this repo
+`https://github.com/cmuartfab/dranimate.git`
+- switch to the `beta` branch with 
+`git checkout beta`
+- switch to browser folder with 
+`cd browser` 
+- install node dependencies with 
+`npm install`
+- run the python SimpleHTTPServer with 
+`python -m SimpleHTTPServer 8000`
 - open Chrome and point it to `localhost:8000`
 
 
