@@ -4,20 +4,19 @@ var path = require('path');
 
 var webpackConfig = {
   entry: {
-    // TODO: create entrypoints for polyfills (if necessary) and vendor (see index.html)
-    // polyfills: 'path/to/polyfill/entrypoint',
-    // vendor: 'path/to/vendor/entrypoint',
-    main: './index.js'
+    // polyfills: './_entrypoints/polyfills.js',
+    vendor: './_entrypoints/vendor.js',
+    main: './_entrypoints/main.js'
   },
   output: {
     publicPath: '',
     path: path.resolve(__dirname, './dist'),
   },
-  // plugins: [
-  // new webpack.optimize.CommonsChunkPlugin({ // TODO: code seperation if multiple bundles are used
-  //   name: ['main', 'vendor', 'polyfills']
-  // }),
-  // ],
+  plugins: [
+  new webpack.optimize.CommonsChunkPlugin({
+    name: ['main', 'vendor']
+  }),
+  ],
   module: {
     rules: [
       {

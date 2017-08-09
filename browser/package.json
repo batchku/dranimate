@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build:copy": "cp ./index.html dist/index.html; cp ./main.css dist/main.css; cp -r ./lib_remove_me dist/lib_remove_me",
-    "build:webpack": "webpack --colors --progress .",
+    "build:webpack": "webpack --colors --progress --display-error-details",
     "build": "npm run clean && npm run build:webpack && npm run build:copy",
     "clean": "rm -rf dist",
     "dev": "webpack-dev-server --inline --colors --progress --content-base ."
