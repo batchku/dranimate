@@ -4,8 +4,11 @@
   "description": "Dranimate browser application",
   "main": "index.js",
   "scripts": {
-    "build": "mkdir -p dist; webpack ./index.js dist/bundle.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:copy": "cp ./index.html dist/index.html; cp ./main.css dist/main.css; cp -r ./lib_remove_me dist/lib_remove_me",
+    "build:webpack": "webpack --colors --progress .",
+    "build": "npm run clean && npm run build:webpack && npm run build:copy",
+    "clean": "rm -rf dist",
+    "dev": "webpack-dev-server --inline --colors --progress --content-base ."
   },
   "author": "",
   "license": "ISC",
@@ -18,5 +21,11 @@
     "angular-messages": "^1.5.8",
     "angular-ui-router": "^0.3.1",
     "jquery": "^3.1.1"
+  },
+  "devDependencies": {
+    "script-loader": "^0.7.0",
+    "webpack": "^3.5.2",
+    "webpack-dev-server": "^2.7.1",
+    "webpack-merge": "^4.1.0"
   }
 }
