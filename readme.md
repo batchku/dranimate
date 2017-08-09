@@ -14,7 +14,17 @@
 * `python server/manage.py runserver`
 
 ### Dranimate client:
-* `webpack ./index.js dist/bundle.js`
+* Requirements: node
+
+#### Development:
+* `npm install`
+* `npm run dev`
+* Open browser to localhost:3000
+
+#### Build:
+* `npm install`
+* `npm run build`
+* When vendor bundle gets implemented, this will work!
 * NOTE: the build process currently assumes ES5, but babel transformer should be added
 
 ### Image segmentation + Mesh generation
