@@ -11,9 +11,9 @@
 ```
 https://github.com/cmuartfab/dranimate.git
 ```
-- switch to the `beta` branch with 
+- switch to the `some-webpack` branch with 
 ```
-git checkout beta
+git checkout some-webpack
 ```
 - switch to browser folder with 
 ```
@@ -23,11 +23,11 @@ cd browser
 ```
 npm install
 ```
-- run the python SimpleHTTPServer with 
+- run local server 
 ```
-python -m SimpleHTTPServer 8000
+npm run dev
 ```
-- open Chrome and point it to `localhost:8000`
+- open Chrome and point it to `localhost:3000`
 
 
 ## Usage
