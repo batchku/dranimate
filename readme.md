@@ -1,31 +1,36 @@
 # Dranimate
 
-### Setup and installation
+## Installation
+### Requirements
+- install (homebrew)[https://brew.sh/]: 
+- install node.js: `brew install node`
 
-`virtualenv init venv`
-* Note: some versions of virtualenv don't require the 'init' command arg
+### Setup
+- user Terminal to navigate to the folder where you wish to install this app
+- clone this repo
+```
+https://github.com/cmuartfab/dranimate.git
+```
+- switch to the `some-webpack` branch with 
+```
+git checkout some-webpack
+```
+- switch to browser folder with 
+```
+cd browser
+```
+- install node dependencies with 
+```
+npm install
+```
+- run local server 
+```
+npm run dev
+```
+- open Chrome and point it to `localhost:3000`
 
-`source venv/bin/activate`
 
-`pip install -r server/requirements.txt`
-
-### Dranimate server:
-* `python server/manage.py migrate`
-* `python server/manage.py runserver`
-
-### Dranimate client:
-* Requirements: node
-
-#### Development:
-* `npm install`
-* `npm run dev`
-* Open browser to localhost:3000
-
-#### Build:
-* `npm install`
-* `npm run build`
-* When vendor bundle gets implemented, this will work!
-* NOTE: the build process currently assumes ES5, but babel transformer should be added
+## Usage
 
 ### Image segmentation + Mesh generation
 * Click and drag to select area; control-click and drag to subtract area
