@@ -1,3 +1,5 @@
+const THREE = require('three');
+
 var Puppet = function (image) {
   this.image = image;
 

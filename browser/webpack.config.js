@@ -22,7 +22,7 @@ var webpackConfig = {
       {
         test: /\.exec\.js$/,
         exclude: /node_modules/,
-        use: [ 'script-loader' ]
+        use: ['script-loader']
       },
       {
         test: /\.css$/,

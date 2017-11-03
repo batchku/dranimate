@@ -1,3 +1,6 @@
+const FileSaver = require('file-saver');
+const THREE = require('three');
+
 var Dranimate = function () {
     /* debugging memory issue */
 
@@ -28,6 +31,7 @@ var Dranimate = function () {
     var renderWireframes = false;
 
     var selectedPuppet = null;
+    var THREEContainer;
 
     var onChangeCallback = function () {};
 
@@ -292,9 +296,10 @@ var Dranimate = function () {
     }
 
     this.exportSelectedPuppet = function () {
+        console.log('-----here', this);
         var puppet = dranimate.getSelectedPuppet();
         var blob = new Blob([puppet.getJSONData()], {type: "text/plain;charset=utf-8"});
-        saveAs(blob, "puppet.json");
+        FileSaver.saveAs(blob, "puppet.json");
     }
 
     this.deleteSelectedPuppet = function () {

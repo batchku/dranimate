@@ -23,4 +23,5 @@ bundle.js
 browser/admin/
 browser/django_extensions/
 browser/rest_framework/
-/browser/node_modules/
+browser/node_modules/
+browser/package-lock.json
