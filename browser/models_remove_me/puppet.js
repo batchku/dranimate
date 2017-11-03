@@ -1,4 +1,8 @@
 const THREE = require('three');
+const GIF = require('gif.js');
+
+const ARAP = require('../lib_remove_me/arap/arap.js');
+console.log('ARAP', ARAP);
 
 var Puppet = function (image) {
   this.image = image;
@@ -25,6 +29,8 @@ var Puppet = function (image) {
   var context = canvas.getContext('2d');
   canvas.getContext('2d');
   context.drawImage(this.image, 0, 0, this.image.width, this.image.height, 0, 0, canvas.width, canvas.height);
+  this.context = context;
+  this.canvas = canvas;
 
   var imageTexture = new THREE.Texture(canvas);
   imageTexture.needsUpdate = true;
@@ -114,32 +120,21 @@ Puppet.prototype.stopRecording = function () {
   this.recordedFrames = [];
 }
 
-Puppet.prototype.finishRecording = function () {
-  var that = this;
-  this.recordedFrames.forEach(function (recordedFrame) {
-    console.log("Frame " + that.recordedFrames.indexOf(recordedFrame));
-    console.log(recordedFrame);
-
-    var gif = new GIF({
-      workers: 2,
-        quality: 10
-    });
-
-    // add a image element
-    gif.addFrame(imageElement);
-
-    // or a canvas element
-    gif.addFrame(canvasElement, {delay: 200});
-
-    // or copy the pixels from a canvas context
-    gif.addFrame(ctx, {copy: true});
-
-    gif.on('finished', function(blob) {
-      window.open(URL.createObjectURL(blob));
-    });
-
-    gif.render();
+Puppet.prototype.finishRecording = function() {
+  this.isRecording = false;
+  const gif = new GIF({
+    workers: 2,
+    quality: 10,
+    // width: 20,
+    // height: 20,
+    workerScript: '/lib_remove_me/gif/gif.worker.js',
   });
+  this.recordedFrames.forEach(recordedFrame => {
+    // TODO: paint recorded frame to canavs and pass it to gif
+    gif.addFrame(ctx, {copy: true});
+  });
+  gif.on('finished', blob => window.open(URL.createObjectURL(blob)));
+  gif.render();
 }
 
 Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {

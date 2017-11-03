@@ -1,9 +1,13 @@
 /*  ARAP.js  *
  * zrispo.co */
 
- /* this library only uses flat arrays that represent vertices and triangles 
+ /* this library only uses flat arrays that represent vertices and triangles
   * for simplicity, it's recommended to use arap-three.js which wraps this
   * code and handles all that nasty stuff for you. */
+
+const Deform2d = require('./deform2d.js');
+const Module = Deform2d.Module;
+const HEAPF32 = Deform2d.HEAPF32;
 
 var ARAP = (function () {
 
@@ -55,15 +59,15 @@ var ARAP = (function () {
 		var dataPtr = Module._malloc(nDataBytes);
 
 		// Copy data to Emscripten heap (directly accessed from Module.HEAPU8)
-		var dataHeap = new Uint8Array(Module.HEAPU8.buffer, 
-			                          dataPtr, 
+		var dataHeap = new Uint8Array(Module.HEAPU8.buffer,
+			                          dataPtr,
 			                          nDataBytes);
 		dataHeap.set(new Uint8Array(data.buffer));
 
 		// Call function and get result
 		func(optionalArg, dataHeap.byteOffset, data.length);
-		var result = new Float32Array(dataHeap.buffer, 
-			                          dataHeap.byteOffset, 
+		var result = new Float32Array(dataHeap.buffer,
+			                          dataHeap.byteOffset,
 			                          data.length);
 
 		// Free memory
@@ -76,7 +80,7 @@ var ARAP = (function () {
 
 /* Exposed functions */
 
-	/* Creates a new mesh inside the module and returns the index of the mesh 
+	/* Creates a new mesh inside the module and returns the index of the mesh
 	 * in the module's internal array. */
 	arap.createNewARAPMesh = function(verts, tris) {
 		// make new mesh
@@ -106,7 +110,7 @@ var ARAP = (function () {
 	}
 
 	/* Call this after adding and setting the positions of control points.
-	 * This is where all the work for mesh deformation is done. 
+	 * This is where all the work for mesh deformation is done.
 	 * Note that the first time you call updateMeshDeformation after adding
 	 * or removing control points, deform2d must recompute a bunch of
 	 * stuff which is very slow. */
@@ -114,9 +118,9 @@ var ARAP = (function () {
 		updateMeshDeformationWrapper(meshIndex);
 	}
 
-	/* Call this after calling update() to get your vertices deformed by the 
+	/* Call this after calling update() to get your vertices deformed by the
 	 * control points. */
-	/* ~Possible optimization: return all verts in one big array to avoid memory 
+	/* ~Possible optimization: return all verts in one big array to avoid memory
 	 * stuff overhead*/
 	arap.getDeformedVertices = function(meshIndex, size) {
 		var empty = [];
@@ -144,3 +148,5 @@ var ARAP = (function () {
 	return arap;
 
 })();
+
+module.exports = ARAP;

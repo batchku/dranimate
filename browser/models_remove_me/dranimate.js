@@ -5,7 +5,7 @@ var Dranimate = function () {
     /* debugging memory issue */
 
     var that = this;
-
+    
     var container;
 
     var camera, scene, renderer;
@@ -319,30 +319,28 @@ var Dranimate = function () {
         }
     }
 
-    this.toggleRenderWireframes = function () {
-        renderWireframes = !renderWireframes;
+    this.toggleRenderWireframes = () => {
+      renderWireframes = !renderWireframes;
     }
 
 /*****************************
     Dom events
 *****************************/
 
-    document.addEventListener('keydown', function(evt) {
-        if(evt.key == " " && dranimate.getSelectedPuppet()) {
-            dranimate.getSelectedPuppet().startRecording();
-        }
-    });
-    document.addEventListener('keyup', function(evt) {
-        if(evt.key == " " && dranimate.getSelectedPuppet()) {
-            dranimate.getSelectedPuppet().finishRecording();
-        }
-    });
+    document.addEventListener('keydown', $event => {
+      if($event.code === 'Space' && this.getSelectedPuppet()) {
+        this.getSelectedPuppet().startRecording();
+      }
+    }, false);
+    document.addEventListener('keyup', $event => {
+      if($event.code === 'Space' && this.getSelectedPuppet()) {
+        this.getSelectedPuppet().finishRecording(THREEContainer);
+      }
+    }, false);
 
-    window.addEventListener( 'resize', function () {
-
-        refreshCamera();
-        renderer.setSize( window.innerWidth, window.innerHeight );
-
+    window.addEventListener('resize', $event => {
+      refreshCamera();
+      renderer.setSize( window.innerWidth, window.innerHeight );
     }, false );
 
 /*****************************
