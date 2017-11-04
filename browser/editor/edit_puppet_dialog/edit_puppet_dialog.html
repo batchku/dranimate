@@ -73,8 +73,14 @@
 
       <md-dialog-actions layout="row">
         <span flex></span>
-        <md-button dranimate-cancel-edit-puppet-dialog>Cancel</md-button>
-        <md-button class="md-primary" dranimate-finish-edit-puppet-dialog>Save</md-button>
+        <md-button ng-click="$ctrl.onCancel($event)">
+          Cancel
+        </md-button>
+        <md-button
+          ng-click="$ctrl.onSave($event)"
+          class="md-primary">
+          Save
+        </md-button>
       </md-dialog-actions>
     </md-sidenav>
 

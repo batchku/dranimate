@@ -4,5 +4,5 @@ var app = angular.module('dranimate.editor.editPuppetDialog', [
 
 app.controller('EditPuppetCtrl', require('./EditPuppetCtrl'));
 
-app.directive('dranimateCancelEditPuppetDialog', require('./CancelEditPuppetDialog'));
-app.directive('dranimateFinishEditPuppetDialog', require('./FinishEditPuppetDialog'));
+// app.directive('dranimateCancelEditPuppetDialog', require('./CancelEditPuppetDialog'));
+// app.directive('dranimateFinishEditPuppetDialog', require('./FinishEditPuppetDialog'));

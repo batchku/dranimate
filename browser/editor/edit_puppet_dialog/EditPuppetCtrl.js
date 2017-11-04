@@ -1,4 +1,7 @@
 var $ = require('jquery');
+// const dranimate = require('../../models_remove_me/dranimate.js');
+import dranimate from '../../models_remove_me/dranimate';
+import Puppet from '../../models_remove_me/puppet';
 
 /* to translate properties from/to imageToMesh to/from the controller */
 function transEditModeToCtrl(v) { return v ? 'editCtrlPt' : 'cropImg'; };
@@ -16,9 +19,9 @@ function transSelectModeFromCtrl(v) {
   };
 };
 
-module.exports = ['$scope', 'imageToMesh', EditPuppetCtrl];
+module.exports = ['$scope', 'imageToMesh', '$mdDialog', EditPuppetCtrl];
 
-function EditPuppetCtrl($scope, imageToMesh) {
+function EditPuppetCtrl($scope, imageToMesh, $mdDialog) {
   var $ctrl = this;
 
   /* zoompanner controls */
@@ -47,4 +50,31 @@ function EditPuppetCtrl($scope, imageToMesh) {
   $ctrl.notCropImgMode = function() {
     return imageToMesh.getAddControlPoints();
   };
+
+  $ctrl.onCancel = $event => $mdDialog.cancel();
+
+  $ctrl.onSave = $event => {
+    // save puppet? this was in the directive: OpenEditPuppetDialog
+    // console.log('-----', imageToMesh, model);
+    imageToMesh.generateMesh();
+
+    var vertices = imageToMesh.getVertices();
+    var faces = imageToMesh.getTriangles();
+    var controlPoints = imageToMesh.getControlPointIndices();
+    var controlPointPositions = imageToMesh.getControlPoints();
+    var image = imageToMesh.getImage();
+    var imageNoBG = imageToMesh.getImageNoBackground();
+    var backgroundRemovalData = imageToMesh.getBackgroundRemovalData();
+
+    var p = new Puppet(image);
+    p.setImageToMeshData(imageNoBG, controlPointPositions, backgroundRemovalData);
+    p.generateMesh(vertices, faces, controlPoints);
+    dranimate.addPuppet(p);
+
+
+
+
+    $mdDialog.hide();
+  };
+
 }

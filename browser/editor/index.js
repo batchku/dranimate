@@ -10,7 +10,7 @@ app.controller('EditorCtrl', require('./EditorCtrl'));
 app.directive('dranimateNewPuppetFromJson', require('./NewPuppetFromJson'));
 app.directive('dranimateStageContainer', require('./StageContainer'));
 
-app.directive('dranimateOpenEditPuppetDialog', require('./edit_puppet_dialog/OpenEditPuppetDialog'));
+// app.directive('dranimateOpenEditPuppetDialog', require('./edit_puppet_dialog/OpenEditPuppetDialog'));
 
 app.component('dranimateZoompanner', {
   templateUrl: 'editor/zoompanner.html',

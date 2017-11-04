@@ -5,6 +5,7 @@ module.exports = ['$mdMedia', '$mdDialog', 'model', OpenEditPuppetDialog];
 
 function makePuppetFromImageToMesh(imageToMesh, model) {
   return function() {
+    console.log('-----', imageToMesh, model);
     imageToMesh.generateMesh();
 
     var vertices = imageToMesh.getVertices();
@@ -23,6 +24,7 @@ function makePuppetFromImageToMesh(imageToMesh, model) {
 };
 
 function OpenEditPuppetDialog($mdMedia, $mdDialog, model) {
+  console.log('- - - - OpenEditPuppetDialog', model);
   return {
     restrict: 'A',
     link: function(scope, $element) {
@@ -34,7 +36,7 @@ function OpenEditPuppetDialog($mdMedia, $mdDialog, model) {
           parent: angular.element(document.body),
           closeTo: $element,
           fullscreen: $mdMedia('xs')
-        });
+        }).then(makePuppetFromImageToMesh(imageToMesh, model));
       });//.then(makePuppetFromImageToMesh(imageToMesh, model));
     }
   };
