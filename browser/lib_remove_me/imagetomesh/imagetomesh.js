@@ -8,6 +8,10 @@
  *
  */
 
+import SLIC from './slic.js';
+import CanvasUtils from './canvasUtils.js';
+const Delaunay = require('delaunay-fast');
+
 var ImageToMesh = function () {
 
     var that = this;
@@ -801,3 +805,5 @@ var ImageToMesh = function () {
     }
 
 }
+
+export {ImageToMesh};

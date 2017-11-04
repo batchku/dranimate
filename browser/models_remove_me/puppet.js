@@ -1,7 +1,7 @@
 const THREE = require('three');
 const GIF = require('gif.js');
 
-const ARAP = require('../lib_remove_me/arap/arap.js');
+const ARAP = require('../arap/arap.js');
 console.log('ARAP', ARAP);
 
 var Puppet = function (image) {

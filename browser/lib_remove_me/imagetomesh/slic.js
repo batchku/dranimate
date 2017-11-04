@@ -26,7 +26,7 @@ function createImageData(width, height) {
   return context.createImageData(width, height);
 }
 
-function SLIC(imageData, options) {
+export default function SLIC(imageData, options) {
   if (!(imageData instanceof ImageData))
       throw "Invalid ImageData";
   this.imageData = imageData;

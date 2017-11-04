@@ -1,3 +1,6 @@
+const itom = require('../lib_remove_me/imagetomesh/imagetomesh.js');
+const ImageToMesh = itom.ImageToMesh;
+
 // XXX WTS is this? Get it out
 module.exports = ['$rootScope', ImageToMeshWrapper];
 

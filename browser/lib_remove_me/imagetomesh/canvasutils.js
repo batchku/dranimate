@@ -52,3 +52,5 @@ var CanvasUtils = (function () {
     return canvasUtils;
 
 })();
+
+export default CanvasUtils;
