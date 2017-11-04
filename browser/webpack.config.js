@@ -20,9 +20,14 @@ var webpackConfig = {
   module: {
     rules: [
       {
-        test: /\.exec\.js$/,
+        test: /\.js$/,
         exclude: /node_modules/,
-        use: ['script-loader']
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
       },
       {
         test: /\.css$/,
