@@ -2,6 +2,7 @@
 // const dranimate = require('../../models_remove_me/dranimate.js');
 import dranimate from '../../models_remove_me/dranimate';
 import Puppet from '../../models_remove_me/puppet';
+import imageToMesh from '../../lib_remove_me/imagetomesh/imagetomesh';
 
 /* to translate properties from/to imageToMesh to/from the controller */
 function transEditModeToCtrl(v) { return v ? 'editCtrlPt' : 'cropImg'; };
@@ -19,9 +20,9 @@ function transSelectModeFromCtrl(v) {
   };
 };
 
-module.exports = ['$scope', 'imageToMesh', '$mdDialog', EditPuppetCtrl];
+module.exports = ['$scope', '$mdDialog', EditPuppetCtrl];
 
-function EditPuppetCtrl($scope, imageToMesh, $mdDialog) {
+function EditPuppetCtrl($scope, $mdDialog) {
   var $ctrl = this;
 
   /* zoompanner controls */

@@ -1,3 +1,5 @@
+import imageToMesh from '../lib_remove_me/imagetomesh/imagetomesh';
+
 var $ = require('jquery');
 var EditPuppetCtrl = require('./edit_puppet_dialog/EditPuppetCtrl');
 var Puppet = require('../models_remove_me/puppet');
@@ -24,9 +26,9 @@ function loadJSONPuppet(element, e) {
   reader.readAsText(element[0].files[0]);
 }
 
-module.exports = ['$mdMedia', '$mdDialog', 'imageToMesh', NewPuppetFromJson];
+module.exports = ['$mdMedia', '$mdDialog', NewPuppetFromJson];
 
-function NewPuppetFromJson($mdMedia, $mdDialog, imageToMesh) {
+function NewPuppetFromJson($mdMedia, $mdDialog) {
   return {
     restrict: 'A',
     link: function($scope, $element) {

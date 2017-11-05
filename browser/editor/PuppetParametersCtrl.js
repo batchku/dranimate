@@ -1,37 +1,39 @@
+import dranimate from '../models_remove_me/dranimate';
+
 var EditPuppetCtrl = require('./edit_puppet_dialog/EditPuppetCtrl');
 
-module.exports = ['model', '$mdDialog', PuppetParametersCtrl];
+module.exports = ['$mdDialog', PuppetParametersCtrl];
 
-function PuppetParametersCtrl(model, $mdDialog) {
+function PuppetParametersCtrl($mdDialog) {
   var $scope = this;
 
   $scope.rotation = function(value) {
-    var puppet = model.getSelectedPuppet();
+    var puppet = dranimate.getSelectedPuppet();
     return (puppet && puppet.rotation(value)) || 0;
   };
 
   $scope.x = function(value) {
-    var puppet = model.getSelectedPuppet();
+    var puppet = dranimate.getSelectedPuppet();
     return (puppet && Math.floor(puppet.x(value))) || 0;
   };
 
   $scope.y = function(value) {
-    var puppet = model.getSelectedPuppet();
+    var puppet = dranimate.getSelectedPuppet();
     return (puppet && Math.floor(puppet.y(value))) || 0;
   };
 
   $scope.scale = function(value) {
-    var puppet = model.getSelectedPuppet();
+    var puppet = dranimate.getSelectedPuppet();
     if (!puppet) return 100;
 
     return value ? puppet.scale(value / 100) : puppet.scale() * 100;
   };
 
   $scope.noPuppetSelected = function() {
-    return model.getSelectedPuppet() === null;
+    return dranimate.getSelectedPuppet() === null;
   };
 
-  $scope.deleteSelectedPuppet = model.deleteSelectedPuppet;
+  $scope.deleteSelectedPuppet = dranimate.deleteSelectedPuppet;
 
   $scope.openEditPuppetDialog = $event => {
     $mdDialog.show({

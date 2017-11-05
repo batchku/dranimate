@@ -2,7 +2,6 @@ const editPuppetDialog = require('./edit_puppet_dialog');
 const EditorCtrl = require('./EditorCtrl');
 const PuppetParametersCtrl = require('./PuppetParametersCtrl');
 const newPuppetFromJsonDirective = require('./NewPuppetFromJson');
-const dranimateStageContainerDirective = require('./StageContainer');
 
 const app = angular.module('dranimate.editor', [
   'ngMaterial',
@@ -12,9 +11,6 @@ const app = angular.module('dranimate.editor', [
 app.controller('EditorCtrl', EditorCtrl);
 
 app.directive('dranimateNewPuppetFromJson', newPuppetFromJsonDirective);
-app.directive('dranimateStageContainer', dranimateStageContainerDirective);
-
-// app.directive('dranimateOpenEditPuppetDialog', require('./edit_puppet_dialog/OpenEditPuppetDialog'));
 
 app.component('dranimateZoompanner', {
   templateUrl: 'editor/zoompanner.html',

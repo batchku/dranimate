@@ -806,4 +806,5 @@ var ImageToMesh = function () {
 
 }
 
-export {ImageToMesh};
+const imageToMesh = new ImageToMesh();
+export default imageToMesh;
