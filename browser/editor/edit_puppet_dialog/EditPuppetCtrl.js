@@ -1,4 +1,4 @@
-var $ = require('jquery');
+// var $ = require('jquery');
 // const dranimate = require('../../models_remove_me/dranimate.js');
 import dranimate from '../../models_remove_me/dranimate';
 import Puppet from '../../models_remove_me/puppet';
@@ -70,8 +70,6 @@ function EditPuppetCtrl($scope, imageToMesh, $mdDialog) {
     p.setImageToMeshData(imageNoBG, controlPointPositions, backgroundRemovalData);
     p.generateMesh(vertices, faces, controlPoints);
     dranimate.addPuppet(p);
-
-
 
 
     $mdDialog.hide();

@@ -1,6 +1,8 @@
-module.exports = ['model', PuppetParametersCtrl];
+var EditPuppetCtrl = require('./edit_puppet_dialog/EditPuppetCtrl');
 
-function PuppetParametersCtrl(model) {
+module.exports = ['model', '$mdDialog', PuppetParametersCtrl];
+
+function PuppetParametersCtrl(model, $mdDialog) {
   var $scope = this;
 
   $scope.rotation = function(value) {
@@ -30,4 +32,12 @@ function PuppetParametersCtrl(model) {
   };
 
   $scope.deleteSelectedPuppet = model.deleteSelectedPuppet;
+
+  $scope.openEditPuppetDialog = $event => {
+    $mdDialog.show({
+      controller: EditPuppetCtrl,
+      controllerAs: '$ctrl',
+      templateUrl: 'editor/edit_puppet_dialog/edit_puppet_dialog.html'
+    });
+  };
 }

@@ -1,6 +1,9 @@
 require('../editor');
 require('angular-ui-router');
 
+const dranimateModel = require('../models_remove_me/model');
+const imageToMesh = require('../models_remove_me/imageToMesh');
+
 const app = angular
   .module('dranimate', [
     'ngMaterial',
@@ -18,8 +21,8 @@ const app = angular
       .warnPalette('red');
   }]);
 
-app.factory('model', require('../models_remove_me/model'));
-app.factory('imageToMesh', require('../models_remove_me/imageToMesh'));
+app.factory('model', dranimateModel);
+app.factory('imageToMesh', imageToMesh);
 
 app.config(['$locationProvider', '$stateProvider', function($locationProvider, $stateProvider) {
   $locationProvider.html5Mode({
