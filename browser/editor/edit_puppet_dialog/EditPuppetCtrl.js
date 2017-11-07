@@ -55,26 +55,26 @@ function EditPuppetCtrl($scope, $mdDialog) {
   $ctrl.onCancel = $event => $mdDialog.cancel();
 
   $ctrl.onSave = $event => {
-    console.log('onSave', this);
-    // save puppet? this was in the directive: OpenEditPuppetDialog
-    // console.log('-----', imageToMesh, model);
-    imageToMesh.generateMesh();
 
-    var vertices = imageToMesh.getVertices();
-    var faces = imageToMesh.getTriangles();
-    var controlPoints = imageToMesh.getControlPointIndices();
-    var controlPointPositions = imageToMesh.getControlPoints();
-    var image = imageToMesh.getImage();
-    var imageNoBG = imageToMesh.getImageNoBackground();
-    var backgroundRemovalData = imageToMesh.getBackgroundRemovalData();
+    imageToMesh.generateMesh()
+      .then(() => {
+        const vertices = imageToMesh.getVertices();
+        const faces = imageToMesh.getTriangles();
+        const controlPoints = imageToMesh.getControlPointIndices();
+        const controlPointPositions = imageToMesh.getControlPoints();
+        const image = imageToMesh.getImage();
+        const imageNoBG = imageToMesh.getImageNoBackground();
+        const backgroundRemovalData = imageToMesh.getBackgroundRemovalData();
 
-    var p = new Puppet(image);
-    p.setImageToMeshData(imageNoBG, controlPointPositions, backgroundRemovalData);
-    p.generateMesh(vertices, faces, controlPoints);
-    console.log('puppet', p);
-    dranimate.addPuppet(p);
+        const p = new Puppet(image);
+        p.setImageToMeshData(imageNoBG, controlPointPositions, backgroundRemovalData);
+        p.generateMesh(vertices, faces, controlPoints);
+        dranimate.addPuppet(p);
 
-    $mdDialog.hide();
+        $mdDialog.hide();
+      });
+
+
   };
 
 }

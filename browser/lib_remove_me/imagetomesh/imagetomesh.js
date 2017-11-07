@@ -152,11 +152,13 @@ var ImageToMesh = function () {
 
     this.generateMesh = function () {
         this.recalculateCentroids();
-        this.findEdgesOfImage();
-        this.removeBackgroundFromImage();
-        this.recalculateContourPoints();
-        this.generateTriangles();
-        redraw();
+        return this.findEdgesOfImage()
+          .then(() => this.removeBackgroundFromImage())
+          .then(() => {
+            this.recalculateContourPoints();
+            this.generateTriangles();
+            redraw();
+          });
     }
 
     this.editImage = function (imageData, controlPointPositions, backgroundRemovalData) {
@@ -511,11 +513,21 @@ var ImageToMesh = function () {
         }
         */
 
-        dummyContext.putImageData(contourData, 0, 0);
-        contourImage.src = dummyCanvas.toDataURL("image/png");
-        contourImage.onload = function() {
-            redraw();
-        }
+        return new Promise((resolve, reject) => {
+          try {
+            dummyContext.putImageData(contourData, 0, 0);
+            contourImage.src = dummyCanvas.toDataURL("image/png");
+            contourImage.onload = () => {
+                redraw(); // TODO does this need to be done?
+                resolve();
+            }
+          }
+          catch(error) {
+            reject(error);
+          }
+        });
+
+
 
     }
 
@@ -530,13 +542,16 @@ var ImageToMesh = function () {
             }
         }
 
-        dummyContext.putImageData(originalImageData, 0, 0);
-        onlySelectionImage = new Image();
-        onlySelectionImage.src = dummyCanvas.toDataURL("image/png");
-        onlySelectionImage.onload = function() {
-            redraw();
-        }
 
+        return new Promise((resolve, reject) => {
+          dummyContext.putImageData(originalImageData, 0, 0);
+          onlySelectionImage = new Image();
+          onlySelectionImage.src = dummyCanvas.toDataURL("image/png");
+          onlySelectionImage.onload = () => {
+              redraw(); // TODO: does this need to be called?
+              resolve();
+          }
+        });
     }
 
     this.addSelectionToNoBackgroundImage = function () {
