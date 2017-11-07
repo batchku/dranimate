@@ -1,4 +1,5 @@
 import dranimate from '../models_remove_me/dranimate';
+import imageToMesh from '../lib_remove_me/imagetomesh/imagetomesh';
 
 var EditPuppetCtrl = require('./edit_puppet_dialog/EditPuppetCtrl');
 
@@ -39,7 +40,12 @@ function PuppetParametersCtrl($mdDialog) {
     $mdDialog.show({
       controller: EditPuppetCtrl,
       controllerAs: '$ctrl',
-      templateUrl: 'editor/edit_puppet_dialog/edit_puppet_dialog.html'
+      templateUrl: 'editor/edit_puppet_dialog/edit_puppet_dialog.html',
+      onComplete: function() {
+        console.log('-------onComplete', dranimate.getSelectedPuppet())
+        // imageToMesh.setup(document.getElementById('edit-mesh-canvas'));
+        // imageToMesh.editImage(reader.result)
+      },
     });
   };
 }

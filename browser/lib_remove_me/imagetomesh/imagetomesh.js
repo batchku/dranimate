@@ -151,7 +151,6 @@ var ImageToMesh = function () {
     }
 
     this.generateMesh = function () {
-
         this.recalculateCentroids();
         this.findEdgesOfImage();
         this.removeBackgroundFromImage();

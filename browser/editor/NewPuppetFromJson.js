@@ -61,7 +61,9 @@ function NewPuppetFromJson($mdMedia, $mdDialog) {
               controllerAs: '$ctrl',
               templateUrl: 'editor/edit_puppet_dialog/edit_puppet_dialog.html',
               onComplete: function() {
-                imageToMesh.setup($('#edit-mesh-canvas')[0]),
+                console.log('-------onComplete')
+                imageToMesh.setup(document.getElementById('edit-mesh-canvas'));
+                // imageToMesh.setup($('#edit-mesh-canvas')[0]),
                 imageToMesh.editImage(reader.result)
               },
               fullscreen: $mdMedia('xs')

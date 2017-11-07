@@ -25,3 +25,4 @@ browser/django_extensions/
 browser/rest_framework/
 browser/node_modules/
 browser/package-lock.json
+.DS_Store
