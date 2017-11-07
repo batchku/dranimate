@@ -3,7 +3,7 @@ import imageToMesh from '../lib_remove_me/imagetomesh/imagetomesh';
 
 module.exports = ['$scope', '$mdDialog', '$rootScope', EditorCtrl];
 
-var $ = require('jquery');
+// var $ = require('jquery');
 
 function EditorCtrl($scope, $mdDialog, $rootScope) {
   var editorScope = $scope;
@@ -25,7 +25,7 @@ function EditorCtrl($scope, $mdDialog, $rootScope) {
   };
 
   $scope.uploadFile = function (e) {
-    $('#file-picker').click();
+    document.getElementById('file-picker').click();
   };
 
 }

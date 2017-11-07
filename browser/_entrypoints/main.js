@@ -6,7 +6,6 @@ const app = angular
     'ngMaterial',
     'dranimate.editor',
     'ui.router',
-    'ngCookies'
   ])
   .config(['$mdThemingProvider', '$httpProvider', function($mdThemingProvider, $httpProvider) {
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';

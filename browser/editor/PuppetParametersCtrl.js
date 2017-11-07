@@ -42,9 +42,8 @@ function PuppetParametersCtrl($mdDialog) {
       controllerAs: '$ctrl',
       templateUrl: 'editor/edit_puppet_dialog/edit_puppet_dialog.html',
       onComplete: function() {
-        console.log('-------onComplete', dranimate.getSelectedPuppet())
-        // imageToMesh.setup(document.getElementById('edit-mesh-canvas'));
-        // imageToMesh.editImage(reader.result)
+        imageToMesh.setup(document.getElementById('edit-mesh-canvas'));
+        imageToMesh.editImage(dranimate.getSelectedPuppet().image.src);
       },
     });
   };

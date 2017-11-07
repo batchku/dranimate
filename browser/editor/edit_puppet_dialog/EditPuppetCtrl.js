@@ -55,6 +55,7 @@ function EditPuppetCtrl($scope, $mdDialog) {
   $ctrl.onCancel = $event => $mdDialog.cancel();
 
   $ctrl.onSave = $event => {
+    console.log('onSave', this);
     // save puppet? this was in the directive: OpenEditPuppetDialog
     // console.log('-----', imageToMesh, model);
     imageToMesh.generateMesh();
@@ -70,8 +71,8 @@ function EditPuppetCtrl($scope, $mdDialog) {
     var p = new Puppet(image);
     p.setImageToMeshData(imageNoBG, controlPointPositions, backgroundRemovalData);
     p.generateMesh(vertices, faces, controlPoints);
+    console.log('puppet', p);
     dranimate.addPuppet(p);
-
 
     $mdDialog.hide();
   };

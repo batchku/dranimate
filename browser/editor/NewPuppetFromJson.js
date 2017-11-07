@@ -1,6 +1,6 @@
 import imageToMesh from '../lib_remove_me/imagetomesh/imagetomesh';
 
-var $ = require('jquery');
+// var $ = require('jquery');
 var EditPuppetCtrl = require('./edit_puppet_dialog/EditPuppetCtrl');
 var Puppet = require('../models_remove_me/puppet');
 var dranimate = require('../models_remove_me/dranimate');

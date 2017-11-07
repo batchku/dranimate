@@ -1,8 +1,9 @@
 require('angular');
+require('angular-ui-router');
 require('angular-animate');
 require('angular-aria');
-require('angular-cookies');
-require('angular-messages');
+// require('angular-cookies');
+// require('angular-messages');
 require('angular-material');
 require('file-saver');
 require('three');
