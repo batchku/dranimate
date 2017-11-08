@@ -1,6 +1,7 @@
 import dranimate from '../models_remove_me/dranimate';
 import imageToMesh from '../lib_remove_me/imagetomesh/imagetomesh';
 
+const FileSaver = require('file-saver');
 var EditPuppetCtrl = require('./edit_puppet_dialog/EditPuppetCtrl');
 
 module.exports = ['$mdDialog', PuppetParametersCtrl];
@@ -46,5 +47,12 @@ function PuppetParametersCtrl($mdDialog) {
         imageToMesh.editImage(dranimate.getSelectedPuppet().image.src);
       },
     });
+  };
+
+  $scope.savePuppet = $event => {
+    console.log('savePuppet', dranimate.getSelectedPuppet());
+    const puppetJsonString = dranimate.getSelectedPuppet().getJSONData();
+    var blob = new Blob([puppetJsonString], {type: 'application/json;charset=utf-8'});
+    FileSaver.saveAs(blob, 'testpuppet.json');
   };
 }
