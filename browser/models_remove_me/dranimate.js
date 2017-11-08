@@ -5,7 +5,7 @@ var Dranimate = function () {
     /* debugging memory issue */
 
     var that = this;
-    
+
     var container;
 
     var camera, scene, renderer;
@@ -34,6 +34,8 @@ var Dranimate = function () {
     var THREEContainer;
 
     var onChangeCallback = function () {};
+
+    let isInRenderLoop = true;
 
 /*****************************
     API
@@ -241,15 +243,15 @@ var Dranimate = function () {
         onCurrentPuppetChangeCallback = callback;
     }
 
-    this.createNewPuppet = function (vertices, faces, controlPoints, image, imageNoBG) {
-
-        /* Create the new Puppet */
-
-        var puppet = new Puppet(image, imageNoBG);
-        puppet.generateMesh(vertices, faces, controlPoints, scene);
-        puppets.push(puppet);
-
-    }
+    // this.createNewPuppet = function (vertices, faces, controlPoints, image, imageNoBG) {
+    //
+    //     /* Create the new Puppet */
+    //
+    //     var puppet = new Puppet(image, imageNoBG);
+    //     puppet.generateMesh(vertices, faces, controlPoints, scene);
+    //     puppets.push(puppet);
+    //
+    // }
 
     this.addPuppet = function (p) {
         puppets.push(p);
@@ -323,6 +325,15 @@ var Dranimate = function () {
       renderWireframes = !renderWireframes;
     }
 
+    // this.startRenderLoop = () => {
+    //   isInRenderLoop = true;
+    //   this.animate();
+    // };
+    //
+    // this.stopRenderLoop = () => {
+    //   isInRenderLoop = false;
+    // };
+
 /*****************************
     Dom events
 *****************************/
@@ -348,12 +359,13 @@ var Dranimate = function () {
 *****************************/
 
     function animate() {
-
-        requestAnimationFrame( animate );
-
-        update();
-        render();
-
+      // console.log('render')
+      requestAnimationFrame(animate);
+      update();
+      render();
+      // if (isInRenderLoop) {
+      //   requestAnimationFrame(animate);
+      // }
     }
 
     function update() {

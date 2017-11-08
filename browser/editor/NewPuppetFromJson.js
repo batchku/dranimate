@@ -1,8 +1,9 @@
 import imageToMesh from '../lib_remove_me/imagetomesh/imagetomesh';
+import requestPuppetCreation from '../models_remove_me/PuppetFactory';
 
 // var $ = require('jquery');
 var EditPuppetCtrl = require('./edit_puppet_dialog/EditPuppetCtrl');
-var Puppet = require('../models_remove_me/puppet');
+// var Puppet = require('../models_remove_me/puppet');
 var dranimate = require('../models_remove_me/dranimate');
 
 // TODO: Load this stuff from the server instead of the json file
@@ -14,10 +15,24 @@ function loadJSONPuppet(element, e) {
     image.onload = function () {
       var imageNoBG = new Image();
       imageNoBG.onload = function () {
-        var p = new Puppet(image);
-        p.setImageToMeshData(imageNoBG, puppetData.controlPointPositions, puppetData.backgroundRemovalData);
-        p.generateMesh(puppetData.verts, puppetData.faces, puppetData.controlPoints);
-        dranimate.addPuppet(p);
+
+        const puppetParams = {
+          vertices: puppetData.verts,
+          faces: puppetData.faces,
+          controlPoints: puppetData.controlPoints,
+          controlPointPositions: puppetData.controlPointPositions,
+          image,
+          imageNoBG,
+          backgroundRemovalData: puppetData.backgroundRemovalData
+        };
+
+        const puppet = requestPuppetCreation(puppetParams);
+        console.log('success?', puppet);
+
+        // var p = new Puppet(image);
+        // p.setImageToMeshData(imageNoBG, puppetData.controlPointPositions, puppetData.backgroundRemovalData);
+        // p.generateMesh(puppetData.verts, puppetData.faces, puppetData.controlPoints);
+        // dranimate.addPuppet(p);
       };
       imageNoBG.src = puppetData.imageNoBGData;
     };

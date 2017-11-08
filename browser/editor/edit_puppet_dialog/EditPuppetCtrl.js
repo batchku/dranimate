@@ -2,6 +2,7 @@
 // const dranimate = require('../../models_remove_me/dranimate.js');
 import dranimate from '../../models_remove_me/dranimate';
 import Puppet from '../../models_remove_me/puppet';
+import requestPuppetCreation from '../../models_remove_me/PuppetFactory';
 import imageToMesh from '../../lib_remove_me/imagetomesh/imagetomesh';
 
 /* to translate properties from/to imageToMesh to/from the controller */
@@ -56,22 +57,41 @@ function EditPuppetCtrl($scope, $mdDialog) {
 
   $ctrl.onSave = $event => {
 
+    // dranimate.stopRenderLoop();
+
     imageToMesh.generateMesh()
       .then(() => {
-        const vertices = imageToMesh.getVertices();
-        const faces = imageToMesh.getTriangles();
-        const controlPoints = imageToMesh.getControlPointIndices();
-        const controlPointPositions = imageToMesh.getControlPoints();
-        const image = imageToMesh.getImage();
-        const imageNoBG = imageToMesh.getImageNoBackground();
-        const backgroundRemovalData = imageToMesh.getBackgroundRemovalData();
+        const puppetParams = {
+          vertices: imageToMesh.getVertices(),
+          faces: imageToMesh.getTriangles(),
+          controlPoints: imageToMesh.getControlPointIndices(),
+          controlPointPositions: imageToMesh.getControlPoints(),
+          image: imageToMesh.getImage(),
+          imageNoBG: imageToMesh.getImageNoBackground(),
+          backgroundRemovalData: imageToMesh.getBackgroundRemovalData()
+        };
 
-        const p = new Puppet(image);
-        p.setImageToMeshData(imageNoBG, controlPointPositions, backgroundRemovalData);
-        p.generateMesh(vertices, faces, controlPoints);
-        dranimate.addPuppet(p);
+        const puppet = requestPuppetCreation(puppetParams);
+        console.log('success?', puppet);
+
+
+        // const vertices = imageToMesh.getVertices();
+        // const faces = imageToMesh.getTriangles();
+        // const controlPoints = imageToMesh.getControlPointIndices();
+        // const controlPointPositions = imageToMesh.getControlPoints();
+        // const image = imageToMesh.getImage();
+        // const imageNoBG = imageToMesh.getImageNoBackground();
+        // const backgroundRemovalData = imageToMesh.getBackgroundRemovalData();
+        //
+        // const p = new Puppet(image);
+        // p.setImageToMeshData(imageNoBG, controlPointPositions, backgroundRemovalData);
+        // p.generateMesh(vertices, faces, controlPoints);
+        // dranimate.addPuppet(p);
+
+        // dranimate.startRenderLoop();
 
         $mdDialog.hide();
+
       });
 
 

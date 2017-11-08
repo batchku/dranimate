@@ -44,6 +44,8 @@ var Puppet = function (image) {
 
   var geometry = new THREE.Geometry();
 
+  console.log('----puppet constructor num vertices', vertsFlatArray.length);
+
   for(var i = 0; i < vertsFlatArray.length; i+=2) {
     var x = vertsFlatArray[i];
     var y = vertsFlatArray[i+1];
@@ -138,6 +140,7 @@ Puppet.prototype.finishRecording = function() {
 }
 
 Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {
+  console.log('faces', verts.length, verts.length / 2);
 
   this.hasMeshData = true;
 
@@ -210,10 +213,10 @@ Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {
 
   console.log("TODO: expand mesh")
 
-    /* Setup new ARAP mesh */
-
-    this.arapMeshID = ARAP.createNewARAPMesh(this.vertsFlatArray,
-        this.facesFlatArray);
+  /* Setup new ARAP mesh */
+  console.log('----Puppet.generateMesh from ', this.vertsFlatArray.length / 2);
+  this.arapMeshID = ARAP.createNewARAPMesh(this.vertsFlatArray,
+      this.facesFlatArray);
 
   /* Add control points */
 
