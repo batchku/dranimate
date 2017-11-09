@@ -164,6 +164,8 @@ var ImageToMesh = function () {
     }
 
     this.editImage = function (imageData, controlPointPositions, backgroundRemovalData) {
+        dummyCanvas = document.createElement("canvas");
+        dummyContext = dummyCanvas.getContext("2d");
 
         mouse = {};
         mouseAbs = {};
@@ -206,58 +208,55 @@ var ImageToMesh = function () {
             imageNoBackgroundData = backgroundRemovalData;
         }
 
-        image = new Image();
-        image.onload = function(){
+        return new Promise((resolve, reject) => {
+          try {
+            image = new Image();
+            image.onload = function(){
+                var normWidth = image.width;
+                var normHeight = image.height;
 
-            var normWidth = image.width;
-            var normHeight = image.height;
+                var largerSize;
+                if(normWidth > normHeight) {
+                    largerSize = normWidth;
+                } else {
+                    largerSize = normHeight;
+                }
 
-            var largerSize;
-            if(normWidth > normHeight) {
-                largerSize = normWidth;
-            } else {
-                largerSize = normHeight;
+                normWidth /= largerSize;
+                normHeight /= largerSize;
+
+                normWidth *= 400;
+                normHeight *= 400;
+
+                dummyCanvas.width = normWidth;
+                dummyCanvas.height = normHeight;
+
+                canvas.width = normWidth;
+                canvas.height = normHeight;
+
+                dummyContext.clearRect(
+                    0, 0,
+                    dummyCanvas.width, dummyCanvas.height);
+                dummyContext.drawImage(
+                    image,
+                    0, 0,
+                    image.width, image.height,
+                    0, 0,
+                    dummyCanvas.width, dummyCanvas.height);
+
+                image.src = dummyCanvas.toDataURL("image/png");
+                image.onload = () => resolve();
             }
+            image.src = imageData;
+          }
+          catch(error) {
+            reject(error);
+          }
+        });
+    }
 
-            normWidth /= largerSize;
-            normHeight /= largerSize;
-
-            normWidth *= 400;
-            normHeight *= 400;
-
-            dummyCanvas.width = normWidth;
-            dummyCanvas.height = normHeight;
-
-            canvas.width = normWidth;
-            canvas.height = normHeight;
-
-            dummyContext.clearRect(
-                0, 0,
-                dummyCanvas.width, dummyCanvas.height);
-            dummyContext.drawImage(
-                image,
-                0, 0,
-                image.width, image.height,
-                0, 0,
-                dummyCanvas.width, dummyCanvas.height);
-
-            image.src = dummyCanvas.toDataURL("image/png");
-            image.onload = function() {
-                that.doSLICOnImage();
-            }
-
-
-        }
-        image.src = imageData;
-
-        /*dummyCanvas.width = image.width;
-        dummyCanvas.height = image.height;
-
-        canvas.width = image.width;
-        canvas.height = image.height;*/
-
-        dummyCanvas = document.createElement("canvas");
-        dummyContext = dummyCanvas.getContext("2d");
+    this.doSlic = function(threshold) {
+      this.doSLICOnImage(threshold);
     }
 
     this.getCanvas = function () {
@@ -336,7 +335,9 @@ var ImageToMesh = function () {
     Private stuff
 *****************************/
 
-    this.doSLICOnImage = function () {
+    this.doSLICOnImage = function (threshold) {
+        console.log('SLIC Start', performance.now());
+        const regionSize = threshold || 30;
 
         dummyContext.drawImage(image, 0, 0, image.width, image.height,
                                       0, 0, dummyCanvas.width, dummyCanvas.height);
@@ -344,7 +345,7 @@ var ImageToMesh = function () {
                                                   dummyCanvas.width,
                                                   dummyCanvas.height);
 
-        slic = new SLIC(originalImageData, { method: "slic", regionSize: 30 }); // NOTE: THIS IS THE THRESHOLD
+        slic = new SLIC(originalImageData, { method: 'slic', regionSize });
         imageNoBackgroundData = context.createImageData(slic.result.width, slic.result.height);
         imageBackgroundMaskData = context.createImageData(slic.result.width, slic.result.height);
         for (var i = 0; i < slic.result.data.length; i += 4) {
@@ -355,6 +356,7 @@ var ImageToMesh = function () {
         }
 
         redraw();
+        console.log('SLIC Done', performance.now());
     }
 
     this.getEncodedSLICLabel = function (array, offset) {

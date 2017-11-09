@@ -54,7 +54,8 @@
             <md-slider flex="40"
               aria-label="threshold"
               min="0" max="100"
-              ng-model="$ctrl.threshold">
+              ng-model="$ctrl.threshold"
+              ng-mouseup="$ctrl.onThresholdMouseUp($event)">
             </md-slider>
             <md-input-container>
               <input type="number"

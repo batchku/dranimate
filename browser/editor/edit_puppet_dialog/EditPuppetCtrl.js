@@ -32,7 +32,8 @@ function EditPuppetCtrl($scope, $mdDialog) {
     const canvasElement = document.getElementById('edit-mesh-canvas');
     const puppetImageSrc = editorHelper.getImageSrc();
     imageToMesh.setup(canvasElement);
-    imageToMesh.editImage(puppetImageSrc);
+    imageToMesh.editImage(puppetImageSrc)
+      .then(() => imageToMesh.doSlic($ctrl.threshold));
   });
 
   /* zoompanner controls */
@@ -60,6 +61,8 @@ function EditPuppetCtrl($scope, $mdDialog) {
   };
 
   $ctrl.onCancel = $event => $mdDialog.cancel();
+
+  $ctrl.onThresholdMouseUp = $event => imageToMesh.doSlic($ctrl.threshold);
 
   $ctrl.onSave = $event => {
     // dranimate.stopRenderLoop();
