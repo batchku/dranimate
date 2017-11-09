@@ -89,6 +89,7 @@ var ImageToMesh = function () {
             mouse.y = Math.round(mouse.y);
 
             if(!panEnabled && !addControlPoints) {
+              console.log('- - - wut')
                 that.updateHighligtedSuperpixel();
             }
 
@@ -100,6 +101,7 @@ var ImageToMesh = function () {
                     redraw();
                 } else {
                     if(addPixels) {
+                        console.log('addPixel')
                         that.addSelectionToNoBackgroundImage();
                     } else {
                         that.removeSelectionToNoBackgroundImage();
@@ -342,7 +344,7 @@ var ImageToMesh = function () {
                                                   dummyCanvas.width,
                                                   dummyCanvas.height);
 
-        slic = new SLIC(originalImageData, { method: "slic", regionSize: 30 });
+        slic = new SLIC(originalImageData, { method: "slic", regionSize: 30 }); // NOTE: THIS IS THE THRESHOLD
         imageNoBackgroundData = context.createImageData(slic.result.width, slic.result.height);
         imageBackgroundMaskData = context.createImageData(slic.result.width, slic.result.height);
         for (var i = 0; i < slic.result.data.length; i += 4) {
@@ -820,5 +822,4 @@ var ImageToMesh = function () {
 
 }
 
-const imageToMesh = new ImageToMesh();
-export default imageToMesh;
+export default ImageToMesh;

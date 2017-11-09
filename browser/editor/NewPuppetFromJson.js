@@ -1,9 +1,7 @@
-import imageToMesh from '../lib_remove_me/imagetomesh/imagetomesh';
 import requestPuppetCreation from '../models_remove_me/PuppetFactory';
+import editorHelper from './edit_puppet_dialog/EditorHelper';
 
-// var $ = require('jquery');
 var EditPuppetCtrl = require('./edit_puppet_dialog/EditPuppetCtrl');
-// var Puppet = require('../models_remove_me/puppet');
 var dranimate = require('../models_remove_me/dranimate');
 
 // TODO: Load this stuff from the server instead of the json file
@@ -25,14 +23,8 @@ function loadJSONPuppet(element, e) {
           imageNoBG,
           backgroundRemovalData: puppetData.backgroundRemovalData
         };
-
         const puppet = requestPuppetCreation(puppetParams);
         console.log('success?', puppet);
-
-        // var p = new Puppet(image);
-        // p.setImageToMeshData(imageNoBG, puppetData.controlPointPositions, puppetData.backgroundRemovalData);
-        // p.generateMesh(puppetData.verts, puppetData.faces, puppetData.controlPoints);
-        // dranimate.addPuppet(p);
       };
       imageNoBG.src = puppetData.imageNoBGData;
     };
@@ -71,16 +63,11 @@ function NewPuppetFromJson($mdMedia, $mdDialog) {
 
           var reader = new FileReader();
           reader.onload = function(e) {
+            editorHelper.setImageSrc(reader.result);
             $mdDialog.show({
               controller: EditPuppetCtrl,
               controllerAs: '$ctrl',
               templateUrl: 'editor/edit_puppet_dialog/edit_puppet_dialog.html',
-              onComplete: function() {
-                console.log('-------onComplete')
-                imageToMesh.setup(document.getElementById('edit-mesh-canvas'));
-                // imageToMesh.setup($('#edit-mesh-canvas')[0]),
-                imageToMesh.editImage(reader.result)
-              },
               fullscreen: $mdMedia('xs')
             });
           };

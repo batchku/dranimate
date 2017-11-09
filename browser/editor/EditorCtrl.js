@@ -1,9 +1,6 @@
 import dranimate from '../models_remove_me/dranimate';
-import imageToMesh from '../lib_remove_me/imagetomesh/imagetomesh';
 
 module.exports = ['$scope', '$mdDialog', '$rootScope', EditorCtrl];
-
-// var $ = require('jquery');
 
 function EditorCtrl($scope, $mdDialog, $rootScope) {
   var editorScope = $scope;

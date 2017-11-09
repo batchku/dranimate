@@ -1,5 +1,5 @@
 import dranimate from '../models_remove_me/dranimate';
-import imageToMesh from '../lib_remove_me/imagetomesh/imagetomesh';
+import editorHelper from './edit_puppet_dialog/EditorHelper';
 
 const FileSaver = require('file-saver');
 var EditPuppetCtrl = require('./edit_puppet_dialog/EditPuppetCtrl');
@@ -38,14 +38,12 @@ function PuppetParametersCtrl($mdDialog) {
   $scope.deleteSelectedPuppet = dranimate.deleteSelectedPuppet;
 
   $scope.openEditPuppetDialog = $event => {
+    const puppetImageSrc = dranimate.getSelectedPuppet().image.src;
+    editorHelper.setImageSrc(puppetImageSrc);
     $mdDialog.show({
       controller: EditPuppetCtrl,
       controllerAs: '$ctrl',
       templateUrl: 'editor/edit_puppet_dialog/edit_puppet_dialog.html',
-      onComplete: function() {
-        imageToMesh.setup(document.getElementById('edit-mesh-canvas'));
-        imageToMesh.editImage(dranimate.getSelectedPuppet().image.src);
-      },
     });
   };
 
