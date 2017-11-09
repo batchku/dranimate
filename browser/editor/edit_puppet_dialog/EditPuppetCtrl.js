@@ -30,10 +30,22 @@ function EditPuppetCtrl($scope, $mdDialog) {
 
   setTimeout(() => {
     const canvasElement = document.getElementById('edit-mesh-canvas');
-    const puppetImageSrc = editorHelper.getImageSrc();
+    const puppetImageSrc = editorHelper.getItem();
     imageToMesh.setup(canvasElement);
-    imageToMesh.editImage(puppetImageSrc)
+    if (editorHelper.isPuppet) {
+      const puppet = editorHelper.getItem();
+      imageToMesh.editImage(
+        puppet.image.src,
+        puppet.controlPointPositions,
+        puppet.backgroundRemovalData
+      )
       .then(() => imageToMesh.doSlic($ctrl.threshold));
+    }
+    else {
+      imageToMesh.editImage(editorHelper.getItem())
+        .then(() => imageToMesh.doSlic($ctrl.threshold));
+    }
+
   });
 
   /* zoompanner controls */

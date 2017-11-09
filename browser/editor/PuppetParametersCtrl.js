@@ -38,8 +38,7 @@ function PuppetParametersCtrl($mdDialog) {
   $scope.deleteSelectedPuppet = dranimate.deleteSelectedPuppet;
 
   $scope.openEditPuppetDialog = $event => {
-    const puppetImageSrc = dranimate.getSelectedPuppet().image.src;
-    editorHelper.setImageSrc(puppetImageSrc);
+    editorHelper.setItem(dranimate.getSelectedPuppet());
     $mdDialog.show({
       controller: EditPuppetCtrl,
       controllerAs: '$ctrl',

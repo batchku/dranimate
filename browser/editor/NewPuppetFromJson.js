@@ -63,7 +63,7 @@ function NewPuppetFromJson($mdMedia, $mdDialog) {
 
           var reader = new FileReader();
           reader.onload = function(e) {
-            editorHelper.setImageSrc(reader.result);
+            editorHelper.setItem(reader.result);
             $mdDialog.show({
               controller: EditPuppetCtrl,
               controllerAs: '$ctrl',

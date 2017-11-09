@@ -341,18 +341,20 @@ var ImageToMesh = function () {
 
         dummyContext.drawImage(image, 0, 0, image.width, image.height,
                                       0, 0, dummyCanvas.width, dummyCanvas.height);
-        originalImageData = dummyContext.getImageData(0, 0,
-                                                  dummyCanvas.width,
-                                                  dummyCanvas.height);
+        originalImageData = dummyContext.getImageData(0, 0, dummyCanvas.width, dummyCanvas.height);
 
         slic = new SLIC(originalImageData, { method: 'slic', regionSize });
         imageNoBackgroundData = context.createImageData(slic.result.width, slic.result.height);
         imageBackgroundMaskData = context.createImageData(slic.result.width, slic.result.height);
         for (var i = 0; i < slic.result.data.length; i += 4) {
-            imageBackgroundMaskData.data[i]     = 0;
-            imageBackgroundMaskData.data[i + 1] = 0;
-            imageBackgroundMaskData.data[i + 2] = 0;
-            imageBackgroundMaskData.data[i + 3] = 0;
+          imageBackgroundMaskData.data[i]     = 0;
+          imageBackgroundMaskData.data[i + 1] = 0;
+          imageBackgroundMaskData.data[i + 2] = 0;
+          imageBackgroundMaskData.data[i + 3] = 0;
+        }
+
+        if (imageNoBackgroundData) {
+          console.log('---recreate selection')
         }
 
         redraw();
@@ -538,7 +540,7 @@ var ImageToMesh = function () {
     this.removeBackgroundFromImage = function () {
 
         for (var i = 0; i < slic.result.data.length; i += 4) {
-            if(imageBackgroundMaskData.data[i+3] != 255) {
+            if(imageBackgroundMaskData.data[i+3] !== 255) {
                 originalImageData.data[i]     = 0;
                 originalImageData.data[i + 1] = 0;
                 originalImageData.data[i + 2] = 0;
@@ -561,7 +563,7 @@ var ImageToMesh = function () {
     this.addSelectionToNoBackgroundImage = function () {
 
         for (var i = 0; i < slic.result.data.length; i += 4) {
-            if(highlightData.data[i+3] == 255) {
+            if(highlightData.data[i+3] === 255) {
                 imageNoBackgroundData.data[i]     = 255;
                 imageNoBackgroundData.data[i + 1] = 255;
                 imageNoBackgroundData.data[i + 2] = 255;
@@ -576,21 +578,21 @@ var ImageToMesh = function () {
 
         dummyContext.putImageData(imageNoBackgroundData, 0, 0);
         imageNoBackgroundImage.src = dummyCanvas.toDataURL("image/png");
-        imageNoBackgroundImage.onload = function() {
-            redraw();
-        }
+        // imageNoBackgroundImage.onload = function() {
+        //     redraw();
+        // }
 
         dummyContext.putImageData(imageBackgroundMaskData, 0, 0);
         imageBackgroundMaskImage.src = dummyCanvas.toDataURL("image/png");
-        imageBackgroundMaskImage.onload = function() {
-            redraw();
-        }
+        // imageBackgroundMaskImage.onload = function() {
+        //     redraw();
+        // }
     }
 
     this.removeSelectionToNoBackgroundImage = function () {
 
         for (var i = 0; i < slic.result.data.length; i += 4) {
-            if(highlightData.data[i+3] == 255) {
+            if(highlightData.data[i+3] === 255) {
                 imageNoBackgroundData.data[i]     = 0;
                 imageNoBackgroundData.data[i + 1] = 0;
                 imageNoBackgroundData.data[i + 2] = 0;
@@ -605,15 +607,15 @@ var ImageToMesh = function () {
 
         dummyContext.putImageData(imageNoBackgroundData, 0, 0);
         imageNoBackgroundImage.src = dummyCanvas.toDataURL("image/png");
-        imageNoBackgroundImage.onload = function() {
-            redraw();
-        }
+        // imageNoBackgroundImage.onload = function() {
+        //     redraw();
+        // }
 
         dummyContext.putImageData(imageBackgroundMaskData, 0, 0);
         imageBackgroundMaskImage.src = dummyCanvas.toDataURL("image/png");
-        imageBackgroundMaskImage.onload = function() {
-            redraw();
-        }
+        // imageBackgroundMaskImage.onload = function() {
+        //     redraw();
+        // }
     }
 
     this.updateHighligtedSuperpixel = function () {

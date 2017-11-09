@@ -1,15 +1,20 @@
 
-let imageSrc;
-
 class EditorHelper {
   constructor() {
-    this.imageSrc;
+    this.isPuppet = false;
+    this.item;
   }
-  setImageSrc(imageSrc) {
-    this.imageSrc = imageSrc;
+  setItem(item) {
+    this.item = item;
+    if (this.item && this.item.name) {
+      this.isPuppet = true;
+    }
+    else {
+      this.isPuppet = false;
+    }
   }
-  getImageSrc(imageSrc) {
-    return this.imageSrc;
+  getItem() {
+    return this.item;
   }
 }
 
