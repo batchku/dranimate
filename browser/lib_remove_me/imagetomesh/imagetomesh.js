@@ -34,7 +34,7 @@ var ImageToMesh = function () {
     var imageNoBackgroundData;
     var imageNoBackgroundImage;
 
-    var imageBackgroundMaskData;
+    // var imageBackgroundMaskData;
     var imageBackgroundMaskImage;
 
     var contourData;
@@ -179,7 +179,7 @@ var ImageToMesh = function () {
         imageNoBackgroundData = undefined;
         imageNoBackgroundImage = new Image();
 
-        imageBackgroundMaskData = undefined;
+        // imageBackgroundMaskData = undefined;
         imageBackgroundMaskImage = new Image();
 
         contourData = undefined;
@@ -279,9 +279,9 @@ var ImageToMesh = function () {
         return onlySelectionImage;
     }
 
-    this.getSelectionData = function () {
-        return imageBackgroundMaskData;
-    }
+    // this.getSelectionData = function () {
+    //     return imageBackgroundMaskData;
+    // }
 
     this.getControlPoints = function () {
         return controlPoints;
@@ -344,19 +344,28 @@ var ImageToMesh = function () {
         originalImageData = dummyContext.getImageData(0, 0, dummyCanvas.width, dummyCanvas.height);
 
         slic = new SLIC(originalImageData, { method: 'slic', regionSize });
-        imageNoBackgroundData = context.createImageData(slic.result.width, slic.result.height);
-        imageBackgroundMaskData = context.createImageData(slic.result.width, slic.result.height);
-        for (var i = 0; i < slic.result.data.length; i += 4) {
-          imageBackgroundMaskData.data[i]     = 0;
-          imageBackgroundMaskData.data[i + 1] = 0;
-          imageBackgroundMaskData.data[i + 2] = 0;
-          imageBackgroundMaskData.data[i + 3] = 0;
-        }
 
-        if (imageNoBackgroundData) {
-          console.log('---recreate selection')
+        if (!imageNoBackgroundData) {
+          // we are editing a new puppet without a selection
+          console.log('----Create removal data')
+          imageNoBackgroundData = context.createImageData(slic.result.width, slic.result.height);
+          // imageBackgroundMaskData = context.createImageData(slic.result.width, slic.result.height);
+          for (var i = 0; i < slic.result.data.length; i += 4) {
+            imageNoBackgroundData.data[i]     = 0;
+            imageNoBackgroundData.data[i + 1] = 0;
+            imageNoBackgroundData.data[i + 2] = 0;
+            imageNoBackgroundData.data[i + 3] = 0;
+          }
         }
-
+        else {
+          if (!imageNoBackgroundData.data.length) {
+            console.error('Error', 'incorrect imageNoBackgroundData');
+            return;
+          }
+          const tempNoBgData = context.createImageData(slic.result.width, slic.result.height);
+          dummyContext.putImageData(imageNoBackgroundData, 0, 0);
+          imageNoBackgroundImage.src = dummyCanvas.toDataURL("image/png");
+        }
         redraw();
         console.log('SLIC Done', performance.now());
     }
@@ -540,7 +549,7 @@ var ImageToMesh = function () {
     this.removeBackgroundFromImage = function () {
 
         for (var i = 0; i < slic.result.data.length; i += 4) {
-            if(imageBackgroundMaskData.data[i+3] !== 255) {
+            if(imageNoBackgroundData.data[i+3] !== 255) {
                 originalImageData.data[i]     = 0;
                 originalImageData.data[i + 1] = 0;
                 originalImageData.data[i + 2] = 0;
@@ -569,10 +578,10 @@ var ImageToMesh = function () {
                 imageNoBackgroundData.data[i + 2] = 255;
                 imageNoBackgroundData.data[i + 3] = 255;
 
-                imageBackgroundMaskData.data[i]     = 255;
-                imageBackgroundMaskData.data[i + 1] = 255;
-                imageBackgroundMaskData.data[i + 2] = 255;
-                imageBackgroundMaskData.data[i + 3] = 255;
+                // imageBackgroundMaskData.data[i]     = 255;
+                // imageBackgroundMaskData.data[i + 1] = 255;
+                // imageBackgroundMaskData.data[i + 2] = 255;
+                // imageBackgroundMaskData.data[i + 3] = 255;
             }
         }
 
@@ -582,8 +591,8 @@ var ImageToMesh = function () {
         //     redraw();
         // }
 
-        dummyContext.putImageData(imageBackgroundMaskData, 0, 0);
-        imageBackgroundMaskImage.src = dummyCanvas.toDataURL("image/png");
+        // dummyContext.putImageData(imageBackgroundMaskData, 0, 0);
+        // imageBackgroundMaskImage.src = dummyCanvas.toDataURL("image/png");
         // imageBackgroundMaskImage.onload = function() {
         //     redraw();
         // }
@@ -598,10 +607,10 @@ var ImageToMesh = function () {
                 imageNoBackgroundData.data[i + 2] = 0;
                 imageNoBackgroundData.data[i + 3] = 0;
 
-                imageBackgroundMaskData.data[i]     = 0;
-                imageBackgroundMaskData.data[i + 1] = 0;
-                imageBackgroundMaskData.data[i + 2] = 0;
-                imageBackgroundMaskData.data[i + 3] = 0;
+                // imageBackgroundMaskData.data[i]     = 0;
+                // imageBackgroundMaskData.data[i + 1] = 0;
+                // imageBackgroundMaskData.data[i + 2] = 0;
+                // imageBackgroundMaskData.data[i + 3] = 0;
             }
         }
 
@@ -611,8 +620,8 @@ var ImageToMesh = function () {
         //     redraw();
         // }
 
-        dummyContext.putImageData(imageBackgroundMaskData, 0, 0);
-        imageBackgroundMaskImage.src = dummyCanvas.toDataURL("image/png");
+        // dummyContext.putImageData(imageBackgroundMaskData, 0, 0);
+        // imageBackgroundMaskImage.src = dummyCanvas.toDataURL("image/png");
         // imageBackgroundMaskImage.onload = function() {
         //     redraw();
         // }

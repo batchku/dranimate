@@ -344,12 +344,17 @@ Puppet.prototype.getImageAsDataURL = function (img) {
 }
 
 Puppet.prototype.getJSONData = function () {
+  console.log('toJson', this.backgroundRemovalData);
   var puppetData = {
     verts: this.verts,
     faces: this.faces,
     controlPoints: this.controlPoints,
     controlPointPositions: this.controlPointPositions,
-    backgroundRemovalData: this.backgroundRemovalData,
+    backgroundRemovalData: {
+      data: [...this.backgroundRemovalData.data],
+      width: this.backgroundRemovalData.width,
+      height: this.backgroundRemovalData.height,
+    },
     imageData: this.getImageAsDataURL(this.image),
     imageNoBGData: this.getImageAsDataURL(this.imageNoBG)
   };

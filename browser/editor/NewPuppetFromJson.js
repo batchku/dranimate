@@ -13,6 +13,11 @@ function loadJSONPuppet(element, e) {
     image.onload = function () {
       var imageNoBG = new Image();
       imageNoBG.onload = function () {
+        const backgroundRemovalData = new ImageData(
+          Uint8ClampedArray.from(puppetData.backgroundRemovalData.data),
+          puppetData.backgroundRemovalData.width,
+          puppetData.backgroundRemovalData.height
+        );
 
         const puppetParams = {
           vertices: puppetData.verts,
@@ -21,7 +26,7 @@ function loadJSONPuppet(element, e) {
           controlPointPositions: puppetData.controlPointPositions,
           image,
           imageNoBG,
-          backgroundRemovalData: puppetData.backgroundRemovalData
+          backgroundRemovalData
         };
         const puppet = requestPuppetCreation(puppetParams);
         console.log('success?', puppet);
