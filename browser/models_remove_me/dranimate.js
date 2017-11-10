@@ -119,15 +119,13 @@ var Dranimate = function () {
                             var controlPoints = puppets[p].controlPoints;
 
                             for(var c = 0; c < controlPoints.length; c++) {
+                              const mouseVector = new THREE.Vector2(mouseRelative.x / puppets[p].scale(), mouseRelative.y / puppets[p].scale());
+                              mouseVector.rotateAround(new THREE.Vector2(0, 0), -puppets[p].rotation());
 
-                                var vert = verts[controlPoints[c]];
-                                var mouseVec = new THREE.Vector3(
-                                    mouseRelative.x / puppets[p].scale(),
-                                    mouseRelative.y / puppets[p].scale(),
-                                    0);
-                                var dist = vert.distanceTo(mouseVec);
+                                const vert = verts[controlPoints[c]];
+                                const dist = vert.distanceTo(new THREE.Vector3(mouseVector.x, mouseVector.y, 0));
 
-                                if(dist < 10*zoom) {
+                                if(dist < 10 * zoom) {
                                     activeControlPoint = {
                                         valid: true,
                                         puppetIndex: p,
@@ -149,13 +147,13 @@ var Dranimate = function () {
                         activeControlPoint.hoveredOver = false;
                     }
                 } else {
-                    var pi = activeControlPoint.puppetIndex;
-                    var ci = activeControlPoint.controlPointIndex;
-                    puppets[pi].setControlPointPosition(
-                        ci,
-                        mouseRelative.x / puppets[pi].scale(),
-                        mouseRelative.y / puppets[pi].scale());
-                    onChangeCallback();
+                  // control point is being dragged by mouse
+                  const puppet = puppets[activeControlPoint.puppetIndex];
+                  const ci = activeControlPoint.controlPointIndex;
+                  const mouseVector = new THREE.Vector2(mouseRelative.x / puppet.scale(), mouseRelative.y / puppet.scale());
+                  mouseVector.rotateAround(new THREE.Vector2(0, 0), -puppet.rotation());
+                  puppet.setControlPointPosition(ci, mouseVector.x, mouseVector.y);
+                  onChangeCallback();
                 }
 
                 if(selectedPuppet && selectedPuppet.isBeingDragged) {

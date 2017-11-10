@@ -267,13 +267,15 @@ Puppet.prototype.update = function() {
   var dx = this._x - this.prevx;
   var dy = this._y - this.prevy;
 
-  if(dx != 0 || dy != 0) {
+  if(dx !== 0 || dy !== 0) {
     if(this.controlPoints) {
       for(var i = 0; i < this.controlPoints.length; i++) {
         var cpx = this.threeMesh.geometry.vertices[this.controlPoints[i]].x;
         var cpy = this.threeMesh.geometry.vertices[this.controlPoints[i]].y;
-        this.setControlPointPosition(i, cpx + (dx/this._scale),
-            cpy + (dy/this._scale));
+
+        const point = new THREE.Vector2(dx / this._scale, dy / this._scale);
+        point.rotateAround(new THREE.Vector2(0, 0), -this._rotation);
+        this.setControlPointPosition(i, cpx + point.x, cpy + point.y);
       }
     }
   }
@@ -281,15 +283,14 @@ Puppet.prototype.update = function() {
   this.prevx = this._x;
   this.prevy = this._y;
 
-  if (this.prevScale != this._scale) {
+  if (this.prevScale !== this._scale) {
     this.threeMesh.scale.set(this._scale, this._scale, 1);
     this.prevScale = this._scale;
     this.needsUpdate = true;
   }
 
-  if (this.prevRotation != this._rotation) {
-    var rad = THREE.Math.degToRad(this._rotation);
-    this.threeMesh.rotation.set(0, 0, rad);
+  if (this.prevRotation !== this._rotation) {
+    this.threeMesh.rotation.set(0, 0, this._rotation);
     this.prevRotation = this._rotation;
     this.needsUpdate = true;
   }
@@ -318,12 +319,12 @@ Puppet.prototype.update = function() {
     for(var i = 0; i < this.controlPoints.length; i++) {
       var cpi = this.controlPoints[i];
       var v = this.threeMesh.geometry.vertices[cpi];
-      this.controlPointSpheres[i].position.x = v.x * this._scale;
-      this.controlPointSpheres[i].position.y = v.y * this._scale;
+      const point = new THREE.Vector2(v.x * this._scale, v.y * this._scale);
+      point.rotateAround(new THREE.Vector2(0, 0), this.prevRotation);
+      this.controlPointSpheres[i].position.x = point.x;
+      this.controlPointSpheres[i].position.y = point.y;
     }
-
     this.needsUpdate = false;
-
   }
 
   if(this.isRecording) {
@@ -334,10 +335,10 @@ Puppet.prototype.update = function() {
 };
 
 Puppet.prototype.getImageAsDataURL = function (img) {
-  var canvas = document.createElement('canvas');
+  const canvas = document.createElement('canvas');
   canvas.width  = img.width;
   canvas.height = img.height;
-  var context = canvas.getContext('2d');
+  const context = canvas.getContext('2d');
   canvas.getContext('2d');
   context.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
   return canvas.toDataURL();
@@ -362,9 +363,7 @@ Puppet.prototype.getJSONData = function () {
 }
 
 Puppet.prototype.cleanup = function () {
-
   console.error("Warning: Puppet.cleanup() not yet implemented! You are wasting memory! >:(")
-
 }
 
 Puppet.prototype.setSelectionGUIVisible = function (visible) {
@@ -377,40 +376,31 @@ Puppet.prototype.setSelectionGUIVisible = function (visible) {
 }
 
 Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {
-
-  var x = xUntransformed / this._scale;
-  var y = yUntransformed / this._scale;
-
-  //http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
-
-  var sign = function (x1, y1, x2, y2, x3, y3) {
-    return (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3);
-  }
-
-  var pointInsideTriangle = function (px, py, x1, y1, x2, y2, x3, y3) {
-    var b1, b2, b3;
-
-    b1 = sign(px,py, x1,y1, x2,y2) < 0.0;
-    b2 = sign(px,py, x2,y2, x3,y3) < 0.0;
-    b3 = sign(px,py, x3,y3, x1,y1) < 0.0;
-
-    return ((b1 == b2) && (b2 == b3));
-  }
-
-  var allFaces = this.threeMesh.geometry.faces;
-  var allVerts = this.threeMesh.geometry.vertices;
+  const point = new THREE.Vector2(xUntransformed / this._scale, yUntransformed / this._scale);
+  point.rotateAround(new THREE.Vector2(0, 0), -this._rotation);
+  const allFaces = this.threeMesh.geometry.faces;
+  const allVerts = this.threeMesh.geometry.vertices;
   for(var i = 0; i < allFaces.length; i++) {
-    var v1 = allVerts[allFaces[i].a];
-    var v2 = allVerts[allFaces[i].b];
-    var v3 = allVerts[allFaces[i].c];
-
-    if(pointInsideTriangle(x, y, v1.x, v1.y, v2.x, v2.y, v3.x, v3.y)) {
+    const v1 = allVerts[allFaces[i].a];
+    const v2 = allVerts[allFaces[i].b];
+    const v3 = allVerts[allFaces[i].c];
+    if (pointIsInsideTriangle(point.x, point.y, v1, v2, v3)) {
       return true;
     }
   }
-
   return false;
+}
 
+function sign(x1, y1, x2, y2, x3, y3) {
+  return (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3);
+}
+
+//http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
+function pointIsInsideTriangle(x, y, p1, p2, p3) {
+  const b1 = sign(x, y, p1.x, p1.y, p2.x, p2.y) < 0.0;
+  const b2 = sign(x, y, p2.x, p2.y, p3.x, p3.y) < 0.0;
+  const b3 = sign(x, y, p3.x, p3.y, p1.x, p1.y) < 0.0;
+  return ((b1 === b2) && (b2 === b3));
 }
 
 module.exports = Puppet;
