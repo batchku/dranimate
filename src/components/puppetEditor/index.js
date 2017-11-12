@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router'
+import ImageToMesh from 'services/imageToMesh/imageToMesh'
+import editorHelper from 'services/imageToMesh/EditorHelper';
 import styles from './styles.scss';
 
 const SELECTION_TYPE = {
@@ -20,19 +22,52 @@ class PuppetEditor extends Component {
       selector: SELECTOR.SELECT,
       threshold: 30
     };
+    this.imageToMesh = new ImageToMesh();
   }
 
-  onCancel = () => this.props.history.push('/');
+  componentDidMount() {
+    console.log('mounted');
+    // const canvasElement = document.getElementById('edit-mesh-canvas');
+    const puppetImageSrc = editorHelper.getItem();
+    this.imageToMesh.setup(this.canvasElement);
+    if (editorHelper.isPuppet) {
+      const puppet = editorHelper.getItem();
+      this.imageToMesh.editImage(
+        puppet.image.src,
+        puppet.controlPointPositions,
+        puppet.backgroundRemovalData
+      )
+      .then(() => this.imageToMesh.doSlic($ctrl.threshold));
+    }
+    else if (puppetImageSrc) {
+      this.imageToMesh.editImage(editorHelper.getItem())
+        .then(() => this.imageToMesh.doSlic(this.state.threshold));
+    }
+    else {
+      console.log('wut?');
+      this.props.history.replace('/');
+    }
+  }
 
-  onSave = () => this.props.history.push('/');
+  onCancel = () => {
+    // TODO: destroy imageToMesh
+    this.props.history.push('/');
+  };
 
-  onThresholdChange = event => this.setState({ threshold: event.target.value });
+  onSave = () => {
+    // TODO: save puppet
+    this.props.history.push('/');
+  }
+
+  updateThresholdUi = event => this.setState({ threshold: event.target.value });
+
+  changeThreshold = () => this.imageToMesh.doSlic(this.state.threshold);
 
   render() {
     return (
       <div className={styles.puppetEditor}>
         <div>
-          <canvas></canvas>
+          <canvas ref={input => this.canvasElement = input}></canvas>
         </div>
         <div>
           <h1>Edit puppet</h1>
@@ -80,7 +115,8 @@ class PuppetEditor extends Component {
             min="5"
             max="75"
             defaultValue={this.state.threshold}
-            onChange={this.onThresholdChange}
+            onChange={this.updateThresholdUi}
+            onMouseUp={this.changeThreshold}
           />
           <p>{this.state.threshold}</p>
           <br />

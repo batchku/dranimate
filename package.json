@@ -35,6 +35,7 @@
     "webpack-merge": "^4.1.1"
   },
   "dependencies": {
+    "delaunay-fast": "^1.0.1",
     "prop-types": "^15.6.0",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
