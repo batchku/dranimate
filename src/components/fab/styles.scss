@@ -1,0 +1,45 @@
+@import '~styles/index';
+
+$diameter: 40px;
+$bar-width: $diameter - 10;
+$bar-height: 4px;
+$bar-border-radius: $bar-height / 2;
+$center-position: $diameter / 2 - $bar-height / 2;
+$bar-margin: ($diameter - $bar-width) / 2;
+$shadow-inactive: 2px 2px 4px $color-grey-default;
+$shadow-active: 3px 4px 4px $color-grey-default;
+
+.fab {
+	width: $diameter;
+	height: $diameter;
+  border-radius: 50%;
+  background-color: $color-grey-light;
+  position: relative;
+  box-shadow: $shadow-inactive;
+  -webkit-box-shadow: $shadow-inactive;
+  transition: box-shadow 0.15s ease-out, transform 0.15s ease-out, -webkit-box-shadow 0.15s ease-out;
+}
+.fab:hover {
+  transform: translate(0px, -2px);
+  box-shadow: $shadow-active;
+  -webkit-box-shadow: $shadow-active;
+}
+
+.fabBar {
+  display: block;
+  position: absolute;
+  height: $bar-height;
+  width: $bar-width;
+  border-radius: $bar-border-radius;
+  background-color: $color-action;
+  left: $bar-margin;
+  top: $center-position;
+}
+
+.fab :nth-child(1) {
+  transform: rotate(0deg);
+}
+
+.fab :nth-child(2) {
+  transform: rotate(90deg);
+}

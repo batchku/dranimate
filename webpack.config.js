@@ -1,55 +1,62 @@
-var webpack = require('webpack');
-var webpackMerge = require('webpack-merge');
-var path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const webpackMerge = require('webpack-merge');
 
-var webpackConfig = {
+const webpackConfig = {
   entry: {
-    // polyfills: './_entrypoints/polyfills.js',
-    vendor: './_entrypoints/vendor.js',
-    main: './_entrypoints/main.js'
+    vendor: './src/_entrypoints/vendor.js',
+    main: './src/_entrypoints/main.js'
   },
   output: {
     publicPath: '',
     path: path.resolve(__dirname, './dist'),
   },
   plugins: [
-  new webpack.optimize.CommonsChunkPlugin({
-    name: ['main', 'vendor']
-  }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: ['main', 'vendor']
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+      filename: 'index.html',
+      inject: 'body'
+    })
   ],
   module: {
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env']
-          }
-        }
-      },
-      {
-        test: /\.css$/,
-        exclude: /node_modules/,
-        loaders: [
-          'raw-loader',
-          'postcss-loader',
+        use: [
+          {
+            loader: 'babel-loader'
+          },
+          // Someday: uncomment to block compilation based on linting rules
+          // {
+          //   loader: 'eslint-loader'
+          // }
         ]
       },
       {
-        test: /\.html$/,
-        loaders: ['raw-loader']
-      },
-      {
-        test: /\.(png|jpg)$/,
-        loaders: ['url-loader?limit=8192']
+        test: /\.scss$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
+          },
+          {
+            loader: 'sass-loader'
+          }
+        ]
       }
     ]
   }
 };
 
-var defaultConfig = {
+const defaultConfig = {
   devtool: 'source-map',
 
   output: {
@@ -61,17 +68,21 @@ var defaultConfig = {
   resolve: {
     extensions: [ '.js' ],
     modules: [ path.resolve(__dirname, 'node_modules') ],
+    alias: {
+      components: path.resolve(__dirname, 'src/components/'),
+      styles: path.resolve(__dirname, 'src/styles/'),
+    }
   },
 
   devServer: {
     historyApiFallback: true,
     watchOptions: { aggregateTimeout: 300, poll: 1000 },
     headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-      "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
     },
-    port: 3000
+    port: 5000
     // To access dev server from other devices on the network uncomment the following line
     // ,host: '0.0.0.0', disableHostCheck: true
   },

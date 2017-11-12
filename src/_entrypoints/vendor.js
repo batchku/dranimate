@@ -1,13 +1,5 @@
-require('angular');
-require('angular-ui-router');
-require('angular-animate');
-require('angular-aria');
-// require('angular-cookies');
-// require('angular-messages');
-require('angular-material');
-require('file-saver');
-require('three');
-require('gif.js');
+/* eslint no-unused-vars: 0 */
 
-// require('lib_remove_me/deform2d.js');
-// require('lib_remove_me/arap.js');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
