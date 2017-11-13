@@ -36,10 +36,12 @@
   },
   "dependencies": {
     "delaunay-fast": "^1.0.1",
+    "file-saver": "^1.3.3",
     "prop-types": "^15.6.0",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
-    "react-router-dom": "^4.2.2"
+    "react-router-dom": "^4.2.2",
+    "three": "^0.88.0"
   },
   "repository": {
     "type": "git",

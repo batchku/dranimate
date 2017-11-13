@@ -1,8 +1,8 @@
 /**
  * This factory is a temporary wrapper to guard against this nasty guy: https://github.com/cmuartfab/dranimate-browser_archive/issues/1
  */
- import Puppet from './puppet';
- import dranimate from './dranimate';
+ import Puppet from 'services/puppet/puppet';
+ import dranimate from 'services/dranimate/dranimate';
 
 
 const errorMessage = 'Must load largest puppet first.'

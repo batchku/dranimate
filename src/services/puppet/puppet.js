@@ -1,9 +1,12 @@
+import * as THREE from 'three';
 import generateUniqueId from 'services/util/uuid';
+import ARAP from 'services/arap/arap';
 
-const THREE = require('three');
-const GIF = require('gif.js');
+// TODO: only import needed three deps
+// const THREE = require('three');
+// const GIF = require('gif.js');
 
-const ARAP = require('../arap/arap.js');
+// const ARAP = require('../arap/arap.js');
 console.log('ARAP', ARAP);
 
 var Puppet = function (image, id) {

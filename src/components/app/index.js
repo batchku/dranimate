@@ -13,7 +13,6 @@ class App extends Component {
       <Router>
         <div>
           <Route exact path="/" component={Stage} />
-          <Route path="/editor" component={PuppetEditor} />
         </div>
       </Router>
     );

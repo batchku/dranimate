@@ -1,0 +1,11 @@
+@import '~styles/index';
+
+.pan {
+  background-color: $color-primary;
+  color: $color-black;
+}
+
+.panActive {
+  background-color: $color-action;
+  color: $color-white;
+}

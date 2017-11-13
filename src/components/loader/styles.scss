@@ -1,0 +1,66 @@
+@import '~styles/index';
+
+$loader-dot-size: 25px;
+$loader-dot-buffer: $loader-dot-size + 10;
+$animation-unit: 0.16s;
+
+.scrim {
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.test {
+  background-color: $color-grey-dark;
+  width: 150px;
+  height: 45px;
+  border-radius: 4px;
+  padding-top: 15px;
+}
+
+.loaderDots,
+.loaderDots:before,
+.loaderDots:after {
+  border-radius: 50%;
+  width: $loader-dot-size;
+  height: $loader-dot-size;
+  animation-fill-mode: both;
+  animation: loaderkeyframes 1.8s infinite ease-in-out;
+}
+
+.loaderDots {
+  color: $color-white;
+  margin: -$loader-dot-size auto $loader-dot-size auto;
+  transform: translateZ(0);
+  animation-delay: -$animation-unit;
+}
+.loaderDots:before,
+.loaderDots:after {
+  content: '';
+  position: absolute;
+  top: 0;
+}
+.loaderDots:before {
+  left: -$loader-dot-buffer;
+  animation-delay: -($animation-unit * 2);
+}
+.loaderDots:after {
+  left: $loader-dot-buffer;
+}
+
+@keyframes loaderkeyframes {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 $loader-dot-size 0 (-$loader-dot-size / 2);
+  }
+  40% {
+    box-shadow: 0 $loader-dot-size 0 0;
+  }
+}
