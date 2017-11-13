@@ -18,7 +18,7 @@ class ZoomPanner extends Component {
 
   render() {
     return (
-      <div>
+      <div className={this.props.className}>
         <button
           className={this.state.panIsSelected ? styles.panActive : styles.pan}
           onClick={this.onPanClick}
@@ -33,7 +33,7 @@ class ZoomPanner extends Component {
         <button
           onClick={() => this.props.onZoomSelect(false)}
         >
-          Zoom In
+          Zoom Out
         </button>
       </div>
     );

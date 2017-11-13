@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-// import { Link } from 'react-router-dom';
-// import { withRouter } from 'react-router'
 import PuppetEditor from 'components/puppetEditor';
 import Fab from 'components/fab';
 import TopBar from 'components/topbar';
+import ZoomPanner from 'components/zoomPanner';
 import { loadFile } from 'services/util/file';
 import editorHelper from 'services/imageToMesh/EditorHelper';
 import dranimate from 'services/dranimate/dranimate';
@@ -31,6 +30,10 @@ class Stage extends Component {
 
   onFabClick = () => this.filePicker.click();
 
+  onZoomSelect = isZoomIn => isZoomIn ? dranimate.zoomIn() : dranimate.zoomOut();
+
+  onPanSelect = isPanSelected => dranimate.setPanEnabled(isPanSelected);
+
   onFileChange = event => {
     loadFile(this.filePicker)
       .then((result) => {
@@ -49,6 +52,11 @@ class Stage extends Component {
           onMouseMove={dranimate.onMouseMove}
           onMouseUp={dranimate.onMouseUp}
           ref={input => this.dranimateStageContainer = input}
+        />
+        <ZoomPanner
+          className={styles.zoomPanner}
+          onPanSelect={this.onPanSelect}
+          onZoomSelect={this.onZoomSelect}
         />
         <Fab
           className={styles.fab}
