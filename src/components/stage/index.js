@@ -44,7 +44,12 @@ class Stage extends Component {
     return (
       <div>
         <TopBar />
-        <div ref={input => this.dranimateStageContainer = input} />
+        <div
+          onMouseDown={dranimate.onMouseDown}
+          onMouseMove={dranimate.onMouseMove}
+          onMouseUp={dranimate.onMouseUp}
+          ref={input => this.dranimateStageContainer = input}
+        />
         <Fab
           className={styles.fab}
           onClick={this.onFabClick}

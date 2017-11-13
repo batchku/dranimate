@@ -7,10 +7,9 @@
  *  - triangulate points
  *
  */
-
+import Delaunay from 'delaunay-fast';
 import SLIC from './slic.js';
 import CanvasUtils from './canvasUtils.js';
-const Delaunay = require('delaunay-fast');
 
 var ImageToMesh = function () {
 
