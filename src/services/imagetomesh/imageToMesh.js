@@ -16,8 +16,10 @@ var ImageToMesh = function () {
 
     var that = this;
 
-    var canvas;
     var context;
+
+    let width;
+    let height;
 
     var mouse;
     var mouseAbs;
@@ -73,83 +75,82 @@ var ImageToMesh = function () {
     }
 
     this.setup = function (i2mCanvas) {
-        canvas = i2mCanvas;
-        context = canvas.getContext('2d');
+        width = i2mCanvas.width;
+        height = i2mCanvas.height;
+        context = i2mCanvas.getContext('2d');
+    }
 
-        canvas.addEventListener('mousemove', function(evt) {
-            evt.preventDefault();
+    this.onMouseMove = function(evt) {
+      evt.preventDefault();
+      const rect = evt.target.getBoundingClientRect();
 
-            var rect = canvas.getBoundingClientRect();
+      mouseAbs.x = (evt.clientX - rect.left) / zoom;
+      mouseAbs.y = (evt.clientY - rect.top)  / zoom;
+      mouse.x = mouseAbs.x - panPosition.x;
+      mouse.y = mouseAbs.y - panPosition.y;
+      mouse.x = Math.round(mouse.x);
+      mouse.y = Math.round(mouse.y);
 
-            mouseAbs.x = (evt.clientX - rect.left) / zoom;
-            mouseAbs.y = (evt.clientY - rect.top)  / zoom;
-            mouse.x = mouseAbs.x - panPosition.x;
-            mouse.y = mouseAbs.y - panPosition.y;
-            mouse.x = Math.round(mouse.x);
-            mouse.y = Math.round(mouse.y);
+      if(!panEnabled && !addControlPoints) {
+        console.log('- - - wut')
+          that.updateHighligtedSuperpixel();
+      }
 
-            if(!panEnabled && !addControlPoints) {
-              console.log('- - - wut')
-                that.updateHighligtedSuperpixel();
-            }
+      if(mouse.leftClickDown && !addControlPoints) {
+          if(panEnabled) {
+              panPosition.x += mouseAbs.x - panFromPosition.x;
+              panPosition.y += mouseAbs.y - panFromPosition.y;
+              panFromPosition = {x:mouseAbs.x, y:mouseAbs.y};
+              redraw();
+          } else {
+              if(addPixels) {
+                  console.log('addPixel')
+                  that.addSelectionToNoBackgroundImage();
+              } else {
+                  that.removeSelectionToNoBackgroundImage();
+              }
+          }
+      }
+    };
 
-            if(mouse.leftClickDown && !addControlPoints) {
-                if(panEnabled) {
-                    panPosition.x += mouseAbs.x - panFromPosition.x;
-                    panPosition.y += mouseAbs.y - panFromPosition.y;
-                    panFromPosition = {x:mouseAbs.x, y:mouseAbs.y};
-                    redraw();
-                } else {
-                    if(addPixels) {
-                        console.log('addPixel')
-                        that.addSelectionToNoBackgroundImage();
-                    } else {
-                        that.removeSelectionToNoBackgroundImage();
-                    }
-                }
-            }
-        }, false);
+    this.onMouseDown = function(evt) {
+      evt.preventDefault();
 
-        canvas.addEventListener('mousedown', function(evt) {
-            evt.preventDefault();
+      panFromPosition = {x:mouseAbs.x, y:mouseAbs.y};
 
-            panFromPosition = {x:mouseAbs.x, y:mouseAbs.y};
+      if(!panEnabled) {
+          if (addControlPoints) {
+              controlPoints.push([mouse.x, mouse.y]);
+              redraw();
+          } else {
+              if(addPixels) {
+                  that.addSelectionToNoBackgroundImage();
+              } else {
+                  that.removeSelectionToNoBackgroundImage();
+              }
+          }
+      }
 
-            if(!panEnabled) {
-                if (addControlPoints) {
-                    controlPoints.push([mouse.x, mouse.y]);
-                    redraw();
-                } else {
-                    if(addPixels) {
-                        that.addSelectionToNoBackgroundImage();
-                    } else {
-                        that.removeSelectionToNoBackgroundImage();
-                    }
-                }
-            }
+      if(evt.which == 3) {
+          mouse.rightClickDown = true;
+      } else {
+          mouse.leftClickDown = true;
+      }
+    };
 
-            if(evt.which == 3) {
-                mouse.rightClickDown = true;
-            } else {
-                mouse.leftClickDown = true;
-            }
-        });
+    this.onContextMenu = function (evt) {
+      evt.preventDefault();
+      mouse.rightClickDown = true;
+      return false;
+    }
 
-        canvas.addEventListener('contextmenu', function(evt) {
-            evt.preventDefault();
-            mouse.rightClickDown = true;
-            return false;
-        }, false);
-
-
-        canvas.addEventListener('mouseup', function(evt) {
-            evt.preventDefault();
-            if(evt.which == 3) {
-                mouse.rightClickDown = false;
-            } else {
-                mouse.leftClickDown = false;
-            }
-        });
+    this.onMouseUp = function(evt) {
+      evt.preventDefault();
+      if(evt.which == 3) {
+          mouse.rightClickDown = false;
+      } else {
+          mouse.leftClickDown = false;
+      }
     }
 
     this.generateMesh = function () {
@@ -231,8 +232,8 @@ var ImageToMesh = function () {
                 dummyCanvas.width = normWidth;
                 dummyCanvas.height = normHeight;
 
-                canvas.width = normWidth;
-                canvas.height = normHeight;
+                width = normWidth;
+                height = normHeight;
 
                 dummyContext.clearRect(
                     0, 0,
@@ -749,7 +750,7 @@ var ImageToMesh = function () {
 
     var redraw = function () {
 
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.clearRect(0, 0, width, height);
 
         context.save();
         context.scale(zoom, zoom);
@@ -757,18 +758,18 @@ var ImageToMesh = function () {
 
         context.globalAlpha = 1.0;
         context.drawImage(image, 0, 0, image.width, image.height,
-                                0, 0, canvas.width, canvas.height);
+                                0, 0, width, height);
         context.drawImage(highlightImage,
                                                 0, 0, highlightImage.width, highlightImage.height,
-                                                0, 0, canvas.width, canvas.height);
+                                                0, 0, width, height);
         context.globalAlpha = 0.8;
         context.drawImage(imageNoBackgroundImage,
                                                 0, 0, imageNoBackgroundImage.width, imageNoBackgroundImage.height,
-                                                0, 0, canvas.width, canvas.height);
+                                                0, 0, width, height);
         context.globalAlpha = 1.0;
         context.drawImage(contourImage,
                                                 0, 0, contourImage.width, contourImage.height,
-                                                0, 0, canvas.width, canvas.height);
+                                                0, 0, width, height);
 
         if(slicSegmentsCentroids) {
             for(var i = 0; i < slicSegmentsCentroids.length; i++) {

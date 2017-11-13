@@ -104,6 +104,10 @@ class PuppetEditor extends Component {
             <canvas
               className={styles.editorCanvas}
               ref={input => this.canvasElement = input}
+              onMouseMove={this.imageToMesh.onMouseMove}
+              onMouseDown={this.imageToMesh.onMouseDown}
+              onContextMenu={this.imageToMesh.onContextMenu}
+              onMouseUp={this.imageToMesh.onMouseUp}
             />
             <ZoomPanner
               onPanSelect={this.onPanSelect}
