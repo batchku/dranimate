@@ -1,43 +1,8 @@
 # Dranimate
 
-### OS X Setup
-
-
-#### Install xcode command line tools and pip if you don't have them
-```
-xcode-select --install
-sudo easy_install pip
-```
-
-#### Install virtualenv if you don't have it
-```
-sudo pip install virtualenv
-```
-
-
-#### Clone repo and install dependencies
-```
-git clone https://github.com/cmuartfab/dranimate.git
-cd dranimate
-pip install -r server/requirements.txt
-```
-
-#### Setup virtual env
-`virtualenv init venv`
-* Note: some versions of virtualenv don't require the 'init' command arg
-
-`source venv/bin/activate`
-
-### How to run the Dranimate server:
-```
-python server/manage.py migrate
-python server/manage.py runserver
-```
-
-## Browser setup
 ### Requirements
 - install (homebrew)[https://brew.sh/]:
-- install node.js: `brew install node`
+- install node.js: `brew install node` or `brew upgrade node`
 
 ### Setup
 - user Terminal to navigate to the folder where you wish to install this app
@@ -49,10 +14,6 @@ https://github.com/cmuartfab/dranimate.git
 ```
 git checkout some-webpack
 ```
-- switch to browser folder with
-```
-cd browser
-```
 - install node dependencies with
 ```
 npm install
@@ -61,8 +22,7 @@ npm install
 ```
 npm run dev
 ```
-- open Chrome and point it to `localhost:3000`
-
+- open Chrome and point it to `localhost:5000`
 
 
 ### Image segmentation + Mesh generation

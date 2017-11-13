@@ -23,7 +23,7 @@ class Loader extends Component {
     if (this.props.isVisible) {
       return this.showLoader();
     }
-    return (<div />);
+    return (null);
   }
 }
 

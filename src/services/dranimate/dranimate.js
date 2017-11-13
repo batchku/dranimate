@@ -235,6 +235,11 @@ var Dranimate = function () {
     // }
 
     this.addPuppet = function (p) {
+      const matchingPuppet = puppets.find(puppet => puppet.id === p.id);
+      if(matchingPuppet) {
+        console.log('TODO: save puppet instead of adding');
+      }
+
         puppets.push(p);
 
         if(p.controlPointSpheres) {

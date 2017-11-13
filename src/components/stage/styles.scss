@@ -1,3 +1,5 @@
+@import '~styles/index';
+
 .puppetContainer {
   border: 1px solid black;
 }
@@ -18,4 +20,13 @@
   left: 0;
   bottom: 0;
   padding: 15px;
+  border: 1px solid $color-black;
+}
+
+.paramControl {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 15px;
+  border: 1px solid $color-black;
 }

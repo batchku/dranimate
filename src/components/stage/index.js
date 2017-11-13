@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PuppetEditor from 'components/puppetEditor';
 import Fab from 'components/fab';
 import TopBar from 'components/topbar';
+import ParamControl from 'components/paramControl';
 import ZoomPanner from 'components/zoomPanner';
 import { loadFile } from 'services/util/file';
 import editorHelper from 'services/imageToMesh/EditorHelper';
@@ -14,12 +15,24 @@ class Stage extends Component {
     super();
     this.state = {
       editorIsOpen: false,
-      controllerIsOpen: false
+      controllerIsOpen: false,
+      selectedPuppet: null
     };
   }
 
   componentDidMount = () => {
     dranimate.setup(this.dranimateStageContainer);
+  };
+
+  onPuppetSelect = () => {
+    console.log('select', dranimate.getSelectedPuppet());
+  }
+
+  onMouseDown = event => {
+    dranimate.onMouseDown(event);
+    const selectedPuppet = dranimate.getSelectedPuppet();
+    this.setState({ selectedPuppet });
+    console.log('onMouseDown', selectedPuppet)
   };
 
   openEditor = () => this.setState({ editorIsOpen: true });
@@ -34,11 +47,21 @@ class Stage extends Component {
 
   onPanSelect = isPanSelected => dranimate.setPanEnabled(isPanSelected);
 
+  onDeleteSelectedPuppet = () => dranimate.deleteSelectedPuppet();
+
+  onEditSelectedPuppet = () => {
+    editorHelper.setItem(dranimate.getSelectedPuppet());
+    this.openEditor();
+  };
+
   onFileChange = event => {
     loadFile(this.filePicker)
       .then((result) => {
         editorHelper.setItem(result);
-        this.openEditor(true);
+        const isPuppet = !!result.id;
+        isPuppet ?
+          dranimate.addPuppet(result) :
+          this.openEditor();
       })
       .catch(error => console.log('error', error));
   }
@@ -48,10 +71,16 @@ class Stage extends Component {
       <div>
         <TopBar />
         <div
-          onMouseDown={dranimate.onMouseDown}
+          onMouseDown={this.onMouseDown}
           onMouseMove={dranimate.onMouseMove}
           onMouseUp={dranimate.onMouseUp}
           ref={input => this.dranimateStageContainer = input}
+        />
+        <ParamControl
+          className={styles.paramControl}
+          selectedPuppet={this.state.selectedPuppet}
+          onEditSelectedPuppet={this.onEditSelectedPuppet}
+          onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
         />
         <ZoomPanner
           className={styles.zoomPanner}
