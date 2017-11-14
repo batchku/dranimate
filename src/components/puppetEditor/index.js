@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import { withRouter } from 'react-router'
 import Loader from 'components/loader';
 import ZoomPanner from 'components/zoomPanner';
 import ImageToMesh from 'services/imageToMesh/imageToMesh'
@@ -62,7 +61,6 @@ class PuppetEditor extends Component {
     }
     this.imageToMesh.generateMesh()
       .then(() => {
-        console.log('')
         const id = editorHelper.isPuppet ? editorHelper.getItem().id : generateUniqueId();
         const puppetParams = {
           id,

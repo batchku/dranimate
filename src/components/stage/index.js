@@ -4,7 +4,7 @@ import Fab from 'components/fab';
 import TopBar from 'components/topbar';
 import ParamControl from 'components/paramControl';
 import ZoomPanner from 'components/zoomPanner';
-import { loadFile } from 'services/util/file';
+import { loadDranimateFile } from 'services/util/file';
 import editorHelper from 'services/imageToMesh/EditorHelper';
 import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
@@ -24,15 +24,10 @@ class Stage extends Component {
     dranimate.setup(this.dranimateStageContainer);
   };
 
-  onPuppetSelect = () => {
-    console.log('select', dranimate.getSelectedPuppet());
-  }
-
   onMouseDown = event => {
     dranimate.onMouseDown(event);
     const selectedPuppet = dranimate.getSelectedPuppet();
     this.setState({ selectedPuppet });
-    console.log('onMouseDown', selectedPuppet)
   };
 
   openEditor = () => this.setState({ editorIsOpen: true });
@@ -55,7 +50,7 @@ class Stage extends Component {
   };
 
   onFileChange = event => {
-    loadFile(this.filePicker)
+    loadDranimateFile(this.filePicker)
       .then((result) => {
         editorHelper.setItem(result);
         const isPuppet = !!result.id;

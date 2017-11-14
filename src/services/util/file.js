@@ -5,18 +5,16 @@ const mimeTypeMap = {
   puppet: ['application/json']
 };
 
-function loadImage(file) {
+function loadFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onloadend = event => {
-      resolve(reader.result);
-    };
+    reader.onloadend = event => resolve(reader.result);
     reader.onerror = error => reject(error);
     reader.readAsDataURL(file);
   });
 }
 
-function loadFile(element) {
+function loadDranimateFile(element) {
   const file = element.files && element.files[0]
   if (!file) {
     return Promise.reject(error);
@@ -27,9 +25,9 @@ function loadFile(element) {
     return Promise.reject('Unsupported file type');
   }
   if (fileType === 'image') {
-    return loadImage(file);
+    return loadFile(file);
   }
   return loadPuppetFromFile(file);
 }
 
-export { loadFile };
+export { loadFile, loadDranimateFile };
