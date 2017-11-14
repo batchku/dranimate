@@ -16,15 +16,21 @@ class ZoomPanner extends Component {
     this.setState({ panIsSelected });
   }
 
+  renderPanButton() {
+    return (
+      <button
+        className={this.state.panIsSelected ? styles.panActive : styles.pan}
+        onClick={this.onPanClick}
+      >
+        Pan
+      </button>
+    );
+  }
+
   render() {
     return (
       <div className={this.props.className}>
-        <button
-          className={this.state.panIsSelected ? styles.panActive : styles.pan}
-          onClick={this.onPanClick}
-        >
-          Pan
-        </button>
+        { this.props.onPanSelect ? this.renderPanButton() : null }
         <button
           onClick={() => this.props.onZoomSelect(true)}
         >
@@ -41,7 +47,7 @@ class ZoomPanner extends Component {
 }
 
 ZoomPanner.propTypes = {
-  onPanSelect: PropTypes.func.isRequired,
+  onPanSelect: PropTypes.func,
   onZoomSelect: PropTypes.func.isRequired,
 };
 

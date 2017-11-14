@@ -15,8 +15,25 @@
 .puppetEditor {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  background-color: white;
+  padding: 40px;
+  border-radius: 4px;
 }
 
 .editorCanvas {
   border: 1px solid black;
+}
+
+.editorControls {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.saveCancel {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }

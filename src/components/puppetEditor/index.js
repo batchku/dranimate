@@ -13,8 +13,7 @@ class PuppetEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectionType: 'crop',
-      selector: 'select',
+      selector: 'SELECT',
       threshold: 30,
       loaderIsVisible: false
     };
@@ -22,9 +21,9 @@ class PuppetEditor extends Component {
   }
 
   componentDidMount() {
-    console.log('mounted');
-    // const canvasElement = document.getElementById('edit-mesh-canvas');
     const puppetImageSrc = editorHelper.getItem();
+    this.canvasElement.width = 400;
+    this.canvasElement.height = 300;
     this.imageToMesh.setup(this.canvasElement);
     if (editorHelper.isPuppet) {
       const puppet = editorHelper.getItem();
@@ -53,13 +52,17 @@ class PuppetEditor extends Component {
   }
 
   onCancel = () => {
-    // TODO: destroy imageToMesh
     this.props.onClose();
   };
 
   onSave = () => {
+    if (this.imageToMesh.getControlPoints().length < 2) {
+      alert('Puppet must have at least two control points');
+      return;
+    }
     this.imageToMesh.generateMesh()
       .then(() => {
+        console.log('')
         const id = editorHelper.isPuppet ? editorHelper.getItem().id : generateUniqueId();
         const puppetParams = {
           id,
@@ -72,29 +75,20 @@ class PuppetEditor extends Component {
           backgroundRemovalData: this.imageToMesh.getBackgroundRemovalData()
         };
         const puppet = requestPuppetCreation(puppetParams);
-        console.log('success?', puppet);
-        // $mdDialog.hide();
         this.props.onClose();
       });
   }
 
   updateThresholdUi = event => this.setState({ threshold: event.target.value });
 
-  onSelectRemove = event => {
-    this.setState({ selector: event.target.value });
-    this.imageToMesh.setAddPixels(event.target.value === 'select');
-  }
-
-  onControlPointCrop = event => {
-    this.setState({ selectionType: event.target.value });
-    this.imageToMesh.setAddControlPoints(event.target.value === 'controlPoints');
-  }
-
   onZoomSelect = isZoomIn => isZoomIn ?
-    this.imageToMesh.zoomIn() :
-    this.imageToMesh.zoomOut();
+    this.imageToMesh.zoomIn() : this.imageToMesh.zoomOut();
 
-  onPanSelect = isPanSelected => this.imageToMesh.setPanEnabled(isPanSelected);
+  onCanvasSelectType = event => {
+    const selector = event.target.value;
+    this.imageToMesh.setSelectState(event.target.value);
+    this.setState({ selector });
+  }
 
   render() {
     return (
@@ -108,71 +102,79 @@ class PuppetEditor extends Component {
               onMouseDown={this.imageToMesh.onMouseDown}
               onContextMenu={this.imageToMesh.onContextMenu}
               onMouseUp={this.imageToMesh.onMouseUp}
+              onMouseOut={this.imageToMesh.onMouseOut}
+              onMouseOver={this.imageToMesh.onMouseOver}
             />
             <ZoomPanner
-              onPanSelect={this.onPanSelect}
               onZoomSelect={this.onZoomSelect}
               />
           </div>
-          <div>
+          <div className={styles.editorControls}>
             <h1>Edit puppet</h1>
-            <p>Selection type:</p>
             <div>
-              <input
-                type="radio"
-                name="selectionType"
-                id="controlPoints"
-                value="controlPoints"
-                onChange={this.onControlPointCrop}
-                checked={this.state.selectionType === 'controlPoints'}
-              />
-              <label htmlFor="controlPoints">Control Points</label>
-              <input
-                type="radio"
-                name="selectionType"
-                id="crop"
-                value="crop"
-                onChange={this.onControlPointCrop}
-                checked={this.state.selectionType === 'crop'}
-              />
-              <label htmlFor="crop">Crop</label>
-            </div>
-            <p>Selector:</p>
-            <div>
-              <input
-                type="radio"
-                name="selector"
-                id="select"
-                value="select"
-                onChange={this.onSelectRemove}
-                checked={this.state.selector === 'select'}
-              />
-              <label htmlFor="select">Select</label>
-              <input
-                type="radio"
-                name="selector"
-                id="remove"
-                value="remove"
-                onChange={this.onSelectRemove}
-                checked={this.state.selector === 'remove'}
-              />
-              <label htmlFor="remove">Remove</label>
+              <p>Selection type:</p>
+              <div>
+                <input
+                  type="radio"
+                  name="selectionType"
+                  id="select"
+                  value="SELECT"
+                  onChange={this.onCanvasSelectType}
+                  checked={this.state.selector === 'SELECT'}
+                />
+                <label htmlFor="select">Select</label>
+                <br />
+                <input
+                  type="radio"
+                  name="selectionType"
+                  id="deselect"
+                  value="DESELECT"
+                  onChange={this.onCanvasSelectType}
+                  checked={this.state.selector === 'DESELECT'}
+                />
+                <label htmlFor="deselect">Deselect</label>
+                <br />
+                <input
+                  type="radio"
+                  name="selectionType"
+                  id="controlPoints"
+                  value="CONTROL_POINT"
+                  onChange={this.onCanvasSelectType}
+                  checked={this.state.selector === 'CONTROL_POINT'}
+                />
+                <label htmlFor="controlPoints">Control Points</label>
+                <br />
+                <input
+                  type="radio"
+                  name="selectionType"
+                  id="pan"
+                  value="PAN"
+                  onChange={this.onCanvasSelectType}
+                  checked={this.state.selector === 'PAN'}
+                />
+                <label htmlFor="pan">Pan</label>
+              </div>
             </div>
 
-            <label htmlFor="thresholdSlider">Threshold</label>
-            <input
-              type="range"
-              id="thresholdSlider"
-              min="5"
-              max="75"
-              defaultValue={this.state.threshold}
-              onChange={this.updateThresholdUi}
-              onMouseUp={this.runSlic}
-            />
-            <p>{this.state.threshold}</p>
-            <br />
-            <button onClick={this.onCancel}>Cancel</button>
-            <button onClick={this.onSave}>Save</button>
+            <div>
+              <label htmlFor="thresholdSlider">Threshold</label>
+              <input
+                type="range"
+                id="thresholdSlider"
+                min="5"
+                max="75"
+                defaultValue={this.state.threshold}
+                onChange={this.updateThresholdUi}
+                onMouseUp={this.runSlic}
+              />
+              <span>{this.state.threshold}</span>
+              <br />
+            </div>
+
+            <div className={styles.saveCancel}>
+              <button onClick={this.onCancel}>Cancel</button>
+              <button onClick={this.onSave}>Save</button>
+            </div>
           </div>
           <Loader isVisible={this.state.loaderIsVisible} />
         </div>

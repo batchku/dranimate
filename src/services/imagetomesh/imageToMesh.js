@@ -11,6 +11,18 @@ import Delaunay from 'delaunay-fast';
 import SLIC from './slic.js';
 import CanvasUtils from './canvasUtils.js';
 
+const SELECT_STATE = {
+  PAN: 'PAN',
+  CONTROL_POINT: 'CONTROL_POINT',
+  SELECT: 'SELECT',
+  DESELECT: 'DESELECT'
+};
+const MOUSE_STATE = {
+  UP: 'UP',
+  DOWN: 'DOWN',
+  OUTSIDE: 'OUTSIDE',
+};
+
 var ImageToMesh = function () {
 
     var that = this;
@@ -35,7 +47,6 @@ var ImageToMesh = function () {
     var imageNoBackgroundData;
     var imageNoBackgroundImage;
 
-    // var imageBackgroundMaskData;
     var imageBackgroundMaskImage;
 
     var contourData;
@@ -51,17 +62,18 @@ var ImageToMesh = function () {
 
     var dummyCanvas;
     var dummyContext;
+    let blankCanvas;
+    let blankContext;
 
     var zoom;
 
-    var addPixels;
-    var addControlPoints;
-
     var onlySelectionImage;
 
-    var panEnabled;
     var panPosition;
     var panFromPosition;
+
+    let mouseState = MOUSE_STATE.UP;
+    let selectState = SELECT_STATE.SELECT;
 
     var onChangeCallback = function () {};
 
@@ -82,7 +94,6 @@ var ImageToMesh = function () {
     this.onMouseMove = function(evt) {
       evt.preventDefault();
       const rect = evt.target.getBoundingClientRect();
-
       mouseAbs.x = (evt.clientX - rect.left) / zoom;
       mouseAbs.y = (evt.clientY - rect.top)  / zoom;
       mouse.x = mouseAbs.x - panPosition.x;
@@ -90,67 +101,71 @@ var ImageToMesh = function () {
       mouse.x = Math.round(mouse.x);
       mouse.y = Math.round(mouse.y);
 
-      if(!panEnabled && !addControlPoints) {
-        console.log('- - - wut')
-          that.updateHighligtedSuperpixel();
+      if (selectState === SELECT_STATE.CONTROL_POINT) {
+        return;
       }
-
-      if(mouse.leftClickDown && !addControlPoints) {
-          if(panEnabled) {
-              panPosition.x += mouseAbs.x - panFromPosition.x;
-              panPosition.y += mouseAbs.y - panFromPosition.y;
-              panFromPosition = {x:mouseAbs.x, y:mouseAbs.y};
-              redraw();
-          } else {
-              if(addPixels) {
-                  console.log('addPixel')
-                  that.addSelectionToNoBackgroundImage();
-              } else {
-                  that.removeSelectionToNoBackgroundImage();
-              }
-          }
+      if (mouseState !== MOUSE_STATE.DOWN) {
+        that.updateHighligtedSuperpixel();
+        redraw();
+        return;
+      }
+      if (selectState === SELECT_STATE.PAN) {
+        panPosition.x += mouseAbs.x - panFromPosition.x;
+        panPosition.y += mouseAbs.y - panFromPosition.y;
+        panFromPosition = { x: mouseAbs.x, y: mouseAbs.y };
+        redraw();
+        return;
+      }
+      if (selectState === SELECT_STATE.SELECT) {
+        that.updateHighligtedSuperpixel();
+        that.addSelectionToNoBackgroundImage();
+      }
+      else if (selectState === SELECT_STATE.DESELECT) {
+        that.updateHighligtedSuperpixel();
+        that.removeSelectionToNoBackgroundImage();
       }
     };
 
     this.onMouseDown = function(evt) {
       evt.preventDefault();
+      mouseState = MOUSE_STATE.DOWN;
 
       panFromPosition = {x:mouseAbs.x, y:mouseAbs.y};
 
-      if(!panEnabled) {
-          if (addControlPoints) {
-              controlPoints.push([mouse.x, mouse.y]);
-              redraw();
-          } else {
-              if(addPixels) {
-                  that.addSelectionToNoBackgroundImage();
-              } else {
-                  that.removeSelectionToNoBackgroundImage();
-              }
-          }
+      if (selectState === SELECT_STATE.CONTROL_POINT) {
+        controlPoints.push([mouse.x, mouse.y]);
+        redraw();
       }
-
-      if(evt.which == 3) {
-          mouse.rightClickDown = true;
-      } else {
-          mouse.leftClickDown = true;
+      if (selectState === SELECT_STATE.SELECT) {
+        that.addSelectionToNoBackgroundImage();
+      }
+      if (selectState === SELECT_STATE.DESELECT) {
+        that.removeSelectionToNoBackgroundImage();
       }
     };
 
     this.onContextMenu = function (evt) {
       evt.preventDefault();
-      mouse.rightClickDown = true;
       return false;
     }
 
-    this.onMouseUp = function(evt) {
-      evt.preventDefault();
-      if(evt.which == 3) {
-          mouse.rightClickDown = false;
-      } else {
-          mouse.leftClickDown = false;
-      }
+    this.onMouseUp = event => {
+      event.preventDefault();
+      mouseState = MOUSE_STATE.UP;
     }
+
+    this.onMouseOut = event => {
+      event.preventDefault();
+      mouseState = MOUSE_STATE.OUTSIDE;
+      that.updateHighligtedSuperpixel();
+    }
+
+    this.onMouseOver = event => {
+      event.preventDefault();
+      if (mouseState !== MOUSE_STATE.DOWN) {
+        mouseState = MOUSE_STATE.UP;
+      }
+    };
 
     this.generateMesh = function () {
         this.recalculateCentroids();
@@ -166,6 +181,8 @@ var ImageToMesh = function () {
     this.editImage = function (imageData, controlPointPositions, backgroundRemovalData) {
         dummyCanvas = document.createElement("canvas");
         dummyContext = dummyCanvas.getContext("2d");
+        blankCanvas = document.createElement('canvas');
+        blankContext = blankCanvas.getContext('2d');
 
         mouse = {};
         mouseAbs = {};
@@ -194,9 +211,6 @@ var ImageToMesh = function () {
         triangles = undefined;
 
         zoom = 1.0;
-        panEnabled = false;
-        addPixels = true;
-        addControlPoints = false;
         panPosition = {x:0, y:0};
         panFromPosition = {x:0, y:0}
 
@@ -279,10 +293,6 @@ var ImageToMesh = function () {
         return onlySelectionImage;
     }
 
-    // this.getSelectionData = function () {
-    //     return imageBackgroundMaskData;
-    // }
-
     this.getControlPoints = function () {
         return controlPoints;
     }
@@ -305,31 +315,8 @@ var ImageToMesh = function () {
         redraw();
     }
 
-    this.setAddPixels = function (enabled) {
-        addPixels = enabled;
-    }
-
-    this.getAddPixels = function () {
-        return addPixels;
-    }
-
-    this.setPanEnabled = function (enabled) {
-        panEnabled = enabled;
-        onChangeCallback();
-    }
-
-    this.getPanEnabled = function () {
-        return panEnabled;
-    }
-
-    this.setAddControlPoints = function (enabled) {
-        addControlPoints = enabled;
-        onChangeCallback();
-    }
-
-    this.getAddControlPoints = function () {
-        return addControlPoints;
-    }
+    this.setSelectState = state => selectState = state;
+    this.setMouseState = state => mouseState = state;
 
 /*****************************
     Private stuff
@@ -347,7 +334,6 @@ var ImageToMesh = function () {
 
         if (!imageNoBackgroundData) {
           // we are editing a new puppet without a selection
-          console.log('----Create removal data')
           imageNoBackgroundData = context.createImageData(slic.result.width, slic.result.height);
           // imageBackgroundMaskData = context.createImageData(slic.result.width, slic.result.height);
           for (var i = 0; i < slic.result.data.length; i += 4) {
@@ -507,27 +493,6 @@ var ImageToMesh = function () {
           }
         }
 
-        /* Resample contour image */
-
-        /*
-        for (var x = 0; x < contourData.width; ++x) {
-            for (var y = 0; y < contourData.height; ++y) {
-                if(getColorAtXY(x,y,"a",contourData) == 255) {
-
-                    setColorAtXY(x+1,y,"a",contourData,0);
-                    setColorAtXY(x,y+1,"a",contourData,0);
-                    setColorAtXY(x-1,y,"a",contourData,0);
-                    setColorAtXY(x,y-1,"a",contourData,0);
-
-                    setColorAtXY(x+1,x+1,"a",contourData,0);
-                    setColorAtXY(x+1,y-1,"a",contourData,0);
-                    setColorAtXY(x-1,y-1,"a",contourData,0);
-                    setColorAtXY(x-1,y+1,"a",contourData,0);
-                }
-            }
-        }
-        */
-
         return new Promise((resolve, reject) => {
           try {
             dummyContext.putImageData(contourData, 0, 0);
@@ -541,9 +506,6 @@ var ImageToMesh = function () {
             reject(error);
           }
         });
-
-
-
     }
 
     this.removeBackgroundFromImage = function () {
@@ -556,7 +518,6 @@ var ImageToMesh = function () {
                 originalImageData.data[i + 3] = 0;
             }
         }
-
 
         return new Promise((resolve, reject) => {
           dummyContext.putImageData(originalImageData, 0, 0);
@@ -577,25 +538,11 @@ var ImageToMesh = function () {
                 imageNoBackgroundData.data[i + 1] = 255;
                 imageNoBackgroundData.data[i + 2] = 255;
                 imageNoBackgroundData.data[i + 3] = 255;
-
-                // imageBackgroundMaskData.data[i]     = 255;
-                // imageBackgroundMaskData.data[i + 1] = 255;
-                // imageBackgroundMaskData.data[i + 2] = 255;
-                // imageBackgroundMaskData.data[i + 3] = 255;
             }
         }
 
         dummyContext.putImageData(imageNoBackgroundData, 0, 0);
-        imageNoBackgroundImage.src = dummyCanvas.toDataURL("image/png");
-        // imageNoBackgroundImage.onload = function() {
-        //     redraw();
-        // }
-
-        // dummyContext.putImageData(imageBackgroundMaskData, 0, 0);
-        // imageBackgroundMaskImage.src = dummyCanvas.toDataURL("image/png");
-        // imageBackgroundMaskImage.onload = function() {
-        //     redraw();
-        // }
+        imageNoBackgroundImage.src = dummyCanvas.toDataURL('image/png');
     }
 
     this.removeSelectionToNoBackgroundImage = function () {
@@ -606,59 +553,49 @@ var ImageToMesh = function () {
                 imageNoBackgroundData.data[i + 1] = 0;
                 imageNoBackgroundData.data[i + 2] = 0;
                 imageNoBackgroundData.data[i + 3] = 0;
-
-                // imageBackgroundMaskData.data[i]     = 0;
-                // imageBackgroundMaskData.data[i + 1] = 0;
-                // imageBackgroundMaskData.data[i + 2] = 0;
-                // imageBackgroundMaskData.data[i + 3] = 0;
             }
         }
 
         dummyContext.putImageData(imageNoBackgroundData, 0, 0);
         imageNoBackgroundImage.src = dummyCanvas.toDataURL("image/png");
-        // imageNoBackgroundImage.onload = function() {
-        //     redraw();
-        // }
-
-        // dummyContext.putImageData(imageBackgroundMaskData, 0, 0);
-        // imageBackgroundMaskImage.src = dummyCanvas.toDataURL("image/png");
-        // imageBackgroundMaskImage.onload = function() {
-        //     redraw();
-        // }
     }
 
     this.updateHighligtedSuperpixel = function () {
-        if(slic) {
-            var selectedLabel = [];
-            var selectedIndex = 4*(mouse.y*slic.result.width+mouse.x);
-            selectedLabel.push(slic.result.data[selectedIndex]);
-            selectedLabel.push(slic.result.data[selectedIndex+1]);
-            selectedLabel.push(slic.result.data[selectedIndex+2]);
+      if (!slic) {
+        return;
+      }
+      if (mouseState === MOUSE_STATE.OUTSIDE) {
+        highlightImage.src = blankCanvas.toDataURL('image/png');
+        highlightImage.onload = () => redraw();
+        return;
+      }
+      const selectedLabel = [];
+      const selectedIndex = 4*(mouse.y*slic.result.width+mouse.x);
+      selectedLabel.push(slic.result.data[selectedIndex]);
+      selectedLabel.push(slic.result.data[selectedIndex+1]);
+      selectedLabel.push(slic.result.data[selectedIndex+2]);
 
-            highlightData = context.createImageData(slic.result.width, slic.result.height);
+      highlightData = context.createImageData(slic.result.width, slic.result.height);
 
-            for (var i = 0; i < slic.result.data.length; i += 4) {
-                if(selectedLabel[0] === slic.result.data[i] &&
-                   selectedLabel[1] === slic.result.data[i+1] &&
-                   selectedLabel[2] === slic.result.data[i+2]) {
-                    highlightData.data[i]     = 255;
-                    highlightData.data[i + 1] = 0;
-                    highlightData.data[i + 2] = 0;
-                    highlightData.data[i + 3] = 255;
-                } else {
-                    highlightData.data[i]     = 255;
-                    highlightData.data[i + 1] = 0;
-                    highlightData.data[i + 2] = 0;
-                    highlightData.data[i + 3] = 0;
-                }
-            }
+      for (var i = 0; i < slic.result.data.length; i += 4) {
+          if(selectedLabel[0] === slic.result.data[i] &&
+             selectedLabel[1] === slic.result.data[i+1] &&
+             selectedLabel[2] === slic.result.data[i+2]) {
+              highlightData.data[i]     = 255;
+              highlightData.data[i + 1] = 0;
+              highlightData.data[i + 2] = 0;
+              highlightData.data[i + 3] = 255;
+          } else {
+              highlightData.data[i]     = 255;
+              highlightData.data[i + 1] = 0;
+              highlightData.data[i + 2] = 0;
+              highlightData.data[i + 3] = 0;
+          }
+      }
 
-            dummyContext.putImageData(highlightData, 0, 0);
-            highlightImage.src = dummyCanvas.toDataURL("image/png");
-            highlightImage.onload = function() {
-                redraw();
-            }
-        }
+      dummyContext.putImageData(highlightData, 0, 0);
+      highlightImage.src = dummyCanvas.toDataURL("image/png");
+      highlightImage.onload = () => redraw();
     }
 
     this.generateTriangles = function() {
