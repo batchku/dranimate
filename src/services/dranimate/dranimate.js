@@ -147,8 +147,8 @@ var Dranimate = function () {
                       var controlPoints = puppets[p].controlPoints;
 
                       for(var c = 0; c < controlPoints.length; c++) {
-                        const mouseVector = new THREE.Vector2(mouseRelative.x / puppets[p].scale(), mouseRelative.y / puppets[p].scale());
-                        mouseVector.rotateAround(puppets[p].getRotationCenter(), -puppets[p].rotation());
+                        const mouseVector = new THREE.Vector2(mouseRelative.x / puppets[p].getScale(), mouseRelative.y / puppets[p].getScale());
+                        mouseVector.rotateAround(puppets[p].getRotationCenter(), -puppets[p].getRotation());
 
                           const vert = verts[controlPoints[c]];
                           const dist = vert.distanceTo(new THREE.Vector3(mouseVector.x, mouseVector.y, 0));
@@ -178,21 +178,25 @@ var Dranimate = function () {
             // control point is being dragged by mouse
             const puppet = puppets[activeControlPoint.puppetIndex];
             const ci = activeControlPoint.controlPointIndex;
-            const mouseVector = new THREE.Vector2(mouseRelative.x / puppet.scale(), mouseRelative.y / puppet.scale());
-            mouseVector.rotateAround(puppet.getRotationCenter(), -puppet.rotation());
+            const mouseVector = new THREE.Vector2(mouseRelative.x / puppet.getScale(), mouseRelative.y / puppet.getScale());
+            mouseVector.rotateAround(puppet.getRotationCenter(), -puppet.getRotation());
             puppet.setControlPointPosition(ci, mouseVector.x, mouseVector.y);
             onChangeCallback();
           }
 
           if(selectedPuppet && selectedPuppet.isBeingDragged) {
-              selectedPuppet.x(
-                mouseRelative.x - selectedPuppet.dragFromPositionX,
-                true // doIncrement flag, to specify incremental update
-              );
-              selectedPuppet.y(
-                mouseRelative.y - selectedPuppet.dragFromPositionY,
-                true
-              );
+            selectedPuppet.incrementPosition(
+              mouseRelative.x - selectedPuppet.dragFromPositionX,
+              mouseRelative.y - selectedPuppet.dragFromPositionY
+            );
+              // selectedPuppet.x(
+              //   mouseRelative.x - selectedPuppet.dragFromPositionX,
+              //   true // doIncrement flag, to specify incremental update
+              // );
+              // selectedPuppet.y(
+              //   mouseRelative.y - selectedPuppet.dragFromPositionY,
+              //   true
+              // );
               selectedPuppet.dragFromPositionX = mouseRelative.x;
               selectedPuppet.dragFromPositionY = mouseRelative.y;
               onChangeCallback();

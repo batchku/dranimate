@@ -26,90 +26,27 @@ var Puppet = function (image, id) {
 
   this.isRecording = false;
   this.recordedFrames = [];
-
-  // Setup quad image
-
-  const canvas = document.createElement('canvas');
-  canvas.width  = this.image.width;
-  canvas.height = this.image.height;
-  const context = canvas.getContext('2d');
-  canvas.getContext('2d');
-  context.drawImage(this.image, 0, 0, this.image.width, this.image.height, 0, 0, canvas.width, canvas.height);
-  // this.context = context;
-  // this.canvas = canvas;
-
-  const imageTexture = new THREE.Texture(canvas);
-  imageTexture.needsUpdate = true;
-  this.texturedMaterial = new THREE.MeshBasicMaterial({
-    map: imageTexture,
-    transparent: true
-  });
-
-  const vertsFlatArray = [0,0, image.width,0, 0,image.height, image.width,image.height];
-  const facesFlatArray = [0,2,1, 1,2,3];
-
-  const geometry = new THREE.Geometry();
-
-  for(let i = 0; i < vertsFlatArray.length; i+=2) {
-    const x = vertsFlatArray[i];
-    const y = vertsFlatArray[i+1];
-    geometry.vertices.push( new THREE.Vector3( x, y, 0 ) );
-  }
-  for(let i = 0; i < facesFlatArray.length; i+=3) {
-    const f1 = facesFlatArray[i];
-    const f2 = facesFlatArray[i+1];
-    const f3 = facesFlatArray[i+2];
-    geometry.faces.push( new THREE.Face3( f1, f2, f3 ) );
-
-    geometry.faceVertexUvs[0].push( [
-        new THREE.Vector2(geometry.vertices[f1].x/this.image.width, 1-geometry.vertices[f1].y/this.image.height),
-        new THREE.Vector2(geometry.vertices[f2].x/this.image.width, 1-geometry.vertices[f2].y/this.image.height),
-        new THREE.Vector2(geometry.vertices[f3].x/this.image.width, 1-geometry.vertices[f3].y/this.image.height)
-        ]);
-  }
-
-  this.threeMesh = new THREE.Mesh(geometry, this.texturedMaterial);
-  this.boundingBox = new THREE.BoxHelper(this.threeMesh, new THREE.Color(0xFF9900));
-  this.boundingBox.visible = false;
-
-
-  const box3 = new THREE.Box3();
-  box3.setFromObject(this.boundingBox); // or from mesh, same answer
-  const size = box3.getSize(new THREE.Vector3()); // pass in size so a new Vector3 is not allocated
-  console.log(size)
-
-  this.center = new THREE.Vector2(size.x / 2, size.y / 2);
-  this._x = -this.center.x;
-  this._y = -this.center.y;
 };
 
-Puppet.prototype.getName = function() {
-  return name;
-};
-
-Puppet.prototype.getPosition = function() {
-  return {x: this._x, y: this._y};
-};
-
-// doIncrement flag allows you to pass in an incremental value and add it to the
-// preexisting value; if false, the value is erased and updated. Defaults to
-// false.
-Puppet.prototype.x = function(value, doIncrement = false) {
-  var baseValue = doIncrement ? this._x : 0;
-  return value ? (this._x = baseValue + value) : this._x;
+Puppet.prototype.incrementPosition = function(x, y) {
+  this._x += x;
+  this._y += y;
 }
 
-Puppet.prototype.y = function(value, doIncrement = false) {
-  var baseValue = doIncrement ? this._y : 0;
-  return value ? (this._y = baseValue + value) : this._y;
+Puppet.prototype.setScale = function(scale) {
+  this._scale = scale;
 }
 
-Puppet.prototype.scale = function(value) {
-  return value ? (this._scale = value) : this._scale;
+Puppet.prototype.getScale = function() {
+  return this._scale;
 }
 
-Puppet.prototype.rotation = function(value) {
-  return value ? (this._rotation = value) : this._rotation;
+Puppet.prototype.setRotation = function(rotation) {
+  this._rotation = rotation;
+}
+
+Puppet.prototype.getRotation = function() {
+  return this._rotation;
 }
 
 Puppet.prototype.setRenderWireframe = function (renderWireframe) {
@@ -120,6 +57,7 @@ Puppet.prototype.setRenderWireframe = function (renderWireframe) {
   }
 }
 
+// TODO: set these in constructor
 Puppet.prototype.setImageToMeshData = function (imageNoBG, controlPointPositions, backgroundRemovalData) {
   this.imageNoBG = imageNoBG;
   this.controlPointPositions = controlPointPositions;
@@ -200,7 +138,6 @@ Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {
   }
 
   /* Create the THREE geometry */
-
   var geometry = new THREE.Geometry();
 
   for(var i = 0; i < this.vertsFlatArray.length; i+=2) {
@@ -233,7 +170,6 @@ Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {
       this.facesFlatArray);
 
   /* Add control points */
-
   for(var i = 0; i < this.controlPoints.length; i++) {
     ARAP.addControlPoint(this.arapMeshID, this.controlPoints[i]);
   }
@@ -243,7 +179,6 @@ Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {
   }
 
   /* Create the THREE objects */
-
   this.threeMesh = new THREE.Mesh(geometry, this.texturedMaterial);
 
   this.boundingBox = new THREE.BoxHelper(this.threeMesh, new THREE.Color(0xFF9900));
@@ -260,11 +195,9 @@ Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {
   }
 
   /* Save a version of the vertices in their original position */
-
   this.undeformedVertices = this.verts;
 
   /* Set needsUpdate flag to update to initialze immediately */
-
   this.needsUpdate = true;
 
   const group = new THREE.Group();

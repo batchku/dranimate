@@ -12,12 +12,12 @@ class ParamControl extends Component {
 
   onScaleChange = event => {
     const value = parseInt(event.target.value) / 100;
-    this.props.selectedPuppet.scale(value);
+    this.props.selectedPuppet.setScale(value);
   };
 
   onRotateChange = event => {
     const value = parseFloat(event.target.value) / 100;
-    this.props.selectedPuppet.rotation(value);
+    this.props.selectedPuppet.setRotation(value);
   };
 
   renderPanel() {
