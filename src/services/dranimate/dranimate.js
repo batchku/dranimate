@@ -1,5 +1,12 @@
 import * as THREE from 'three';
-import FileSaver from 'file-saver';
+// import FileSaver from 'file-saver';
+import { clamp } from 'services/util/math';
+
+const ZOOM = {
+  MIN: 0.1,
+  MAX: 3
+};
+const CAMERA_DEPTH = 100;
 
 var Dranimate = function () {
     /* debugging memory issue */
@@ -57,40 +64,32 @@ var Dranimate = function () {
     }
 
     this.setup = function (canvasContainer) {
-
-        /* Initialize THREE canvas and scene */
-
-        camera = new THREE.OrthographicCamera( 0,
-                                               window.innerWidth,
-                                               0,
-                                               window.innerHeight,
-                                               0.1, 1000 );
-        refreshCamera();
-
-        scene = new THREE.Scene();
-
-        var ambient = new THREE.AmbientLight( 0x101030 );
-        scene.add( ambient );
-
-        var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-        directionalLight.position.set( 0, 0, 1 );
-        scene.add( directionalLight );
-
-        renderer = new THREE.WebGLRenderer( { antialias: true } );
-        renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        renderer.setClearColor( 0xFFFFFF, 1 );
-        canvasContainer.appendChild( renderer.domElement );
-
-        animate();
+      /* Initialize THREE canvas and scene */
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const halfWidth = width / 2;
+      const halfHeight = height / 2;
+      // OrthographicCamera: left, right, top, bottom, near, far
+      // puppet.z = 0, controlPoint.z = 10
+      camera = new THREE.OrthographicCamera(-halfWidth, halfWidth, -halfHeight, halfHeight, CAMERA_DEPTH - 10, CAMERA_DEPTH + 1);
+      scene = new THREE.Scene();
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+      renderer.setClearColor(0xFFFFFF, 1);
+      canvasContainer.appendChild(renderer.domElement);
+      camera.position.x = 0;
+      camera.position.y = 0;
+      camera.position.z = CAMERA_DEPTH;
+      refreshCamera();
+      animate();
     }
 
     this.onMouseWheel = function(event) {
-      var d = ((typeof e.wheelDelta != "undefined")?(-e.wheelDelta):e.detail);
+      let d = ((typeof e.wheelDelta != "undefined")?(-e.wheelDelta):e.detail);
       d *= 0.01;
-
       zoom += d;
-
+      zoom = clamp(zoom, ZOOM.MIN, ZOOM.MAX);
       refreshCamera();
     };
 
@@ -202,6 +201,7 @@ var Dranimate = function () {
       }
     };
 
+    // TODO: flatten pan / control point / selected puppet control flow
     this.onMouseUp = function(event) {
       updateMousePosition(event.clientX, event.clientY);
       mouseState.down = false;
@@ -240,21 +240,22 @@ var Dranimate = function () {
         console.log('TODO: save puppet instead of adding');
       }
 
-        puppets.push(p);
+      puppets.push(p);
 
-        if(p.controlPointSpheres) {
-            for(var i = 0; i < p.controlPointSpheres.length; i++) {
-                scene.add(p.controlPointSpheres[i]);
-            }
+      if(p.controlPointSpheres) {
+        for(var i = 0; i < p.controlPointSpheres.length; i++) {
+          scene.add(p.controlPointSpheres[i]);
         }
-        if(p.boundingBox) {
-            scene.add(p.boundingBox);
-        }
-        scene.add(p.threeMesh)
+      }
+      if(p.boundingBox) {
+        scene.add(p.boundingBox);
+      }
+      scene.add(p.threeMesh);
     }
 
     this.zoomIn = function () {
         zoom += 0.1;
+        zoom = clamp(zoom, ZOOM.MIN, ZOOM.MAX);
         //panPosition.x -= (0.1)*window.innerWidth/2;
         //panPosition.y -= (0.1)*window.innerHeight/2;
 
@@ -264,6 +265,7 @@ var Dranimate = function () {
 
     this.zoomOut = function () {
         zoom -= 0.1;
+        zoom = clamp(zoom, ZOOM.MIN, ZOOM.MAX);
         //panPosition.x += (0.1)*window.innerWidth/2;
         //panPosition.y += (0.1)*window.innerHeight/2;
 
@@ -283,12 +285,11 @@ var Dranimate = function () {
         return selectedPuppet;
     }
 
-    this.exportSelectedPuppet = function () {
-        console.log('-----here', this);
-        var puppet = dranimate.getSelectedPuppet();
-        var blob = new Blob([puppet.getJSONData()], {type: "text/plain;charset=utf-8"});
-        FileSaver.saveAs(blob, "puppet.json");
-    }
+    // this.exportSelectedPuppet = function () {
+    //   const puppet = dranimate.getSelectedPuppet();
+    //   const blob = new Blob([puppet.getJSONData()], {type: "text/plain;charset=utf-8"});
+    //   FileSaver.saveAs(blob, "puppet.json");
+    // }
 
     this.deleteSelectedPuppet = function () {
         if(selectedPuppet) {
@@ -364,38 +365,33 @@ var Dranimate = function () {
     }
 
     function refreshCamera() {
-
-        if(zoom < 0.1) zoom = 0.1;
-        if(zoom > 3) zoom = 3;
-
-        camera.left = -window.innerWidth/2 / zoom;
-        camera.right =  window.innerWidth/2 / zoom;
-        camera.top = -window.innerHeight/2 / zoom;
-        camera.bottom = window.innerHeight/2 / zoom;
-        camera.updateProjectionMatrix();
-        //camera.lookAt( 0, 0, 0 );
+      const width = window.innerWidth / 2 / zoom;
+      const height = window.innerHeight / 2 / zoom
+      camera.left = -width;
+      camera.right = width;
+      camera.top = -height;
+      camera.bottom = height;
+      camera.updateProjectionMatrix();
     }
 
     function render() {
+      for(var i = 0; i < puppets.length; i++) {
+          puppets[i].setRenderWireframe(renderWireframes);
+          puppets[i].setSelectionGUIVisible(false);
+      }
+      if(selectedPuppet) {
+          selectedPuppet.setSelectionGUIVisible(true);
+      }
 
-        for(var i = 0; i < puppets.length; i++) {
-            puppets[i].setRenderWireframe(renderWireframes);
-            puppets[i].setSelectionGUIVisible(false);
-        }
-        if(selectedPuppet) {
-            selectedPuppet.setSelectionGUIVisible(true);
-        }
+      if(activeControlPoint.hoveredOver) {
+          puppets[activeControlPoint.puppetIndex].controlPointSpheres[activeControlPoint.controlPointIndex].visible = true;
+      }
 
-        if(activeControlPoint.hoveredOver) {
-            puppets[activeControlPoint.puppetIndex].controlPointSpheres[activeControlPoint.controlPointIndex].visible = true;
-        }
+      camera.position.x = -panPosition.x;
+      camera.position.y = -panPosition.y;
+      // camera.position.z = 100;
 
-        camera.position.x = -panPosition.x;
-        camera.position.y = -panPosition.y;
-        camera.position.z = 100;
-
-        renderer.render( scene, camera );
-
+      renderer.render( scene, camera );
     }
 
 };

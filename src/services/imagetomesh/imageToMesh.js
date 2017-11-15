@@ -167,6 +167,8 @@ var ImageToMesh = function () {
       }
     };
 
+    // TODO: seperate this logic from the ui actions
+    // each function is only called from here
     this.generateMesh = function () {
         this.recalculateCentroids();
         return this.findEdgesOfImage()
@@ -294,7 +296,7 @@ var ImageToMesh = function () {
     }
 
     this.getControlPoints = function () {
-        return controlPoints;
+      return controlPoints;
     }
 
     this.getControlPointIndices = function () {
@@ -362,6 +364,7 @@ var ImageToMesh = function () {
               (array[offset + 2] << 16);
     }
 
+    // TODO: this could be an external function with 'contourData' passed in
     this.recalculateContourPoints = function () {
 
         var contourPointsRaw = [];
@@ -415,6 +418,7 @@ var ImageToMesh = function () {
 
     }
 
+    // TODO: make external function
     this.findCentroidOfSLICSegment = function (slicImageData, SLICLabel) {
 
         /* Find all pixels that have the label we're looking for */
@@ -608,13 +612,13 @@ var ImageToMesh = function () {
         }
 
         // Don't actually add the slic centroids as points lol
-        // (Just uncomment that line if u want to tho.)
-        for(var i = 0; i < slicSegmentsCentroids.length; i++) {
-            var segment = slicSegmentsCentroids[i];
-            if(segment) {
-                //vertices.push(slicSegmentsCentroids[i]);
-            }
-        }
+        // (Just uncomment this if u want to tho.)
+        // for(var i = 0; i < slicSegmentsCentroids.length; i++) {
+        //     var segment = slicSegmentsCentroids[i];
+        //     if(segment) {
+        //         vertices.push(slicSegmentsCentroids[i]);
+        //     }
+        // }
 
         /* Add vertices for requested control points as well */
 

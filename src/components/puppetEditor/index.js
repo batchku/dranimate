@@ -61,6 +61,7 @@ class PuppetEditor extends Component {
     }
     this.imageToMesh.generateMesh()
       .then(() => {
+        // TODO: this block should live in the image to mesh file
         const id = editorHelper.isPuppet ? editorHelper.getItem().id : generateUniqueId();
         const puppetParams = {
           id,
@@ -72,6 +73,9 @@ class PuppetEditor extends Component {
           imageNoBG: this.imageToMesh.getImageNoBackground(),
           backgroundRemovalData: this.imageToMesh.getBackgroundRemovalData()
         };
+        console.log('puppetParams.controlPoints', puppetParams.controlPoints)
+        console.log('puppetParams.controlPointPositions', puppetParams.controlPointPositions)
+
         const puppet = requestPuppetCreation(puppetParams);
         this.props.onClose();
       });

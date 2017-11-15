@@ -50,7 +50,7 @@ var Puppet = function (image, id) {
 
   var geometry = new THREE.Geometry();
 
-  console.log('----puppet constructor num vertices', vertsFlatArray.length);
+  // console.log('----puppet constructor num vertices', vertsFlatArray.length);
 
   for(var i = 0; i < vertsFlatArray.length; i+=2) {
     var x = vertsFlatArray[i];
@@ -71,9 +71,31 @@ var Puppet = function (image, id) {
   }
 
   this.threeMesh = new THREE.Mesh(geometry, this.texturedMaterial);
+  // this.threeMesh.translate(0, 0, 0);
 
-  this.boundingBox = new THREE.BoundingBoxHelper(this.threeMesh, new THREE.Color(0xFF9900));
+  this.boundingBox = new THREE.BoxHelper(this.threeMesh, new THREE.Color(0xFF9900));
   this.boundingBox.visible = false;
+
+
+
+  const box3 = new THREE.Box3();
+  box3.setFromObject(this.boundingBox); // or from mesh, same answer
+  const size = box3.getSize(new THREE.Vector3()); // pass in size so a new Vector3 is not allocated
+  console.log(size)
+
+  this.center = new THREE.Vector2(size.x / 2, size.y / 2);
+
+  this._x = -this.center.x;
+  this._y = -this.center.y;
+
+  // setTimeout(() => {
+  //   this._x = -200;
+  //   this._y = -200;
+  // });
+  console.log('boundingBox', this.boundingBox)
+  // const box = new THREE.Box2().setFromObject(this.threeMesh);
+  // console.log('new puppet dimensions:', box, box.min, box.max, box.size() );
+
 };
 
 Puppet.prototype.getName = function() {
@@ -238,7 +260,7 @@ Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {
 
   this.threeMesh = new THREE.Mesh(geometry, this.texturedMaterial);
 
-  this.boundingBox = new THREE.BoundingBoxHelper(this.threeMesh, new THREE.Color(0xFF9900));
+  this.boundingBox = new THREE.BoxHelper(this.threeMesh, new THREE.Color(0xFF9900));
   this.boundingBox.visible = false;
 
   this.controlPointSpheres = [];
@@ -258,6 +280,8 @@ Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {
   /* Set needsUpdate flag to update to initialze immediately */
 
   this.needsUpdate = true;
+
+  console.log('new mesh', this.threeMesh);
 }
 
 Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
