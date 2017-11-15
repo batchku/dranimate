@@ -29,38 +29,36 @@ var Puppet = function (image, id) {
 
   // Setup quad image
 
-  var canvas = document.createElement('canvas');
+  const canvas = document.createElement('canvas');
   canvas.width  = this.image.width;
   canvas.height = this.image.height;
-  var context = canvas.getContext('2d');
+  const context = canvas.getContext('2d');
   canvas.getContext('2d');
   context.drawImage(this.image, 0, 0, this.image.width, this.image.height, 0, 0, canvas.width, canvas.height);
-  this.context = context;
-  this.canvas = canvas;
+  // this.context = context;
+  // this.canvas = canvas;
 
-  var imageTexture = new THREE.Texture(canvas);
+  const imageTexture = new THREE.Texture(canvas);
   imageTexture.needsUpdate = true;
   this.texturedMaterial = new THREE.MeshBasicMaterial({
     map: imageTexture,
     transparent: true
   });
 
-  var vertsFlatArray = [0,0, image.width,0, 0,image.height, image.width,image.height];
-  var facesFlatArray = [0,2,1, 1,2,3];
+  const vertsFlatArray = [0,0, image.width,0, 0,image.height, image.width,image.height];
+  const facesFlatArray = [0,2,1, 1,2,3];
 
-  var geometry = new THREE.Geometry();
+  const geometry = new THREE.Geometry();
 
-  // console.log('----puppet constructor num vertices', vertsFlatArray.length);
-
-  for(var i = 0; i < vertsFlatArray.length; i+=2) {
-    var x = vertsFlatArray[i];
-    var y = vertsFlatArray[i+1];
+  for(let i = 0; i < vertsFlatArray.length; i+=2) {
+    const x = vertsFlatArray[i];
+    const y = vertsFlatArray[i+1];
     geometry.vertices.push( new THREE.Vector3( x, y, 0 ) );
   }
-  for(var i = 0; i < facesFlatArray.length; i+=3) {
-    var f1 = facesFlatArray[i];
-    var f2 = facesFlatArray[i+1];
-    var f3 = facesFlatArray[i+2];
+  for(let i = 0; i < facesFlatArray.length; i+=3) {
+    const f1 = facesFlatArray[i];
+    const f2 = facesFlatArray[i+1];
+    const f3 = facesFlatArray[i+2];
     geometry.faces.push( new THREE.Face3( f1, f2, f3 ) );
 
     geometry.faceVertexUvs[0].push( [
@@ -71,11 +69,8 @@ var Puppet = function (image, id) {
   }
 
   this.threeMesh = new THREE.Mesh(geometry, this.texturedMaterial);
-  // this.threeMesh.translate(0, 0, 0);
-
   this.boundingBox = new THREE.BoxHelper(this.threeMesh, new THREE.Color(0xFF9900));
   this.boundingBox.visible = false;
-
 
 
   const box3 = new THREE.Box3();
@@ -84,18 +79,8 @@ var Puppet = function (image, id) {
   console.log(size)
 
   this.center = new THREE.Vector2(size.x / 2, size.y / 2);
-
   this._x = -this.center.x;
   this._y = -this.center.y;
-
-  // setTimeout(() => {
-  //   this._x = -200;
-  //   this._y = -200;
-  // });
-  console.log('boundingBox', this.boundingBox)
-  // const box = new THREE.Box2().setFromObject(this.threeMesh);
-  // console.log('new puppet dimensions:', box, box.min, box.max, box.size() );
-
 };
 
 Puppet.prototype.getName = function() {
@@ -167,6 +152,7 @@ Puppet.prototype.finishRecording = function() {
   gif.render();
 }
 
+// TODO: this can probably get moved into the puppet factory
 Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {
   console.log('faces', verts.length, verts.length / 2);
 
@@ -281,21 +267,21 @@ Puppet.prototype.generateMesh = function (verts, faces, controlPoints) {
 
   this.needsUpdate = true;
 
-  console.log('new mesh', this.threeMesh);
+  const group = new THREE.Group();
+  group.add(this.threeMesh);
+  group.add(this.boundingBox);
+  this.controlPointSpheres.forEach(cp => group.add(cp));
+  this.group = group;
 }
 
 Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
-
   this.needsUpdate = true;
-
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
-
 }
 
 Puppet.prototype.update = function() {
-
-  var dx = this._x - this.prevx;
-  var dy = this._y - this.prevy;
+  const dx = this._x - this.prevx;
+  const dy = this._y - this.prevy;
 
   if(dx !== 0 || dy !== 0) {
     if(this.controlPoints) {
@@ -304,7 +290,7 @@ Puppet.prototype.update = function() {
         var cpy = this.threeMesh.geometry.vertices[this.controlPoints[i]].y;
 
         const point = new THREE.Vector2(dx / this._scale, dy / this._scale);
-        point.rotateAround(new THREE.Vector2(0, 0), -this._rotation);
+        point.rotateAround(this.getRotationCenter(), -this._rotation);
         this.setControlPointPosition(i, cpx + point.x, cpy + point.y);
       }
     }
@@ -350,7 +336,7 @@ Puppet.prototype.update = function() {
       var cpi = this.controlPoints[i];
       var v = this.threeMesh.geometry.vertices[cpi];
       const point = new THREE.Vector2(v.x * this._scale, v.y * this._scale);
-      point.rotateAround(new THREE.Vector2(0, 0), this.prevRotation);
+      point.rotateAround(this.getRotationCenter(), this.prevRotation);
       this.controlPointSpheres[i].position.x = point.x;
       this.controlPointSpheres[i].position.y = point.y;
     }
@@ -364,6 +350,17 @@ Puppet.prototype.update = function() {
 
 };
 
+// TODO: this work for everything execpt for threeMesh
+// ... mesh.rotation.set is different from the other kinds of rotation we are applying
+Puppet.prototype.getRotationCenter = function() {
+  // return new THREE.Vector2(
+  //   this._x + this.center.x,
+  //   this._y + this.center.y
+  // );
+  return new THREE.Vector2(0, 0);
+}
+
+// TODO: move to image util service
 Puppet.prototype.getImageAsDataURL = function (img) {
   const canvas = document.createElement('canvas');
   canvas.width  = img.width;
@@ -407,10 +404,10 @@ Puppet.prototype.setSelectionGUIVisible = function (visible) {
 
 Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {
   const point = new THREE.Vector2(xUntransformed / this._scale, yUntransformed / this._scale);
-  point.rotateAround(new THREE.Vector2(0, 0), -this._rotation);
+  point.rotateAround(this.getRotationCenter(), -this._rotation);
   const allFaces = this.threeMesh.geometry.faces;
   const allVerts = this.threeMesh.geometry.vertices;
-  for(var i = 0; i < allFaces.length; i++) {
+  for(let i = 0; i < allFaces.length; i++) {
     const v1 = allVerts[allFaces[i].a];
     const v2 = allVerts[allFaces[i].b];
     const v3 = allVerts[allFaces[i].c];

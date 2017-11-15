@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-// import FileSaver from 'file-saver';
 import { clamp } from 'services/util/math';
 
 const ZOOM = {
@@ -149,7 +148,7 @@ var Dranimate = function () {
 
                       for(var c = 0; c < controlPoints.length; c++) {
                         const mouseVector = new THREE.Vector2(mouseRelative.x / puppets[p].scale(), mouseRelative.y / puppets[p].scale());
-                        mouseVector.rotateAround(new THREE.Vector2(0, 0), -puppets[p].rotation());
+                        mouseVector.rotateAround(puppets[p].getRotationCenter(), -puppets[p].rotation());
 
                           const vert = verts[controlPoints[c]];
                           const dist = vert.distanceTo(new THREE.Vector3(mouseVector.x, mouseVector.y, 0));
@@ -180,7 +179,7 @@ var Dranimate = function () {
             const puppet = puppets[activeControlPoint.puppetIndex];
             const ci = activeControlPoint.controlPointIndex;
             const mouseVector = new THREE.Vector2(mouseRelative.x / puppet.scale(), mouseRelative.y / puppet.scale());
-            mouseVector.rotateAround(new THREE.Vector2(0, 0), -puppet.rotation());
+            mouseVector.rotateAround(puppet.getRotationCenter(), -puppet.rotation());
             puppet.setControlPointPosition(ci, mouseVector.x, mouseVector.y);
             onChangeCallback();
           }
@@ -241,16 +240,7 @@ var Dranimate = function () {
       }
 
       puppets.push(p);
-
-      if(p.controlPointSpheres) {
-        for(var i = 0; i < p.controlPointSpheres.length; i++) {
-          scene.add(p.controlPointSpheres[i]);
-        }
-      }
-      if(p.boundingBox) {
-        scene.add(p.boundingBox);
-      }
-      scene.add(p.threeMesh);
+      scene.add(p.group);
     }
 
     this.zoomIn = function () {
