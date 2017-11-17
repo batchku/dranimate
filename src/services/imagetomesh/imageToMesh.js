@@ -11,13 +11,7 @@
 import SLIC from './slic.js';
 import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
 import loadImage from 'services/util/imageLoader';
-import {
-  // findEdgesOfImage,
-  // removeBackgroundFromImage,
-  // recalculateContourPoints,
-  // generateTriangles,
-  generateMesh
-} from 'services/imagetomesh/generateMesh';
+import { generateMesh } from 'services/imagetomesh/generateMesh';
 
 const SELECT_STATE = {
   PAN: 'PAN',
@@ -57,16 +51,8 @@ var ImageToMesh = function () {
 
     var imageBackgroundMaskImage;
 
-    var contourData;
-    var contourImage;
-
-    var contourPoints;
-
     var controlPoints;
     var controlPointIndices;
-
-    var vertices;
-    var triangles;
 
     var dummyCanvas;
     var dummyContext;
@@ -83,15 +69,9 @@ var ImageToMesh = function () {
     let mouseState = MOUSE_STATE.UP;
     let selectState = SELECT_STATE.SELECT;
 
-    var onChangeCallback = function () {};
-
 /*****************************
     API
 *****************************/
-
-    this.onChange = function (callback) {
-        onChangeCallback = callback;
-    }
 
     this.setup = function (i2mCanvas) {
         width = i2mCanvas.width;
@@ -176,35 +156,12 @@ var ImageToMesh = function () {
       }
     };
 
-    // TODO: seperate this logic from the ui actions
-    // each function is only called from here
     this.generateMesh = function () {
-
       return generateMesh(image, imageNoBackgroundData, originalImageData, context, dummyContext, dummyCanvas, controlPoints, slic);
-
-        // this.recalculateCentroids();
-        // const contourData = findEdgesOfImage(imageNoBackgroundData, context.createImageData(slic.result.width, slic.result.height));
-        // // return this.findEdgesOfImage()
-        //
-        // return removeBackgroundFromImage(slic, imageNoBackgroundData, originalImageData, dummyContext, dummyCanvas)
-        //   .then((onlySelectionImage) => {
-        //     const contourPoints = recalculateContourPoints(contourData);
-        //     const geoData = generateTriangles(contourPoints, controlPoints, imageNoBackgroundData);
-        //     return Promise.resolve({
-        //       image,
-        //       onlySelectionImage,
-        //       vertices: geoData.vertices,
-        //       triangles: geoData.triangles,
-        //       controlPointIndices: geoData.controlPointIndices,
-        //       controlPointPositions: controlPoints,
-        //       imageNoBackgroundData
-        //     });
-        //   })
     }
 
     // TODO: this should be the constructor
     this.editImage = function (imageData, controlPointPositions, backgroundRemovalData) {
-        console.log('editImage start');
         dummyCanvas = document.createElement("canvas");
         dummyContext = dummyCanvas.getContext("2d");
         blankCanvas = document.createElement('canvas');
@@ -225,16 +182,16 @@ var ImageToMesh = function () {
         // imageBackgroundMaskData = undefined;
         imageBackgroundMaskImage = new Image();
 
-        contourData = undefined;
-        contourImage = new Image();
+        // contourData = undefined;
+        // contourImage = new Image();
 
-        contourPoints = undefined;
+        // contourPoints = undefined;
 
         controlPoints = [];
         controlPointIndices = [];
 
-        vertices = undefined;
-        triangles = undefined;
+        // vertices = undefined;
+        // triangles = undefined;
 
         zoom = 1.0;
         panPosition = {x:0, y:0};
@@ -303,10 +260,6 @@ var ImageToMesh = function () {
     Private stuff
 *****************************/
 
-    this.generateImageData = function() {
-      return context.createImageData(slic.result.width, slic.result.height);
-    }
-
     this.doSLICOnImage = function (threshold) {
         console.log('SLIC Start', performance.now());
         const regionSize = threshold || 30;
@@ -346,100 +299,6 @@ var ImageToMesh = function () {
               (array[offset + 1] << 8) |
               (array[offset + 2] << 16);
     }
-
-    // TODO: this could be an external function with 'contourData' passed in
-    this.recalculateContourPoints = function (contourData) {
-
-        var contourPointsRaw = [];
-
-        /* Convert contour image into list of points */
-
-        for (var x = 0; x < contourData.width; ++x) {
-            for (var y = 0; y < contourData.height; ++y) {
-                if(CanvasUtils.getColorAtXY(x,y,"a",contourData) == 255) {
-                    contourPointsRaw.push([x,y]);
-                }
-            }
-        }
-
-        /* Resample list of points */
-
-        contourPoints = [];
-
-        var resampleDist = 10;
-        for(var i = 0; i < contourPointsRaw.length; i++) {
-            var a = contourPointsRaw[i];
-            for(var j = 0; j < contourPointsRaw.length; j++) {
-                if(i != j) {
-                    var b = contourPointsRaw[j];
-                    var ax = a[0];
-                    var ay = a[1];
-                    var bx = b[0];
-                    var by = b[1];
-                    var dx = Math.abs(bx - ax);
-                    var dy = Math.abs(by - ay);
-                    if(Math.sqrt(dx*dx+dy*dy) < resampleDist) {
-                        contourPointsRaw.splice(j, 1);
-                        j--;
-                    }
-                }
-            }
-        }
-        contourPoints = contourPointsRaw;
-
-        // redraw();
-
-    }
-
-    // this.recalculateCentroids = function () {
-    //
-    //     slicSegmentsCentroids = [];
-    //
-    //     for(var i = 0; i < slic.result.numSegments; i++) {
-    //         this.findCentroidOfSLICSegment(slic.result,i);
-    //     }
-    //
-    // }
-    //
-    // // TODO: make external function
-    // this.findCentroidOfSLICSegment = function (slicImageData, SLICLabel) {
-    //
-    //     /* Find all pixels that have the label we're looking for */
-    //
-    //     var pixelPoints = []
-    //
-    //     for (var x = 0; x < slicImageData.width; ++x) {
-    //         for (var y = 0; y < slicImageData.height; ++y) {
-    //             var index = CanvasUtils.getIndexOfXY(x,y,slicImageData);
-    //             var currentSLICLabel = this.getEncodedSLICLabel(slicImageData.data, index);
-    //             if(currentSLICLabel == SLICLabel) {
-    //                 pixelPoints.push([x,y]);
-    //             }
-    //         }
-    //     }
-    //
-    //     /* Calculate centroid (average points) */
-    //
-    //     var totalX = 0;
-    //     var totalY = 0;
-    //     for(var i = 0; i < pixelPoints.length; i++) {
-    //         totalX += pixelPoints[i][0];
-    //         totalY += pixelPoints[i][1];
-    //     }
-    //     var avgX = totalX / pixelPoints.length;
-    //     var avgY = totalY / pixelPoints.length;
-    //
-    //     var centroid = [avgX,avgY];
-    //
-    //     /* Update slicSegmentsCentroids if the centroid is not part of the background */
-    //
-    //     var roundedCentroid = [Math.round(centroid[0]), Math.round(centroid[1])];
-    //     if(CanvasUtils.getColorAtXY(roundedCentroid[0], roundedCentroid[1], "a", imageNoBackgroundData) == 255) {
-    //         slicSegmentsCentroids[SLICLabel] = centroid;
-    //     }
-    //
-    // }
-
 
     this.addSelectionToNoBackgroundImage = function () {
 
@@ -509,92 +368,6 @@ var ImageToMesh = function () {
       highlightImage.onload = () => redraw();
     }
 
-    // this.generateTriangles = function(contourPoints) {
-    //     /* Create list of vertices from superpixel centroids and contour points */
-    //
-    //     vertices = [];
-    //
-    //     for(var i = 0; i < contourPoints.length; i++) {
-    //         vertices.push(contourPoints[i]);
-    //     }
-    //
-    //     // Don't actually add the slic centroids as points lol
-    //     // (Just uncomment this if u want to tho.)
-    //     // for(var i = 0; i < slicSegmentsCentroids.length; i++) {
-    //     //     var segment = slicSegmentsCentroids[i];
-    //     //     if(segment) {
-    //     //         vertices.push(slicSegmentsCentroids[i]);
-    //     //     }
-    //     // }
-    //
-    //     /* Add vertices for requested control points as well */
-    //
-    //     for(var i = 0; i < controlPoints.length; i++) {
-    //         controlPointIndices.push(vertices.length);
-    //         vertices.push(controlPoints[i]);
-    //     }
-    //
-    //     /* Run delaunay on vertices to generate mesh */
-    //
-    //     var rawTriangles = Delaunay.triangulate(vertices);
-    //
-    //     /* Remove trianges whose centroids are in the image background */
-    //
-    //     triangles = [];
-    //
-    //     for(var i = 0; i < rawTriangles.length; i+=3) {
-    //         var x1 = vertices[rawTriangles[i]][0];
-    //         var y1 = vertices[rawTriangles[i]][1];
-    //
-    //         var x2 = vertices[rawTriangles[i+1]][0];
-    //         var y2 = vertices[rawTriangles[i+1]][1];
-    //
-    //         var x3 = vertices[rawTriangles[i+2]][0];
-    //         var y3 = vertices[rawTriangles[i+2]][1];
-    //
-    //         var centroidX = Math.round((x1 + x2 + x3) / 3);
-    //         var centroidY = Math.round((y1 + y2 + y3) / 3);
-    //
-    //         if(CanvasUtils.getColorAtXY(centroidX,centroidY,"a",imageNoBackgroundData) == 255) {
-    //             triangles.push(rawTriangles[i]);
-    //             triangles.push(rawTriangles[i+1]);
-    //             triangles.push(rawTriangles[i+2]);
-    //         }
-    //     }
-    //
-    //     /* Remove vertices that aren't part of any triangle */
-    //
-    //     for(var vi = 0; vi < vertices.length; vi++) {
-    //
-    //         var vertexIsPartOfATriangle = false;
-    //
-    //         for(var ti = 0; ti < triangles.length; ti++) {
-    //             if(vi == triangles[ti]) {
-    //                 vertexIsPartOfATriangle = true;
-    //             }
-    //         }
-    //
-    //         if(!vertexIsPartOfATriangle) {
-    //             vertices.splice(vi, 1)
-    //
-    //             /* Since we removed a vertex from the verts array, we need to update the
-    //              * control points and triangles because they point to the vertices by index. */
-    //
-    //             for(var ti = 0; ti < triangles.length; ti++) {
-    //                 if(triangles[ti] > vi) {
-    //                     triangles[ti] -= 1;
-    //                 }
-    //             }
-    //             for(var cpi = 0; cpi < controlPointIndices.length; cpi++) {
-    //                 if(controlPointIndices[cpi] > vi) {
-    //                     controlPointIndices[cpi] -= 1;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //
-    // }
-
     var redraw = function () {
 
         context.clearRect(0, 0, width, height);
@@ -614,36 +387,6 @@ var ImageToMesh = function () {
                           0, 0, width, height);
         context.globalAlpha = 1.0;
 
-        // context.drawImage(contourImage,
-        //                   0, 0, contourImage.width, contourImage.height,
-        //                   0, 0, width, height);
-
-        // if(slicSegmentsCentroids) {
-        //   console.log('---- draw slicSegmentsCentroids')
-        //     for(var i = 0; i < slicSegmentsCentroids.length; i++) {
-        //         var segment = slicSegmentsCentroids[i];
-        //         if(segment) {
-        //             var centroidX = slicSegmentsCentroids[i][0];
-        //             var centroidY = slicSegmentsCentroids[i][1];
-        //
-        //             context.beginPath();
-        //             context.arc(centroidX, centroidY, 3, 0, 2 * Math.PI, false);
-        //             context.fillStyle = 'yellow';
-        //             context.fill();
-        //         }
-        //     }
-        // }
-        // if(contourPoints) {
-        //     for(var i = 0; i < contourPoints.length; i++) {
-        //         var centroidX = contourPoints[i][0];
-        //         var centroidY = contourPoints[i][1];
-        //
-        //         context.beginPath();
-        //         context.arc(centroidX, centroidY, 3, 0, 2 * Math.PI, false);
-        //         context.fillStyle = '#00FF00';
-        //         context.fill();
-        //     }
-        // }
         if(controlPoints && controlPoints.length) {
             context.fillStyle = '#00FFFF';
             for(var i = 0; i < controlPoints.length; i++) {
@@ -655,29 +398,6 @@ var ImageToMesh = function () {
                 context.fill();
             }
         }
-
-        // if(vertices) {
-        //     for(var i = 0; i < vertices.length; i++) {
-        //         var centroidX = vertices[i][0];
-        //         var centroidY = vertices[i][1];
-        //
-        //         context.beginPath();
-        //         context.arc(centroidX, centroidY, 3, 0, 2 * Math.PI, false);
-        //         context.fillStyle = '#FF00FF';
-        //         context.fill();
-        //     }
-        // }
-        //
-        // if(triangles) {
-        //     for(var i = 0; i < triangles.length; ) {
-        //         context.beginPath();
-        //         context.moveTo(vertices[triangles[i]][0], vertices[triangles[i]][1]); i++;
-        //         context.lineTo(vertices[triangles[i]][0], vertices[triangles[i]][1]); i++;
-        //         context.lineTo(vertices[triangles[i]][0], vertices[triangles[i]][1]); i++;
-        //         context.closePath();
-        //         context.stroke();
-        //     }
-        // }
 
         context.restore();
     }

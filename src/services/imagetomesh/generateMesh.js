@@ -205,10 +205,4 @@ function generateMesh(image, imageNoBackgroundData, originalImageData, context, 
     })
 }
 
-export {
-  // findEdgesOfImage,
-  // removeBackgroundFromImage,
-  // recalculateContourPoints,
-  // generateTriangles,
-  generateMesh
-};
+export { generateMesh };
