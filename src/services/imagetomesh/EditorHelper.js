@@ -5,6 +5,7 @@ class EditorHelper {
     this.item;
   }
   setItem(item) {
+    console.log('. . . .item?', this.item)
     this.item = item;
     if (this.item && this.item.name) {
       this.isPuppet = true;

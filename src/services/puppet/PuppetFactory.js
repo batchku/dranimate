@@ -71,6 +71,7 @@ function buildFromOptions(options) {
   }
 
   geometry.dynamic = true;
+  // geometry.translate(-200, -200, 0);
 
   /* Expand mesh to show finer edges of image (as opposed to rough triangle edges of mesh) */
   console.log("TODO: expand mesh")

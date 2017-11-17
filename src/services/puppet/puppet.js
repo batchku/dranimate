@@ -13,7 +13,7 @@ var Puppet = function(puppetData) {
   this.prevy = this._y;
   this.prevScale = this._scale;
   this.prevRotation = this._rotation;
-  this.name = '';
+  this.name = 'DEFAULT_PUPPET_NAME';
 
   // RECORDING
   this.isRecording = false;

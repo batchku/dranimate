@@ -16,26 +16,33 @@ class PuppetEditor extends Component {
       threshold: 30,
       loaderIsVisible: false
     };
+  }
+
+  componentWillMount() {
     this.imageToMesh = new ImageToMesh();
   }
 
   componentDidMount() {
-    const puppetImageSrc = editorHelper.getItem();
     this.canvasElement.width = 400;
     this.canvasElement.height = 300;
     this.imageToMesh.setup(this.canvasElement);
+    // TODO: image to puppet needs 2 instantiation methods: "fromImage" and "fromPuppet"
     if (editorHelper.isPuppet) {
+      console.log('0000ispuppetttt')
       const puppet = editorHelper.getItem();
       this.imageToMesh.editImage(
         puppet.image.src,
         puppet.controlPointPositions,
         puppet.backgroundRemovalData
       )
-      .then(() => this.runSlic());
+      .then(() => this.runSlic())
+      .catch(error => console.log('error', error));
     }
-    else if (puppetImageSrc) {
+    else if (editorHelper.getItem()) {
+      console.log('-----is iamge')
       this.imageToMesh.editImage(editorHelper.getItem())
-        .then(() => this.runSlic());
+        .then(() => this.runSlic())
+        .catch(error => console.log('error', error));
     }
     else {
       this.props.onClose();
@@ -43,6 +50,7 @@ class PuppetEditor extends Component {
   }
 
   runSlic = () => {
+    console.log(".......runslic")
     this.setState({ loaderIsVisible: true });
     setTimeout(() => {
       this.imageToMesh.doSlic(this.state.threshold);
@@ -60,18 +68,27 @@ class PuppetEditor extends Component {
       return;
     }
     this.imageToMesh.generateMesh()
-      .then(() => {
+      .then((puppetData) => {
         // TODO: this block should live in the image to mesh file
         const id = editorHelper.isPuppet ? editorHelper.getItem().id : generateUniqueId();
+        //
+        // vertices,
+        // triangles,
+        // image,
+        // onlySelectionImage,
+        // controlPoints,
+        // controlPointIndices,
+        // imageNoBackgroundData
+
         const puppetParams = {
           id,
-          vertices: this.imageToMesh.getVertices(),
-          faces: this.imageToMesh.getTriangles(),
-          controlPoints: this.imageToMesh.getControlPointIndices(),
-          controlPointPositions: this.imageToMesh.getControlPoints(),
-          image: this.imageToMesh.getImage(),
-          imageNoBG: this.imageToMesh.getImageNoBackground(),
-          backgroundRemovalData: this.imageToMesh.getBackgroundRemovalData()
+          vertices: puppetData.vertices,
+          faces: puppetData.triangles,
+          controlPoints: puppetData.controlPointIndices, // AHHHHHHH!!!!
+          controlPointPositions: puppetData.controlPoints,
+          image: puppetData.image,
+          imageNoBG: puppetData.onlySelectionImage,
+          backgroundRemovalData: puppetData.imageNoBackgroundData
         };
         console.log('puppetParams.controlPoints', puppetParams.controlPoints)
         console.log('puppetParams.controlPointPositions', puppetParams.controlPointPositions)

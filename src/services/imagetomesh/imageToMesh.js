@@ -9,7 +9,13 @@
  */
 import Delaunay from 'delaunay-fast';
 import SLIC from './slic.js';
-import CanvasUtils from './canvasUtils.js';
+import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
+import loadImage from 'services/util/imageLoader';
+import {
+  findEdgesOfImage,
+  removeBackgroundFromImage,
+  recalculateContourPoints
+} from 'services/imagetomesh/generateMesh';
 
 const SELECT_STATE = {
   PAN: 'PAN',
@@ -67,7 +73,7 @@ var ImageToMesh = function () {
 
     var zoom;
 
-    var onlySelectionImage;
+    // var onlySelectionImage;
 
     var panPosition;
     var panFromPosition;
@@ -89,6 +95,7 @@ var ImageToMesh = function () {
         width = i2mCanvas.width;
         height = i2mCanvas.height;
         context = i2mCanvas.getContext('2d');
+        console.log('------imageToMesh.setup', i2mCanvas)
     }
 
     this.onMouseMove = function(evt) {
@@ -170,17 +177,37 @@ var ImageToMesh = function () {
     // TODO: seperate this logic from the ui actions
     // each function is only called from here
     this.generateMesh = function () {
-        this.recalculateCentroids();
-        return this.findEdgesOfImage()
-          .then(() => this.removeBackgroundFromImage())
-          .then(() => {
-            this.recalculateContourPoints();
-            this.generateTriangles();
-            redraw();
+        // this.recalculateCentroids();
+        const contourData = findEdgesOfImage(imageNoBackgroundData, context.createImageData(slic.result.width, slic.result.height));
+        // return this.findEdgesOfImage()
+
+        return removeBackgroundFromImage(slic, imageNoBackgroundData, originalImageData, dummyContext, dummyCanvas)
+          .then((onlySelectionImage) => {
+            const contourPoints = recalculateContourPoints(contourData);
+            this.generateTriangles(contourPoints);
+            // redraw();
+
+            return Promise.resolve({
+              onlySelectionImage,
+              contourPoints
+            });
+          })
+          .then((resolve) => {
+            return {
+              vertices,
+              triangles,
+              image,
+              onlySelectionImage: resolve.onlySelectionImage,
+              controlPoints: resolve.controlPoints,
+              controlPointIndices,
+              imageNoBackgroundData
+            };
           });
     }
 
+    // TODO: this should be the constructor
     this.editImage = function (imageData, controlPointPositions, backgroundRemovalData) {
+        console.log('editImage start');
         dummyCanvas = document.createElement("canvas");
         dummyContext = dummyCanvas.getContext("2d");
         blankCanvas = document.createElement('canvas');
@@ -217,94 +244,48 @@ var ImageToMesh = function () {
         panFromPosition = {x:0, y:0}
 
         if(controlPointPositions) {
-            controlPoints = controlPointPositions;
+          controlPoints = controlPointPositions;
         }
 
         if(backgroundRemovalData) {
-            imageNoBackgroundData = backgroundRemovalData;
+          imageNoBackgroundData = backgroundRemovalData;
         }
 
-        return new Promise((resolve, reject) => {
-          try {
-            image = new Image();
-            image.onload = function(){
-                var normWidth = image.width;
-                var normHeight = image.height;
+        return loadImage(imageData)
+          .then((img) => {
+            let normWidth = img.width;
+            let normHeight = img.height;
+            const largerSize = Math.max(normWidth, normHeight);
 
-                var largerSize;
-                if(normWidth > normHeight) {
-                    largerSize = normWidth;
-                } else {
-                    largerSize = normHeight;
-                }
+            normWidth /= largerSize;
+            normHeight /= largerSize;
 
-                normWidth /= largerSize;
-                normHeight /= largerSize;
+            normWidth *= 400;
+            normHeight *= 400;
 
-                normWidth *= 400;
-                normHeight *= 400;
+            dummyCanvas.width = normWidth;
+            dummyCanvas.height = normHeight;
 
-                dummyCanvas.width = normWidth;
-                dummyCanvas.height = normHeight;
+            width = normWidth;
+            height = normHeight;
 
-                width = normWidth;
-                height = normHeight;
-
-                dummyContext.clearRect(
-                    0, 0,
-                    dummyCanvas.width, dummyCanvas.height);
-                dummyContext.drawImage(
-                    image,
-                    0, 0,
-                    image.width, image.height,
-                    0, 0,
-                    dummyCanvas.width, dummyCanvas.height);
-
-                image.src = dummyCanvas.toDataURL("image/png");
-                image.onload = () => resolve();
-            }
-            image.src = imageData;
-          }
-          catch(error) {
-            reject(error);
-          }
-        });
+            dummyContext.clearRect(0, 0, dummyCanvas.width, dummyCanvas.height);
+            dummyContext.drawImage(img,
+              0, 0, img.width, img.height,
+              0, 0, dummyCanvas.width, dummyCanvas.height
+            );
+            return Promise.resolve(dummyCanvas.toDataURL('image/png'));
+          })
+          .then(imgSrc => loadImage(imgSrc))
+          .then(img => image = img);
     }
 
     this.doSlic = function(threshold) {
       this.doSLICOnImage(threshold);
     }
 
-    this.getCanvas = function () {
-        return canvas;
-    }
-
-    this.getVertices = function () {
-        return vertices;
-    }
-
-    this.getTriangles = function () {
-        return triangles;
-    }
-
-    this.getImage = function() {
-        return image;
-    }
-
-    this.getImageNoBackground = function() {
-        return onlySelectionImage;
-    }
-
     this.getControlPoints = function () {
       return controlPoints;
-    }
-
-    this.getControlPointIndices = function () {
-        return controlPointIndices;
-    }
-
-    this.getBackgroundRemovalData = function () {
-        return imageNoBackgroundData;
     }
 
     this.zoomIn = function () {
@@ -323,6 +304,10 @@ var ImageToMesh = function () {
 /*****************************
     Private stuff
 *****************************/
+
+    this.generateImageData = function() {
+      return context.createImageData(slic.result.width, slic.result.height);
+    }
 
     this.doSLICOnImage = function (threshold) {
         console.log('SLIC Start', performance.now());
@@ -365,7 +350,7 @@ var ImageToMesh = function () {
     }
 
     // TODO: this could be an external function with 'contourData' passed in
-    this.recalculateContourPoints = function () {
+    this.recalculateContourPoints = function (contourData) {
 
         var contourPointsRaw = [];
 
@@ -404,135 +389,59 @@ var ImageToMesh = function () {
         }
         contourPoints = contourPointsRaw;
 
-        redraw();
+        // redraw();
 
     }
 
-    this.recalculateCentroids = function () {
+    // this.recalculateCentroids = function () {
+    //
+    //     slicSegmentsCentroids = [];
+    //
+    //     for(var i = 0; i < slic.result.numSegments; i++) {
+    //         this.findCentroidOfSLICSegment(slic.result,i);
+    //     }
+    //
+    // }
+    //
+    // // TODO: make external function
+    // this.findCentroidOfSLICSegment = function (slicImageData, SLICLabel) {
+    //
+    //     /* Find all pixels that have the label we're looking for */
+    //
+    //     var pixelPoints = []
+    //
+    //     for (var x = 0; x < slicImageData.width; ++x) {
+    //         for (var y = 0; y < slicImageData.height; ++y) {
+    //             var index = CanvasUtils.getIndexOfXY(x,y,slicImageData);
+    //             var currentSLICLabel = this.getEncodedSLICLabel(slicImageData.data, index);
+    //             if(currentSLICLabel == SLICLabel) {
+    //                 pixelPoints.push([x,y]);
+    //             }
+    //         }
+    //     }
+    //
+    //     /* Calculate centroid (average points) */
+    //
+    //     var totalX = 0;
+    //     var totalY = 0;
+    //     for(var i = 0; i < pixelPoints.length; i++) {
+    //         totalX += pixelPoints[i][0];
+    //         totalY += pixelPoints[i][1];
+    //     }
+    //     var avgX = totalX / pixelPoints.length;
+    //     var avgY = totalY / pixelPoints.length;
+    //
+    //     var centroid = [avgX,avgY];
+    //
+    //     /* Update slicSegmentsCentroids if the centroid is not part of the background */
+    //
+    //     var roundedCentroid = [Math.round(centroid[0]), Math.round(centroid[1])];
+    //     if(CanvasUtils.getColorAtXY(roundedCentroid[0], roundedCentroid[1], "a", imageNoBackgroundData) == 255) {
+    //         slicSegmentsCentroids[SLICLabel] = centroid;
+    //     }
+    //
+    // }
 
-        slicSegmentsCentroids = [];
-
-        for(var i = 0; i < slic.result.numSegments; i++) {
-            this.findCentroidOfSLICSegment(slic.result,i);
-        }
-
-    }
-
-    // TODO: make external function
-    this.findCentroidOfSLICSegment = function (slicImageData, SLICLabel) {
-
-        /* Find all pixels that have the label we're looking for */
-
-        var pixelPoints = []
-
-        for (var x = 0; x < slicImageData.width; ++x) {
-            for (var y = 0; y < slicImageData.height; ++y) {
-                var index = CanvasUtils.getIndexOfXY(x,y,slicImageData);
-                var currentSLICLabel = this.getEncodedSLICLabel(slicImageData.data, index);
-                if(currentSLICLabel == SLICLabel) {
-                    pixelPoints.push([x,y]);
-                }
-            }
-        }
-
-        /* Calculate centroid (average points) */
-
-        var totalX = 0;
-        var totalY = 0;
-        for(var i = 0; i < pixelPoints.length; i++) {
-            totalX += pixelPoints[i][0];
-            totalY += pixelPoints[i][1];
-        }
-        var avgX = totalX / pixelPoints.length;
-        var avgY = totalY / pixelPoints.length;
-
-        var centroid = [avgX,avgY];
-
-        /* Update slicSegmentsCentroids if the centroid is not part of the background */
-
-        var roundedCentroid = [Math.round(centroid[0]), Math.round(centroid[1])];
-        if(CanvasUtils.getColorAtXY(roundedCentroid[0], roundedCentroid[1], "a", imageNoBackgroundData) == 255) {
-            slicSegmentsCentroids[SLICLabel] = centroid;
-        }
-
-    }
-
-    this.findEdgesOfImage = function () {
-
-        var width = imageNoBackgroundData.width;
-        var height = imageNoBackgroundData.height;
-        var data = imageNoBackgroundData.data;
-
-        /* Generate contour image */
-
-        contourData = context.createImageData(slic.result.width, slic.result.height);
-
-        for (var i = 0; i < height; ++i) {
-          for (var j = 0; j < width; ++j) {
-            var offset = 4 * (i * width + j);
-            var alpha = data[4 * (i * width + j) + 3];
-            var isSLICBoundary = (alpha !== data[4 * (i * width + j - 1)] ||
-                                  alpha !== data[4 * (i * width + j + 1)] ||
-                                  alpha !== data[4 * ((i - 1) * width + j)] ||
-                                  alpha !== data[4 * ((i + 1) * width + j)]);
-            var isOnImageBorder = i === 0 ||
-                                  j === 0 ||
-                                  i === (height - 1) ||
-                                  j === (width - 1);
-            var isBoundary = isSLICBoundary && !isOnImageBorder;
-
-            var p = 4 * (i * width + j);
-            if (isBoundary) {
-              contourData.data[p] = 255;
-              contourData.data[p+1] = 0;
-              contourData.data[p+2] = 0;
-              contourData.data[p+3] = 255;
-            } else {
-              contourData.data[p] = 255;
-              contourData.data[p+1] = 0;
-              contourData.data[p+2] = 0;
-              contourData.data[p+3] = 0;
-            }
-
-          }
-        }
-
-        return new Promise((resolve, reject) => {
-          try {
-            dummyContext.putImageData(contourData, 0, 0);
-            contourImage.src = dummyCanvas.toDataURL("image/png");
-            contourImage.onload = () => {
-                redraw(); // TODO does this need to be done?
-                resolve();
-            }
-          }
-          catch(error) {
-            reject(error);
-          }
-        });
-    }
-
-    this.removeBackgroundFromImage = function () {
-
-        for (var i = 0; i < slic.result.data.length; i += 4) {
-            if(imageNoBackgroundData.data[i+3] !== 255) {
-                originalImageData.data[i]     = 0;
-                originalImageData.data[i + 1] = 0;
-                originalImageData.data[i + 2] = 0;
-                originalImageData.data[i + 3] = 0;
-            }
-        }
-
-        return new Promise((resolve, reject) => {
-          dummyContext.putImageData(originalImageData, 0, 0);
-          onlySelectionImage = new Image();
-          onlySelectionImage.src = dummyCanvas.toDataURL("image/png");
-          onlySelectionImage.onload = () => {
-              redraw(); // TODO: does this need to be called?
-              resolve();
-          }
-        });
-    }
 
     this.addSelectionToNoBackgroundImage = function () {
 
@@ -602,7 +511,7 @@ var ImageToMesh = function () {
       highlightImage.onload = () => redraw();
     }
 
-    this.generateTriangles = function() {
+    this.generateTriangles = function(contourPoints) {
         /* Create list of vertices from superpixel centroids and contour points */
 
         vertices = [];
@@ -697,45 +606,46 @@ var ImageToMesh = function () {
         context.translate(panPosition.x, panPosition.y);
 
         context.globalAlpha = 1.0;
-        context.drawImage(image, 0, 0, image.width, image.height,
-                                0, 0, width, height);
+        context.drawImage(image, 0, 0, image.width, image.height, 0, 0, width, height);
         context.drawImage(highlightImage,
-                                                0, 0, highlightImage.width, highlightImage.height,
-                                                0, 0, width, height);
+                          0, 0, highlightImage.width, highlightImage.height,
+                          0, 0, width, height);
         context.globalAlpha = 0.8;
         context.drawImage(imageNoBackgroundImage,
-                                                0, 0, imageNoBackgroundImage.width, imageNoBackgroundImage.height,
-                                                0, 0, width, height);
+                          0, 0, imageNoBackgroundImage.width, imageNoBackgroundImage.height,
+                          0, 0, width, height);
         context.globalAlpha = 1.0;
-        context.drawImage(contourImage,
-                                                0, 0, contourImage.width, contourImage.height,
-                                                0, 0, width, height);
 
-        if(slicSegmentsCentroids) {
-            for(var i = 0; i < slicSegmentsCentroids.length; i++) {
-                var segment = slicSegmentsCentroids[i];
-                if(segment) {
-                    var centroidX = slicSegmentsCentroids[i][0];
-                    var centroidY = slicSegmentsCentroids[i][1];
+        // context.drawImage(contourImage,
+        //                   0, 0, contourImage.width, contourImage.height,
+        //                   0, 0, width, height);
 
-                    context.beginPath();
-                    context.arc(centroidX, centroidY, 3, 0, 2 * Math.PI, false);
-                    context.fillStyle = 'yellow';
-                    context.fill();
-                }
-            }
-        }
-        if(contourPoints) {
-            for(var i = 0; i < contourPoints.length; i++) {
-                var centroidX = contourPoints[i][0];
-                var centroidY = contourPoints[i][1];
-
-                context.beginPath();
-                context.arc(centroidX, centroidY, 3, 0, 2 * Math.PI, false);
-                context.fillStyle = '#00FF00';
-                context.fill();
-            }
-        }
+        // if(slicSegmentsCentroids) {
+        //   console.log('---- draw slicSegmentsCentroids')
+        //     for(var i = 0; i < slicSegmentsCentroids.length; i++) {
+        //         var segment = slicSegmentsCentroids[i];
+        //         if(segment) {
+        //             var centroidX = slicSegmentsCentroids[i][0];
+        //             var centroidY = slicSegmentsCentroids[i][1];
+        //
+        //             context.beginPath();
+        //             context.arc(centroidX, centroidY, 3, 0, 2 * Math.PI, false);
+        //             context.fillStyle = 'yellow';
+        //             context.fill();
+        //         }
+        //     }
+        // }
+        // if(contourPoints) {
+        //     for(var i = 0; i < contourPoints.length; i++) {
+        //         var centroidX = contourPoints[i][0];
+        //         var centroidY = contourPoints[i][1];
+        //
+        //         context.beginPath();
+        //         context.arc(centroidX, centroidY, 3, 0, 2 * Math.PI, false);
+        //         context.fillStyle = '#00FF00';
+        //         context.fill();
+        //     }
+        // }
         if(controlPoints) {
             for(var i = 0; i < controlPoints.length; i++) {
                 var cpx = controlPoints[i][0];

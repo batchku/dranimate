@@ -30,7 +30,7 @@ class Stage extends Component {
     this.setState({ selectedPuppet });
   };
 
-  openEditor = () => this.setState({ editorIsOpen: true });
+  // openEditor = () => this.setState({ editorIsOpen: true });
 
   closeEditor = () => this.setState({ editorIsOpen: false });
 
@@ -45,18 +45,28 @@ class Stage extends Component {
   onDeleteSelectedPuppet = () => dranimate.deleteSelectedPuppet();
 
   onEditSelectedPuppet = () => {
+    console.log('onSelectPuppet', dranimate.getSelectedPuppet());
     editorHelper.setItem(dranimate.getSelectedPuppet());
-    this.openEditor();
+    this.setState({ editorIsOpen: true });
   };
 
   onFileChange = event => {
     loadDranimateFile(this.filePicker)
       .then((result) => {
-        editorHelper.setItem(result);
         const isPuppet = !!result.id;
-        isPuppet ?
-          dranimate.addPuppet(result) :
-          this.openEditor();
+        if (isPuppet) {
+          dranimate.addPuppet(result);
+        }
+        else {
+          editorHelper.setItem(result);
+          this.setState({ editorIsOpen: true });
+        }
+
+        // editorHelper.setItem(result);
+        // const isPuppet = !!result.id;
+        // isPuppet ?
+        //   dranimate.addPuppet(result) :
+        //   this.openEditor();
       })
       .catch(error => console.log('error', error));
   }
