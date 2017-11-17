@@ -7,14 +7,16 @@
  *  - triangulate points
  *
  */
-import Delaunay from 'delaunay-fast';
+// import Delaunay from 'delaunay-fast';
 import SLIC from './slic.js';
 import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
 import loadImage from 'services/util/imageLoader';
 import {
-  findEdgesOfImage,
-  removeBackgroundFromImage,
-  recalculateContourPoints
+  // findEdgesOfImage,
+  // removeBackgroundFromImage,
+  // recalculateContourPoints,
+  // generateTriangles,
+  generateMesh
 } from 'services/imagetomesh/generateMesh';
 
 const SELECT_STATE = {
@@ -177,32 +179,27 @@ var ImageToMesh = function () {
     // TODO: seperate this logic from the ui actions
     // each function is only called from here
     this.generateMesh = function () {
+
+      return generateMesh(image, imageNoBackgroundData, originalImageData, context, dummyContext, dummyCanvas, controlPoints, slic);
+
         // this.recalculateCentroids();
-        const contourData = findEdgesOfImage(imageNoBackgroundData, context.createImageData(slic.result.width, slic.result.height));
-        // return this.findEdgesOfImage()
-
-        return removeBackgroundFromImage(slic, imageNoBackgroundData, originalImageData, dummyContext, dummyCanvas)
-          .then((onlySelectionImage) => {
-            const contourPoints = recalculateContourPoints(contourData);
-            this.generateTriangles(contourPoints);
-            // redraw();
-
-            return Promise.resolve({
-              onlySelectionImage,
-              contourPoints
-            });
-          })
-          .then((resolve) => {
-            return {
-              vertices,
-              triangles,
-              image,
-              onlySelectionImage: resolve.onlySelectionImage,
-              controlPoints: resolve.controlPoints,
-              controlPointIndices,
-              imageNoBackgroundData
-            };
-          });
+        // const contourData = findEdgesOfImage(imageNoBackgroundData, context.createImageData(slic.result.width, slic.result.height));
+        // // return this.findEdgesOfImage()
+        //
+        // return removeBackgroundFromImage(slic, imageNoBackgroundData, originalImageData, dummyContext, dummyCanvas)
+        //   .then((onlySelectionImage) => {
+        //     const contourPoints = recalculateContourPoints(contourData);
+        //     const geoData = generateTriangles(contourPoints, controlPoints, imageNoBackgroundData);
+        //     return Promise.resolve({
+        //       image,
+        //       onlySelectionImage,
+        //       vertices: geoData.vertices,
+        //       triangles: geoData.triangles,
+        //       controlPointIndices: geoData.controlPointIndices,
+        //       controlPointPositions: controlPoints,
+        //       imageNoBackgroundData
+        //     });
+        //   })
     }
 
     // TODO: this should be the constructor
@@ -243,6 +240,7 @@ var ImageToMesh = function () {
         panPosition = {x:0, y:0};
         panFromPosition = {x:0, y:0}
 
+        // console.log('....controlPnts', controlPnts)
         if(controlPointPositions) {
           controlPoints = controlPointPositions;
         }
@@ -511,91 +509,91 @@ var ImageToMesh = function () {
       highlightImage.onload = () => redraw();
     }
 
-    this.generateTriangles = function(contourPoints) {
-        /* Create list of vertices from superpixel centroids and contour points */
-
-        vertices = [];
-
-        for(var i = 0; i < contourPoints.length; i++) {
-            vertices.push(contourPoints[i]);
-        }
-
-        // Don't actually add the slic centroids as points lol
-        // (Just uncomment this if u want to tho.)
-        // for(var i = 0; i < slicSegmentsCentroids.length; i++) {
-        //     var segment = slicSegmentsCentroids[i];
-        //     if(segment) {
-        //         vertices.push(slicSegmentsCentroids[i]);
-        //     }
-        // }
-
-        /* Add vertices for requested control points as well */
-
-        for(var i = 0; i < controlPoints.length; i++) {
-            controlPointIndices.push(vertices.length);
-            vertices.push(controlPoints[i]);
-        }
-
-        /* Run delaunay on vertices to generate mesh */
-
-        var rawTriangles = Delaunay.triangulate(vertices);
-
-        /* Remove trianges whose centroids are in the image background */
-
-        triangles = [];
-
-        for(var i = 0; i < rawTriangles.length; i+=3) {
-            var x1 = vertices[rawTriangles[i]][0];
-            var y1 = vertices[rawTriangles[i]][1];
-
-            var x2 = vertices[rawTriangles[i+1]][0];
-            var y2 = vertices[rawTriangles[i+1]][1];
-
-            var x3 = vertices[rawTriangles[i+2]][0];
-            var y3 = vertices[rawTriangles[i+2]][1];
-
-            var centroidX = Math.round((x1 + x2 + x3) / 3);
-            var centroidY = Math.round((y1 + y2 + y3) / 3);
-
-            if(CanvasUtils.getColorAtXY(centroidX,centroidY,"a",imageNoBackgroundData) == 255) {
-                triangles.push(rawTriangles[i]);
-                triangles.push(rawTriangles[i+1]);
-                triangles.push(rawTriangles[i+2]);
-            }
-        }
-
-        /* Remove vertices that aren't part of any triangle */
-
-        for(var vi = 0; vi < vertices.length; vi++) {
-
-            var vertexIsPartOfATriangle = false;
-
-            for(var ti = 0; ti < triangles.length; ti++) {
-                if(vi == triangles[ti]) {
-                    vertexIsPartOfATriangle = true;
-                }
-            }
-
-            if(!vertexIsPartOfATriangle) {
-                vertices.splice(vi, 1)
-
-                /* Since we removed a vertex from the verts array, we need to update the
-                 * control points and triangles because they point to the vertices by index. */
-
-                for(var ti = 0; ti < triangles.length; ti++) {
-                    if(triangles[ti] > vi) {
-                        triangles[ti] -= 1;
-                    }
-                }
-                for(var cpi = 0; cpi < controlPointIndices.length; cpi++) {
-                    if(controlPointIndices[cpi] > vi) {
-                        controlPointIndices[cpi] -= 1;
-                    }
-                }
-            }
-        }
-
-    }
+    // this.generateTriangles = function(contourPoints) {
+    //     /* Create list of vertices from superpixel centroids and contour points */
+    //
+    //     vertices = [];
+    //
+    //     for(var i = 0; i < contourPoints.length; i++) {
+    //         vertices.push(contourPoints[i]);
+    //     }
+    //
+    //     // Don't actually add the slic centroids as points lol
+    //     // (Just uncomment this if u want to tho.)
+    //     // for(var i = 0; i < slicSegmentsCentroids.length; i++) {
+    //     //     var segment = slicSegmentsCentroids[i];
+    //     //     if(segment) {
+    //     //         vertices.push(slicSegmentsCentroids[i]);
+    //     //     }
+    //     // }
+    //
+    //     /* Add vertices for requested control points as well */
+    //
+    //     for(var i = 0; i < controlPoints.length; i++) {
+    //         controlPointIndices.push(vertices.length);
+    //         vertices.push(controlPoints[i]);
+    //     }
+    //
+    //     /* Run delaunay on vertices to generate mesh */
+    //
+    //     var rawTriangles = Delaunay.triangulate(vertices);
+    //
+    //     /* Remove trianges whose centroids are in the image background */
+    //
+    //     triangles = [];
+    //
+    //     for(var i = 0; i < rawTriangles.length; i+=3) {
+    //         var x1 = vertices[rawTriangles[i]][0];
+    //         var y1 = vertices[rawTriangles[i]][1];
+    //
+    //         var x2 = vertices[rawTriangles[i+1]][0];
+    //         var y2 = vertices[rawTriangles[i+1]][1];
+    //
+    //         var x3 = vertices[rawTriangles[i+2]][0];
+    //         var y3 = vertices[rawTriangles[i+2]][1];
+    //
+    //         var centroidX = Math.round((x1 + x2 + x3) / 3);
+    //         var centroidY = Math.round((y1 + y2 + y3) / 3);
+    //
+    //         if(CanvasUtils.getColorAtXY(centroidX,centroidY,"a",imageNoBackgroundData) == 255) {
+    //             triangles.push(rawTriangles[i]);
+    //             triangles.push(rawTriangles[i+1]);
+    //             triangles.push(rawTriangles[i+2]);
+    //         }
+    //     }
+    //
+    //     /* Remove vertices that aren't part of any triangle */
+    //
+    //     for(var vi = 0; vi < vertices.length; vi++) {
+    //
+    //         var vertexIsPartOfATriangle = false;
+    //
+    //         for(var ti = 0; ti < triangles.length; ti++) {
+    //             if(vi == triangles[ti]) {
+    //                 vertexIsPartOfATriangle = true;
+    //             }
+    //         }
+    //
+    //         if(!vertexIsPartOfATriangle) {
+    //             vertices.splice(vi, 1)
+    //
+    //             /* Since we removed a vertex from the verts array, we need to update the
+    //              * control points and triangles because they point to the vertices by index. */
+    //
+    //             for(var ti = 0; ti < triangles.length; ti++) {
+    //                 if(triangles[ti] > vi) {
+    //                     triangles[ti] -= 1;
+    //                 }
+    //             }
+    //             for(var cpi = 0; cpi < controlPointIndices.length; cpi++) {
+    //                 if(controlPointIndices[cpi] > vi) {
+    //                     controlPointIndices[cpi] -= 1;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //
+    // }
 
     var redraw = function () {
 
@@ -646,40 +644,40 @@ var ImageToMesh = function () {
         //         context.fill();
         //     }
         // }
-        if(controlPoints) {
+        if(controlPoints && controlPoints.length) {
+            context.fillStyle = '#00FFFF';
             for(var i = 0; i < controlPoints.length; i++) {
                 var cpx = controlPoints[i][0];
                 var cpy = controlPoints[i][1];
 
                 context.beginPath();
                 context.arc(cpx, cpy, 3, 0, 2 * Math.PI, false);
-                context.fillStyle = '#00FFFF';
                 context.fill();
             }
         }
 
-        if(vertices) {
-            for(var i = 0; i < vertices.length; i++) {
-                var centroidX = vertices[i][0];
-                var centroidY = vertices[i][1];
-
-                context.beginPath();
-                context.arc(centroidX, centroidY, 3, 0, 2 * Math.PI, false);
-                context.fillStyle = '#FF00FF';
-                context.fill();
-            }
-        }
-
-        if(triangles) {
-            for(var i = 0; i < triangles.length; ) {
-                context.beginPath();
-                context.moveTo(vertices[triangles[i]][0], vertices[triangles[i]][1]); i++;
-                context.lineTo(vertices[triangles[i]][0], vertices[triangles[i]][1]); i++;
-                context.lineTo(vertices[triangles[i]][0], vertices[triangles[i]][1]); i++;
-                context.closePath();
-                context.stroke();
-            }
-        }
+        // if(vertices) {
+        //     for(var i = 0; i < vertices.length; i++) {
+        //         var centroidX = vertices[i][0];
+        //         var centroidY = vertices[i][1];
+        //
+        //         context.beginPath();
+        //         context.arc(centroidX, centroidY, 3, 0, 2 * Math.PI, false);
+        //         context.fillStyle = '#FF00FF';
+        //         context.fill();
+        //     }
+        // }
+        //
+        // if(triangles) {
+        //     for(var i = 0; i < triangles.length; ) {
+        //         context.beginPath();
+        //         context.moveTo(vertices[triangles[i]][0], vertices[triangles[i]][1]); i++;
+        //         context.lineTo(vertices[triangles[i]][0], vertices[triangles[i]][1]); i++;
+        //         context.lineTo(vertices[triangles[i]][0], vertices[triangles[i]][1]); i++;
+        //         context.closePath();
+        //         context.stroke();
+        //     }
+        // }
 
         context.restore();
     }

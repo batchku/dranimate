@@ -28,7 +28,6 @@ class PuppetEditor extends Component {
     this.imageToMesh.setup(this.canvasElement);
     // TODO: image to puppet needs 2 instantiation methods: "fromImage" and "fromPuppet"
     if (editorHelper.isPuppet) {
-      console.log('0000ispuppetttt')
       const puppet = editorHelper.getItem();
       this.imageToMesh.editImage(
         puppet.image.src,
@@ -39,7 +38,6 @@ class PuppetEditor extends Component {
       .catch(error => console.log('error', error));
     }
     else if (editorHelper.getItem()) {
-      console.log('-----is iamge')
       this.imageToMesh.editImage(editorHelper.getItem())
         .then(() => this.runSlic())
         .catch(error => console.log('error', error));

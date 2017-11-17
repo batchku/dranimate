@@ -1,3 +1,4 @@
+import Delaunay from 'delaunay-fast';
 import loadImage from 'services/util/imageLoader';
 import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
 
@@ -98,8 +99,116 @@ function recalculateContourPoints(contourData) {
 
 }
 
+function generateTriangles(contourPoints, controlPoints, imageNoBackgroundData) {
+    /* Create list of vertices from superpixel centroids and contour points */
+
+    const vertices = [];
+
+    for(let i = 0; i < contourPoints.length; i++) {
+        vertices.push(contourPoints[i]);
+    }
+
+    // Don't actually add the slic centroids as points lol
+    // (Just uncomment this if u want to tho.)
+    // for(var i = 0; i < slicSegmentsCentroids.length; i++) {
+    //     var segment = slicSegmentsCentroids[i];
+    //     if(segment) {
+    //         vertices.push(slicSegmentsCentroids[i]);
+    //     }
+    // }
+
+    /* Add vertices for requested control points as well */
+    const controlPointIndices = [];
+
+    for(var i = 0; i < controlPoints.length; i++) {
+        controlPointIndices.push(vertices.length);
+        vertices.push(controlPoints[i]);
+    }
+
+    /* Run delaunay on vertices to generate mesh */
+
+    const rawTriangles = Delaunay.triangulate(vertices);
+
+    /* Remove trianges whose centroids are in the image background */
+
+    const triangles = [];
+
+    for(var i = 0; i < rawTriangles.length; i+=3) {
+        var x1 = vertices[rawTriangles[i]][0];
+        var y1 = vertices[rawTriangles[i]][1];
+
+        var x2 = vertices[rawTriangles[i+1]][0];
+        var y2 = vertices[rawTriangles[i+1]][1];
+
+        var x3 = vertices[rawTriangles[i+2]][0];
+        var y3 = vertices[rawTriangles[i+2]][1];
+
+        var centroidX = Math.round((x1 + x2 + x3) / 3);
+        var centroidY = Math.round((y1 + y2 + y3) / 3);
+
+        if(CanvasUtils.getColorAtXY(centroidX,centroidY,"a",imageNoBackgroundData) == 255) {
+            triangles.push(rawTriangles[i]);
+            triangles.push(rawTriangles[i+1]);
+            triangles.push(rawTriangles[i+2]);
+        }
+    }
+
+    /* Remove vertices that aren't part of any triangle */
+
+    for(var vi = 0; vi < vertices.length; vi++) {
+
+        var vertexIsPartOfATriangle = false;
+
+        for(var ti = 0; ti < triangles.length; ti++) {
+            if(vi == triangles[ti]) {
+                vertexIsPartOfATriangle = true;
+            }
+        }
+
+        if(!vertexIsPartOfATriangle) {
+            vertices.splice(vi, 1)
+
+            /* Since we removed a vertex from the verts array, we need to update the
+             * control points and triangles because they point to the vertices by index. */
+
+            for(var ti = 0; ti < triangles.length; ti++) {
+                if(triangles[ti] > vi) {
+                    triangles[ti] -= 1;
+                }
+            }
+            for(var cpi = 0; cpi < controlPointIndices.length; cpi++) {
+                if(controlPointIndices[cpi] > vi) {
+                    controlPointIndices[cpi] -= 1;
+                }
+            }
+        }
+    }
+
+    return { triangles, vertices, controlPointIndices };
+}
+
+function generateMesh(image, imageNoBackgroundData, originalImageData, context, dummyContext, dummyCanvas, controlPoints, slic) {
+  const contourData = findEdgesOfImage(imageNoBackgroundData, context.createImageData(slic.result.width, slic.result.height));
+  return removeBackgroundFromImage(slic, imageNoBackgroundData, originalImageData, dummyContext, dummyCanvas)
+    .then((onlySelectionImage) => {
+      const contourPoints = recalculateContourPoints(contourData);
+      const geoData = generateTriangles(contourPoints, controlPoints, imageNoBackgroundData);
+      return Promise.resolve({
+        image,
+        onlySelectionImage,
+        vertices: geoData.vertices,
+        triangles: geoData.triangles,
+        controlPointIndices: geoData.controlPointIndices,
+        controlPointPositions: controlPoints,
+        imageNoBackgroundData
+      });
+    })
+}
+
 export {
-  findEdgesOfImage,
-  removeBackgroundFromImage,
-  recalculateContourPoints
+  // findEdgesOfImage,
+  // removeBackgroundFromImage,
+  // recalculateContourPoints,
+  // generateTriangles,
+  generateMesh
 };
