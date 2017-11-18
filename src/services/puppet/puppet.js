@@ -1,5 +1,7 @@
-import * as THREE from 'three';
+// import * as THREE from 'three';
+import { Vector2 } from 'three';
 import ARAP from 'services/arap/arap';
+import { pointIsInsideTriangle } from 'services/util/math';
 // TODO: only import needed three deps
 
 var Puppet = function(puppetData) {
@@ -88,12 +90,8 @@ Puppet.prototype.getRotation = function() {
   return this._rotation;
 }
 
-Puppet.prototype.setRenderWireframe = function (renderWireframe) {
-  if(renderWireframe) {
-    this.threeMesh.material = this.wireframeMaterial;
-  } else {
-    this.threeMesh.material = this.texturedMaterial;
-  }
+Puppet.prototype.setRenderWireframe = function(shouldRender) {
+  this.threeMesh.material = shouldRender ? this.wireframeMaterial : this.texturedMaterial;
 }
 
 Puppet.prototype.setSelectionState = function(isBeingDragged, x, y){
@@ -145,7 +143,7 @@ Puppet.prototype.update = function() {
         var cpx = this.threeMesh.geometry.vertices[this.controlPoints[i]].x;
         var cpy = this.threeMesh.geometry.vertices[this.controlPoints[i]].y;
 
-        const point = new THREE.Vector2(dx / this._scale, dy / this._scale);
+        const point = new Vector2(dx / this._scale, dy / this._scale);
         point.rotateAround(this.getRotationCenter(), -this._rotation);
         this.setControlPointPosition(i, cpx + point.x, cpy + point.y);
       }
@@ -191,7 +189,7 @@ Puppet.prototype.update = function() {
     for(var i = 0; i < this.controlPoints.length; i++) {
       var cpi = this.controlPoints[i];
       var v = this.threeMesh.geometry.vertices[cpi];
-      const point = new THREE.Vector2(v.x * this._scale, v.y * this._scale);
+      const point = new Vector2(v.x * this._scale, v.y * this._scale);
       point.rotateAround(this.getRotationCenter(), this.prevRotation);
       this.controlPointSpheres[i].position.x = point.x;
       this.controlPointSpheres[i].position.y = point.y;
@@ -213,7 +211,7 @@ Puppet.prototype.getRotationCenter = function() {
   //   this._x + this.center.x,
   //   this._y + this.center.y
   // );
-  return new THREE.Vector2(0, 0);
+  return new Vector2(0, 0);
 }
 
 Puppet.prototype.cleanup = function () {
@@ -226,7 +224,7 @@ Puppet.prototype.setSelectionGUIVisible = function (visible) {
 }
 
 Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {
-  const point = new THREE.Vector2(xUntransformed / this._scale, yUntransformed / this._scale);
+  const point = new Vector2(xUntransformed / this._scale, yUntransformed / this._scale);
   point.rotateAround(this.getRotationCenter(), -this._rotation);
   const allFaces = this.threeMesh.geometry.faces;
   const allVerts = this.threeMesh.geometry.vertices;
@@ -239,18 +237,6 @@ Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {
     }
   }
   return false;
-}
-
-function sign(x1, y1, x2, y2, x3, y3) {
-  return (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3);
-}
-
-//http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
-function pointIsInsideTriangle(x, y, p1, p2, p3) {
-  const b1 = sign(x, y, p1.x, p1.y, p2.x, p2.y) < 0.0;
-  const b2 = sign(x, y, p2.x, p2.y, p3.x, p3.y) < 0.0;
-  const b3 = sign(x, y, p3.x, p3.y, p1.x, p1.y) < 0.0;
-  return ((b1 === b2) && (b2 === b3));
 }
 
 module.exports = Puppet;
