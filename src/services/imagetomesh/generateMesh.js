@@ -187,6 +187,7 @@ function generateTriangles(contourPoints, controlPoints, imageNoBackgroundData) 
     return { triangles, vertices, controlPointIndices };
 }
 
+// TODO: make this return a class that puppet factory can take to create puppet
 function generateMesh(image, imageNoBackgroundData, originalImageData, context, dummyContext, dummyCanvas, controlPoints, slic) {
   const contourData = findEdgesOfImage(imageNoBackgroundData, context.createImageData(slic.result.width, slic.result.height));
   return removeBackgroundFromImage(slic, imageNoBackgroundData, originalImageData, dummyContext, dummyCanvas)

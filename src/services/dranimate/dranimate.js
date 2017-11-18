@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import PanHandler from 'services/dranimate/panHandler';
 import { clamp } from 'services/util/math';
 
 const ZOOM = {
@@ -10,11 +11,6 @@ const MOUSE_STATE = {
   UP: 'UP',
   DOWN: 'DOWN',
   OUTSIDE: 'OUTSIDE',
-};
-const SELECT_STATE = {
-  PAN: 'PAN',
-  CONTROL_POINT: 'CONTROL_POINT',
-  SELECT: 'SELECT',
 };
 
 var Dranimate = function () {
@@ -39,10 +35,8 @@ var Dranimate = function () {
 
     var controlPointToControl = 0;
 
-    var panEnabled = false;
     var zoom = 1.0;
-    var panPosition = {x:0, y:0};
-    var panFromPosition = {x:0, y:0}
+    const panHandler = new PanHandler();
 
     var renderWireframes = false;
 
@@ -57,8 +51,8 @@ var Dranimate = function () {
         y: y - boundingRect.top
       };
       mouseRelative = {
-        x: (x - boundingRect.left - window.innerWidth / 2) / zoom - panPosition.x,
-        y: (y - boundingRect.top - window.innerHeight / 2) / zoom - panPosition.y
+        x: (x - boundingRect.left - window.innerWidth / 2) / zoom - panHandler.getPanPosition().x,
+        y: (y - boundingRect.top - window.innerHeight / 2) / zoom - panHandler.getPanPosition().y
       };
     }
 
@@ -133,10 +127,8 @@ var Dranimate = function () {
       updateMousePosition(event.clientX, event.clientY);
       mouseState = MOUSE_STATE.DOWN;
 
-      // TODO: put into pan handler
-      if(panEnabled) {
-        panFromPosition.x = mouseAbsolute.x / zoom;
-        panFromPosition.y = mouseAbsolute.y / zoom;
+      if(panHandler.getPanEnabled()) {
+        panHandler.onMouseDown(mouseAbsolute.x, mouseAbsolute.y, zoom);
         return;
       }
 
@@ -161,11 +153,8 @@ var Dranimate = function () {
 
       /* Find control point closest to the mouse */
 
-      if(panEnabled && mouseState === MOUSE_STATE.DOWN) {
-        panPosition.x += mouseAbsolute.x / zoom - panFromPosition.x;
-        panPosition.y += mouseAbsolute.y / zoom - panFromPosition.y;
-        panFromPosition.x = mouseAbsolute.x / zoom;
-        panFromPosition.y = mouseAbsolute.y / zoom;
+      if(panHandler.getPanEnabled() && mouseState === MOUSE_STATE.DOWN) {
+        panHandler.onMouseMove(mouseAbsolute.x, mouseAbsolute.y, zoom);
         return;
       }
 
@@ -200,7 +189,7 @@ var Dranimate = function () {
     this.onMouseUp = function(event) {
       updateMousePosition(event.clientX, event.clientY);
       mouseState = MOUSE_STATE.UP;
-      if (panEnabled) {
+      if (panHandler.getPanEnabled()) {
         return;
       }
       activeControlPoint.beingDragged = false;
@@ -250,8 +239,8 @@ var Dranimate = function () {
     }
 
     this.setPanEnabled = function (isEnabled) {
-        panEnabled = isEnabled;
-        renderer.domElement.parentNode.style.cursor = isEnabled ? 'move' : 'default';
+      panHandler.setPanEnabled(isEnabled);
+      renderer.domElement.style.cursor = isEnabled ? 'move' : 'default';
     }
 
     this.getSelectedPuppet = function () {
@@ -327,10 +316,7 @@ var Dranimate = function () {
 
     function update() {
       puppets.forEach(puppet => puppet.update());
-
-      // TODO: move to: panner.update()
-      camera.position.x = -panPosition.x;
-      camera.position.y = -panPosition.y;
+      panHandler.update(camera);
     }
 
     function render() {
