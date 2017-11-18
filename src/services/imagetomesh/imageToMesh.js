@@ -11,6 +11,7 @@
 import SLIC from './slic.js';
 import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
 import loadImage from 'services/util/imageLoader';
+import PanHandler from 'services/dranimate/panHandler';
 import { generateMesh } from 'services/imagetomesh/generateMesh';
 
 const SELECT_STATE = {
@@ -61,10 +62,7 @@ var ImageToMesh = function () {
 
     var zoom;
 
-    // var onlySelectionImage;
-
-    var panPosition;
-    var panFromPosition;
+    const panHandler = new PanHandler();
 
     let mouseState = MOUSE_STATE.UP;
     let selectState = SELECT_STATE.SELECT;
@@ -85,8 +83,8 @@ var ImageToMesh = function () {
       const rect = evt.target.getBoundingClientRect();
       mouseAbs.x = (evt.clientX - rect.left) / zoom;
       mouseAbs.y = (evt.clientY - rect.top)  / zoom;
-      mouse.x = mouseAbs.x - panPosition.x;
-      mouse.y = mouseAbs.y - panPosition.y;
+      mouse.x = mouseAbs.x - panHandler.getPanPosition().x;
+      mouse.y = mouseAbs.y - panHandler.getPanPosition().y;
       mouse.x = Math.round(mouse.x);
       mouse.y = Math.round(mouse.y);
 
@@ -99,9 +97,7 @@ var ImageToMesh = function () {
         return;
       }
       if (selectState === SELECT_STATE.PAN) {
-        panPosition.x += mouseAbs.x - panFromPosition.x;
-        panPosition.y += mouseAbs.y - panFromPosition.y;
-        panFromPosition = { x: mouseAbs.x, y: mouseAbs.y };
+        panHandler.onMouseMove(mouseAbs.x, mouseAbs.y, zoom);
         redraw();
         return;
       }
@@ -119,7 +115,7 @@ var ImageToMesh = function () {
       evt.preventDefault();
       mouseState = MOUSE_STATE.DOWN;
 
-      panFromPosition = {x:mouseAbs.x, y:mouseAbs.y};
+      panHandler.onMouseDown(mouseAbs.x, mouseAbs.y, zoom);
 
       if (selectState === SELECT_STATE.CONTROL_POINT) {
         controlPoints.push([mouse.x, mouse.y]);
@@ -179,25 +175,13 @@ var ImageToMesh = function () {
         imageNoBackgroundData = undefined;
         imageNoBackgroundImage = new Image();
 
-        // imageBackgroundMaskData = undefined;
         imageBackgroundMaskImage = new Image();
-
-        // contourData = undefined;
-        // contourImage = new Image();
-
-        // contourPoints = undefined;
 
         controlPoints = [];
         controlPointIndices = [];
 
-        // vertices = undefined;
-        // triangles = undefined;
-
         zoom = 1.0;
-        panPosition = {x:0, y:0};
-        panFromPosition = {x:0, y:0}
 
-        // console.log('....controlPnts', controlPnts)
         if(controlPointPositions) {
           controlPoints = controlPointPositions;
         }
@@ -253,7 +237,11 @@ var ImageToMesh = function () {
         redraw();
     }
 
-    this.setSelectState = state => selectState = state;
+    this.setSelectState = state => {
+      selectState = state;
+      panHandler.setPanEnabled(selectState === SELECT_STATE.PAN);
+    };
+
     this.setMouseState = state => mouseState = state;
 
 /*****************************
@@ -374,7 +362,7 @@ var ImageToMesh = function () {
 
         context.save();
         context.scale(zoom, zoom);
-        context.translate(panPosition.x, panPosition.y);
+        context.translate(panHandler.getPanPosition().x, panHandler.getPanPosition().y);
 
         context.globalAlpha = 1.0;
         context.drawImage(image, 0, 0, image.width, image.height, 0, 0, width, height);
