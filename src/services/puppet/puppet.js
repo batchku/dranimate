@@ -221,12 +221,8 @@ Puppet.prototype.cleanup = function () {
 }
 
 Puppet.prototype.setSelectionGUIVisible = function (visible) {
-  if(this.hasMeshData) {
-    this.boundingBox.visible = visible;
-    for(var i = 0; i < this.controlPointSpheres.length; i++) {
-      this.controlPointSpheres[i].visible = visible;
-    }
-  }
+  this.boundingBox.visible = visible;
+  this.controlPointSpheres.forEach(sphere => sphere.visible = visible);
 }
 
 Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {

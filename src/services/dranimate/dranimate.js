@@ -62,6 +62,45 @@ var Dranimate = function () {
       };
     }
 
+    // const getPuppetAndControlPointFromPostion = (x, y, distanceThreshold) => {
+    //
+    //   for(var p = 0; p < puppets.length; p++) { // WHY LOOP OVER ALL PUPPETS?
+    //     const puppet = puppets[p];
+    //
+    //       // if(puppet.hasMeshData) {
+    //
+    //     const verts = puppet.threeMesh.geometry.vertices;
+    //     const controlPoints = puppet.controlPoints;
+    //
+    //     const closeControlPointIndex = controlPoints.findIndex((controlPoint, index) => {
+    //       const mouseVector = new THREE.Vector2(mouseRelative.x / puppet.getScale(), mouseRelative.y / puppet.getScale());
+    //       mouseVector.rotateAround(puppet.getRotationCenter(), -puppet.getRotation());
+    //       const vert = verts[controlPoint];
+    //       const dist = vert.distanceTo(new THREE.Vector3(mouseVector.x, mouseVector.y, 0));
+    //       return (dist < 10 * zoom);
+    //     });
+    //
+    //     if (closeControlPointIndex > -1) {
+    //       activeControlPoint = {
+    //         valid: true,
+    //         puppetIndex: p,
+    //         hoveredOver: true,
+    //         beingDragged: false,
+    //         controlPointIndex: closeControlPointIndex
+    //       };
+    //       foundControlPoint = true;
+    //     }
+    //
+    //   }
+    //
+    //   if (foundControlPoint) {
+    //     return {
+    //       puppet: puppets[activeControlPoint.puppetIndex],
+    //       controlPoint: puppets[activeControlPoint.puppetIndex].controlPoints[activeControlPoint.controlPointIndex]
+    //     };
+    //   }
+    // };
+
 /*****************************
     API
 *****************************/
@@ -105,19 +144,19 @@ var Dranimate = function () {
         panFromPosition.y = mouseAbsolute.y / zoom;
         return;
       }
+
       if(activeControlPoint.hoveredOver) {
         selectedPuppet = puppets[activeControlPoint.puppetIndex];
         activeControlPoint.beingDragged = true;
-      } else {
-        selectedPuppet = null;
-
-        const clickedPuppet = puppets
-          .find(puppet => puppet.pointInsideMesh(mouseRelative.x, mouseRelative.y));
-        if (clickedPuppet) {
-          selectedPuppet = clickedPuppet;
-          selectedPuppet.setSelectionState(true, mouseRelative.x, mouseRelative.y);
-        }
+        return;
       }
+
+      // the notion of a selected puppet is only relative to mouse / touch, not leap motion
+      selectedPuppet = puppets.find(puppet => puppet.pointInsideMesh(mouseRelative.x, mouseRelative.y));
+      if (selectedPuppet) {
+        selectedPuppet.setSelectionState(true, mouseRelative.x, mouseRelative.y);
+      }
+
     };
 
     this.onMouseMove = function(event) {
@@ -143,54 +182,56 @@ var Dranimate = function () {
         return;
       }
 
-      // start process of finding control point
-      // TODO: break each nested layer into named function
-      let foundControlPoint = false;
-      for(var p = 0; p < puppets.length; p++) {
-
-          if(puppets[p].hasMeshData) {
-
-              var verts = puppets[p].threeMesh.geometry.vertices;
-              var controlPoints = puppets[p].controlPoints;
-
-              for(var c = 0; c < controlPoints.length; c++) {
-                const mouseVector = new THREE.Vector2(mouseRelative.x / puppets[p].getScale(), mouseRelative.y / puppets[p].getScale());
-                mouseVector.rotateAround(puppets[p].getRotationCenter(), -puppets[p].getRotation());
-
-                  const vert = verts[controlPoints[c]];
-                  const dist = vert.distanceTo(new THREE.Vector3(mouseVector.x, mouseVector.y, 0));
-
-                  if(dist < 10 * zoom) {
-                      activeControlPoint = {
-                          valid: true,
-                          puppetIndex: p,
-                          hoveredOver: true,
-                          beingDragged: false,
-                          controlPointIndex: c
-                      };
-                      foundControlPoint = true;
-                      break;
-                  }
-              }
-          }
-
-          if(foundControlPoint) {
-              renderer.domElement.parentNode.style.cursor = "pointer";
-          } else {
-              renderer.domElement.parentNode.style.cursor = "default";
-              activeControlPoint.hoveredOver = false;
-          }
+      if(selectedPuppet && selectedPuppet.selectionState.isBeingDragged) {
+        selectedPuppet.incrementPosition(mouseRelative.x, mouseRelative.y);
+        return;
       }
 
 
-      // TODO: dragFromPosition should be encapsulated in puppet
-      if(selectedPuppet && selectedPuppet.selectionState.isBeingDragged) {
-        selectedPuppet.incrementPosition(mouseRelative.x, mouseRelative.y);
+      // // start process of finding control point
+      // // TODO: break each nested layer into named function
+      let foundControlPoint = false;
+
+      for(var p = 0; p < puppets.length; p++) { // WHY LOOP OVER ALL PUPPETS?
+        const puppet = puppets[p];
+
+          // if(puppet.hasMeshData) {
+
+        const verts = puppet.threeMesh.geometry.vertices;
+        const controlPoints = puppet.controlPoints;
+
+        const closeControlPointIndex = controlPoints.findIndex((controlPoint, index) => {
+          const mouseVector = new THREE.Vector2(mouseRelative.x / puppet.getScale(), mouseRelative.y / puppet.getScale());
+          mouseVector.rotateAround(puppet.getRotationCenter(), -puppet.getRotation());
+          const vert = verts[controlPoint];
+          const dist = vert.distanceTo(new THREE.Vector3(mouseVector.x, mouseVector.y, 0));
+          return (dist < 10 * zoom);
+        });
+
+        if (closeControlPointIndex > -1) {
+          activeControlPoint = {
+            valid: true,
+            puppetIndex: p,
+            hoveredOver: true,
+            beingDragged: false,
+            controlPointIndex: closeControlPointIndex
+          };
+          foundControlPoint = true;
+        }
+
+      }
+
+      // const puppetControlPointPair = getPuppetAndControlPointFromPostion(mouseVector.x, mouseVector.y, 10);
+
+      if(foundControlPoint) {
+        renderer.domElement.parentNode.style.cursor = "pointer";
+      } else {
+        renderer.domElement.parentNode.style.cursor = "default";
+        activeControlPoint.hoveredOver = false;
       }
 
     };
 
-    // TODO: flatten pan / control point / selected puppet control flow
     this.onMouseUp = function(event) {
       updateMousePosition(event.clientX, event.clientY);
       mouseState = MOUSE_STATE.UP;
@@ -341,13 +382,14 @@ var Dranimate = function () {
     function render() {
       for(var i = 0; i < puppets.length; i++) {
           puppets[i].setRenderWireframe(renderWireframes);
-          puppets[i].setSelectionGUIVisible(false);
+          puppets[i].setSelectionGUIVisible(false); // TODO: this should be in mouse
       }
+      // TODO: move to click listener
       if(selectedPuppet) {
           selectedPuppet.setSelectionGUIVisible(true);
       }
-
-      if(activeControlPoint.hoveredOver) {
+      // TODO: move to click listener
+      if(activeControlPoint && activeControlPoint.hoveredOver) {
           puppets[activeControlPoint.puppetIndex].controlPointSpheres[activeControlPoint.controlPointIndex].visible = true;
       }
 
