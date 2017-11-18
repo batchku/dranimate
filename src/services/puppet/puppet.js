@@ -41,6 +41,12 @@ var Puppet = function(puppetData) {
   this.undeformedVertices = this.verts;
   this.needsUpdate = true;
   this.initArap();
+
+  this.selectionState = {
+    isBeingDragged: false,
+    lastPositionX: 0,
+    lastPositionY: 0
+  };
 };
 
 Puppet.prototype.initArap = function() {
@@ -58,8 +64,12 @@ Puppet.prototype.initArap = function() {
 }
 
 Puppet.prototype.incrementPosition = function(x, y) {
-  this._x += x;
-  this._y += y;
+  const _x = x - this.selectionState.lastPositionX;
+  const _y = y - this.selectionState.lastPositionY;
+  this._x += _x;
+  this._y += _y;
+  this.selectionState.lastPositionX = x;
+  this.selectionState.lastPositionY = y;
 }
 
 Puppet.prototype.setScale = function(scale) {
@@ -83,6 +93,14 @@ Puppet.prototype.setRenderWireframe = function (renderWireframe) {
     this.threeMesh.material = this.wireframeMaterial;
   } else {
     this.threeMesh.material = this.texturedMaterial;
+  }
+}
+
+Puppet.prototype.setSelectionState = function(isBeingDragged, x, y){
+  this.selectionState.isBeingDragged = isBeingDragged;
+  if (isBeingDragged) {
+    this.selectionState.lastPositionX = x;
+    this.selectionState.lastPositionY = y;
   }
 }
 

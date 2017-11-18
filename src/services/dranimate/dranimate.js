@@ -6,6 +6,16 @@ const ZOOM = {
   MAX: 3
 };
 const CAMERA_DEPTH = 100;
+const MOUSE_STATE = {
+  UP: 'UP',
+  DOWN: 'DOWN',
+  OUTSIDE: 'OUTSIDE',
+};
+const SELECT_STATE = {
+  PAN: 'PAN',
+  CONTROL_POINT: 'CONTROL_POINT',
+  SELECT: 'SELECT',
+};
 
 var Dranimate = function () {
     /* debugging memory issue */
@@ -16,7 +26,7 @@ var Dranimate = function () {
 
     var camera, scene, renderer;
 
-    var mouseState = {down: false};
+    var mouseState = MOUSE_STATE.UP;
     var mouseRelative = {x:0, y:0};
     var mouseAbsolute = {x:0, y:0};
 
@@ -38,8 +48,6 @@ var Dranimate = function () {
 
     var selectedPuppet = null;
 
-    var onChangeCallback = function () {};
-
     let isInRenderLoop = true;
 
     const updateMousePosition = (x,y) => {
@@ -49,18 +57,14 @@ var Dranimate = function () {
         y: y - boundingRect.top
       };
       mouseRelative = {
-        x: (x - boundingRect.left-window.innerWidth/2) / zoom - panPosition.x,
-        y: (y - boundingRect.top-window.innerHeight/2) / zoom - panPosition.y
+        x: (x - boundingRect.left - window.innerWidth / 2) / zoom - panPosition.x,
+        y: (y - boundingRect.top - window.innerHeight / 2) / zoom - panPosition.y
       };
     }
 
 /*****************************
     API
 *****************************/
-
-    this.onChange = function (callback) {
-        onChangeCallback = callback;
-    }
 
     this.setup = function (canvasContainer) {
       /* Initialize THREE canvas and scene */
@@ -94,28 +98,25 @@ var Dranimate = function () {
 
     this.onMouseDown = function(event) {
       updateMousePosition(event.clientX, event.clientY);
-      mouseState.down = true;
+      mouseState = MOUSE_STATE.DOWN;
 
       if(panEnabled) {
-          panFromPosition.x = mouseAbsolute.x/zoom;
-          panFromPosition.y = mouseAbsolute.y/zoom;
+        panFromPosition.x = mouseAbsolute.x / zoom;
+        panFromPosition.y = mouseAbsolute.y / zoom;
+        return;
+      }
+      if(activeControlPoint.hoveredOver) {
+        selectedPuppet = puppets[activeControlPoint.puppetIndex];
+        activeControlPoint.beingDragged = true;
       } else {
+        selectedPuppet = null;
 
-          if(activeControlPoint.hoveredOver) {
-              selectedPuppet = puppets[activeControlPoint.puppetIndex];
-              activeControlPoint.beingDragged = true;
-          } else {
-              selectedPuppet = null;
-              for(var i = 0; i < puppets.length; i++) {
-                  if(puppets[i].pointInsideMesh(mouseRelative.x, mouseRelative.y)) {
-                      selectedPuppet = puppets[i];
-                      selectedPuppet.isBeingDragged = true;
-                      selectedPuppet.dragFromPositionX = mouseRelative.x;
-                      selectedPuppet.dragFromPositionY = mouseRelative.y;
-                  }
-              }
-          }
-          onChangeCallback();
+        const clickedPuppet = puppets
+          .find(puppet => puppet.pointInsideMesh(mouseRelative.x, mouseRelative.y));
+        if (clickedPuppet) {
+          selectedPuppet = clickedPuppet;
+          selectedPuppet.setSelectionState(true, mouseRelative.x, mouseRelative.y);
+        }
       }
     };
 
@@ -124,103 +125,83 @@ var Dranimate = function () {
 
       /* Find control point closest to the mouse */
 
-      if(panEnabled) {
+      if(panEnabled && mouseState === MOUSE_STATE.DOWN) {
+        panPosition.x += mouseAbsolute.x / zoom - panFromPosition.x;
+        panPosition.y += mouseAbsolute.y / zoom - panFromPosition.y;
+        panFromPosition.x = mouseAbsolute.x / zoom;
+        panFromPosition.y = mouseAbsolute.y / zoom;
+        return;
+      }
 
-          renderer.domElement.parentNode.style.cursor = "move";
+      if (activeControlPoint.beingDragged) {
+        // control point is being dragged by mouse
+        const puppet = puppets[activeControlPoint.puppetIndex];
+        const ci = activeControlPoint.controlPointIndex;
+        const mouseVector = new THREE.Vector2(mouseRelative.x / puppet.getScale(), mouseRelative.y / puppet.getScale());
+        mouseVector.rotateAround(puppet.getRotationCenter(), -puppet.getRotation());
+        puppet.setControlPointPosition(ci, mouseVector.x, mouseVector.y);
+        return;
+      }
 
-          if(mouseState.down) {
-              panPosition.x += mouseAbsolute.x/zoom - panFromPosition.x;
-              panPosition.y += mouseAbsolute.y/zoom - panFromPosition.y;
-              panFromPosition.x = mouseAbsolute.x/zoom;
-              panFromPosition.y = mouseAbsolute.y/zoom;
-          }
-      } else {
-          if(!activeControlPoint.beingDragged) {
+      // start process of finding control point
+      // TODO: break each nested layer into named function
+      let foundControlPoint = false;
+      for(var p = 0; p < puppets.length; p++) {
 
-              var foundControlPoint = false;
+          if(puppets[p].hasMeshData) {
 
-              for(var p = 0; p < puppets.length; p++) {
+              var verts = puppets[p].threeMesh.geometry.vertices;
+              var controlPoints = puppets[p].controlPoints;
 
-                  if(puppets[p].hasMeshData) {
+              for(var c = 0; c < controlPoints.length; c++) {
+                const mouseVector = new THREE.Vector2(mouseRelative.x / puppets[p].getScale(), mouseRelative.y / puppets[p].getScale());
+                mouseVector.rotateAround(puppets[p].getRotationCenter(), -puppets[p].getRotation());
 
-                      var verts = puppets[p].threeMesh.geometry.vertices;
-                      var controlPoints = puppets[p].controlPoints;
+                  const vert = verts[controlPoints[c]];
+                  const dist = vert.distanceTo(new THREE.Vector3(mouseVector.x, mouseVector.y, 0));
 
-                      for(var c = 0; c < controlPoints.length; c++) {
-                        const mouseVector = new THREE.Vector2(mouseRelative.x / puppets[p].getScale(), mouseRelative.y / puppets[p].getScale());
-                        mouseVector.rotateAround(puppets[p].getRotationCenter(), -puppets[p].getRotation());
-
-                          const vert = verts[controlPoints[c]];
-                          const dist = vert.distanceTo(new THREE.Vector3(mouseVector.x, mouseVector.y, 0));
-
-                          if(dist < 10 * zoom) {
-                              activeControlPoint = {
-                                  valid: true,
-                                  puppetIndex: p,
-                                  hoveredOver: true,
-                                  beingDragged: false,
-                                  controlPointIndex: c
-                              };
-                              foundControlPoint = true;
-                              break;
-                          }
-                      }
+                  if(dist < 10 * zoom) {
+                      activeControlPoint = {
+                          valid: true,
+                          puppetIndex: p,
+                          hoveredOver: true,
+                          beingDragged: false,
+                          controlPointIndex: c
+                      };
+                      foundControlPoint = true;
+                      break;
                   }
               }
-
-              if(foundControlPoint) {
-                  renderer.domElement.parentNode.style.cursor = "pointer";
-              } else {
-                  renderer.domElement.parentNode.style.cursor = "default";
-                  activeControlPoint.hoveredOver = false;
-              }
-          } else {
-            // control point is being dragged by mouse
-            const puppet = puppets[activeControlPoint.puppetIndex];
-            const ci = activeControlPoint.controlPointIndex;
-            const mouseVector = new THREE.Vector2(mouseRelative.x / puppet.getScale(), mouseRelative.y / puppet.getScale());
-            mouseVector.rotateAround(puppet.getRotationCenter(), -puppet.getRotation());
-            puppet.setControlPointPosition(ci, mouseVector.x, mouseVector.y);
-            onChangeCallback();
           }
 
-          if(selectedPuppet && selectedPuppet.isBeingDragged) {
-            selectedPuppet.incrementPosition(
-              mouseRelative.x - selectedPuppet.dragFromPositionX,
-              mouseRelative.y - selectedPuppet.dragFromPositionY
-            );
-              // selectedPuppet.x(
-              //   mouseRelative.x - selectedPuppet.dragFromPositionX,
-              //   true // doIncrement flag, to specify incremental update
-              // );
-              // selectedPuppet.y(
-              //   mouseRelative.y - selectedPuppet.dragFromPositionY,
-              //   true
-              // );
-              selectedPuppet.dragFromPositionX = mouseRelative.x;
-              selectedPuppet.dragFromPositionY = mouseRelative.y;
-              onChangeCallback();
+          if(foundControlPoint) {
+              renderer.domElement.parentNode.style.cursor = "pointer";
+          } else {
+              renderer.domElement.parentNode.style.cursor = "default";
+              activeControlPoint.hoveredOver = false;
           }
       }
+
+
+      // TODO: dragFromPosition should be encapsulated in puppet
+      if(selectedPuppet && selectedPuppet.selectionState.isBeingDragged) {
+        selectedPuppet.incrementPosition(mouseRelative.x, mouseRelative.y);
+      }
+
     };
 
     // TODO: flatten pan / control point / selected puppet control flow
     this.onMouseUp = function(event) {
       updateMousePosition(event.clientX, event.clientY);
-      mouseState.down = false;
-
-      if(panEnabled) {
-
-      } else {
-          if(activeControlPoint) {
-              activeControlPoint.beingDragged = false;
-              renderer.domElement.parentNode.style.cursor = "default";
-          }
-
-          if(selectedPuppet) {
-              selectedPuppet.isBeingDragged = false;
-          }
+      mouseState = MOUSE_STATE.UP;
+      if (panEnabled) {
+        return;
       }
+      activeControlPoint.beingDragged = false;
+      if (selectedPuppet) {
+        selectedPuppet.setSelectionState(false);
+      }
+      // renderer.domElement.parentNode.style.cursor = "default";
     };
 
     this.onCurrentPuppetChange = function (callback) {
@@ -267,23 +248,14 @@ var Dranimate = function () {
         camera.updateProjectionMatrix();
     }
 
-    this.setPanEnabled = function (enable) {
-        panEnabled = enable;
-    }
-
-    this.getPanEnabled = function (enable) {
-        return panEnabled;
+    this.setPanEnabled = function (isEnabled) {
+        panEnabled = isEnabled;
+        renderer.domElement.parentNode.style.cursor = isEnabled ? 'move' : 'default';
     }
 
     this.getSelectedPuppet = function () {
         return selectedPuppet;
     }
-
-    // this.exportSelectedPuppet = function () {
-    //   const puppet = dranimate.getSelectedPuppet();
-    //   const blob = new Blob([puppet.getJSONData()], {type: "text/plain;charset=utf-8"});
-    //   FileSaver.saveAs(blob, "puppet.json");
-    // }
 
     this.deleteSelectedPuppet = function () {
         if(selectedPuppet) {
@@ -297,8 +269,6 @@ var Dranimate = function () {
             puppets.splice(index, 1);
 
             selectedPuppet = null;
-
-            onChangeCallback();
         }
     }
 
