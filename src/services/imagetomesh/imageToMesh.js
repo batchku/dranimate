@@ -11,7 +11,7 @@
 import SLIC from './slic.js';
 import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
 import loadImage from 'services/util/imageLoader';
-import PanHandler from 'services/dranimate/panHandler';
+import PanHandler from 'services/util/panHandler';
 import { generateMesh } from 'services/imagetomesh/generateMesh';
 
 const SELECT_STATE = {
