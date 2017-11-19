@@ -53,6 +53,7 @@ export default class DranimateMouseHandler {
       x: x - boundingRect.left,
       y: y - boundingRect.top
     };
+    // TODO: set window width and height on resize
     this.mouseRelative = {
       x: (x - boundingRect.left - window.innerWidth / 2) / zoom - this.panHandler.getPanPosition().x,
       y: (y - boundingRect.top - window.innerHeight / 2) / zoom - this.panHandler.getPanPosition().y

@@ -4,6 +4,7 @@ import {
   WebGLRenderer
 } from 'three';
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
+import DranimateLeapHandler from 'services/dranimate/leapHandler';
 import PanHandler from 'services/util/panHandler';
 import { clamp } from 'services/util/math';
 
@@ -28,6 +29,7 @@ var Dranimate = function () {
 
     let zoom = 1.0;
     const panHandler = new PanHandler();
+    let leapHandler;
     let mouseHandler;
 
     let isInRenderLoop = true;
@@ -56,6 +58,7 @@ var Dranimate = function () {
       camera.position.z = CAMERA_DEPTH;
 
       mouseHandler = new DranimateMouseHandler(renderer.domElement, panHandler);
+      // leapHandler = new DranimateLeapHandler(renderer.domElement, panHandler, puppets);
 
       refreshCamera();
       animate();
