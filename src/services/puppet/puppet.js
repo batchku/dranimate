@@ -207,7 +207,7 @@ Puppet.prototype.update = function() {
 // TODO: this work for everything execpt for threeMesh
 // ... mesh.rotation.set is different from the other kinds of rotation we are applying
 Puppet.prototype.getRotationCenter = function() {
-  // return new THREE.Vector2(
+  // return new Vector2(
   //   this._x + this.center.x,
   //   this._y + this.center.y
   // );

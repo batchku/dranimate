@@ -1,4 +1,8 @@
-import * as THREE from 'three';
+import {
+  OrthographicCamera,
+  Scene,
+  WebGLRenderer
+} from 'three';
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
 import PanHandler from 'services/util/panHandler';
 import { clamp } from 'services/util/math';
@@ -40,9 +44,9 @@ var Dranimate = function () {
       const halfHeight = height / 2;
       // OrthographicCamera: left, right, top, bottom, near, far
       // puppet.z = 0, controlPoint.z = 10
-      camera = new THREE.OrthographicCamera(-halfWidth, halfWidth, -halfHeight, halfHeight, CAMERA_DEPTH - 10, CAMERA_DEPTH + 1);
-      scene = new THREE.Scene();
-      renderer = new THREE.WebGLRenderer({ antialias: true });
+      camera = new OrthographicCamera(-halfWidth, halfWidth, -halfHeight, halfHeight, CAMERA_DEPTH - 10, CAMERA_DEPTH + 1);
+      scene = new Scene();
+      renderer = new WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(width, height);
       renderer.setClearColor(0xFFFFFF, 1);

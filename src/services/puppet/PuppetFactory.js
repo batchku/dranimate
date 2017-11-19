@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import {
   Box3,
   BoxHelper,
@@ -45,6 +44,7 @@ function buildFromOptions(options) {
   // canvas.getContext('2d');
   context.drawImage(imageNoBG, 0, 0, imageNoBG.width, imageNoBG.height, 0, 0, canvas.width, canvas.height);
 
+  const geometry = new Geometry();
   const imageTexture = new Texture(canvas);
   imageTexture.needsUpdate = true;
   const texturedMaterial = new MeshBasicMaterial({
@@ -52,35 +52,23 @@ function buildFromOptions(options) {
     transparent: true
   });
 
-  const vertsFlatArray = [];
-  for(var i = 0; i < verts.length; i++) {
-    vertsFlatArray.push(verts[i][0]);
-    vertsFlatArray.push(verts[i][1]);
-  }
+  const vertsFlatArray = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
+  const facesFlatArray = faces.map(face => face);
 
-  const facesFlatArray = [];
-  for(var i = 0; i < faces.length; i++) {
-    facesFlatArray.push(faces[i]);
-  }
+  // add geometry vertices
+  verts.map((vertex) => new Vector3(vertex[0], vertex[1], 0))
+    .forEach(vertex => geometry.vertices.push(vertex));
 
-  /* Create the THREE geometry */
-  const geometry = new Geometry();
 
-  for(var i = 0; i < vertsFlatArray.length; i+=2) {
-    const x = vertsFlatArray[i];
-    const y = vertsFlatArray[i+1];
-    geometry.vertices.push( new Vector3( x, y, 0 ) );
-  }
   for(var i = 0; i < facesFlatArray.length; i+=3) {
     const f1 = facesFlatArray[i];
-    const f2 = facesFlatArray[i+1];
-    const f3 = facesFlatArray[i+2];
-    geometry.faces.push( new Face3( f1, f2, f3 ) );
-
+    const f2 = facesFlatArray[i + 1];
+    const f3 = facesFlatArray[i + 2];
+    geometry.faces.push(new Face3(f1, f2, f3 ));
     geometry.faceVertexUvs[0].push( [
-      new Vector2(geometry.vertices[f1].x/imageNoBG.width, 1-geometry.vertices[f1].y/imageNoBG.height),
-      new Vector2(geometry.vertices[f2].x/imageNoBG.width, 1-geometry.vertices[f2].y/imageNoBG.height),
-      new Vector2(geometry.vertices[f3].x/imageNoBG.width, 1-geometry.vertices[f3].y/imageNoBG.height)
+      new Vector2(geometry.vertices[f1].x / imageNoBG.width, 1 - geometry.vertices[f1].y / imageNoBG.height),
+      new Vector2(geometry.vertices[f2].x / imageNoBG.width, 1 - geometry.vertices[f2].y / imageNoBG.height),
+      new Vector2(geometry.vertices[f3].x / imageNoBG.width, 1 - geometry.vertices[f3].y / imageNoBG.height)
     ]);
   }
 
@@ -100,15 +88,14 @@ function buildFromOptions(options) {
   const size = box3.getSize(new Vector3());
   const center = new Vector2(size.x / 2, size.y / 2);
 
-  const controlPointSpheres = [];
-  for(var i = 0; i < controlPoints.length; i++) {
+  const controlPointSpheres = controlPoints.map(() => {
     const sphere = new Mesh(
-      new SphereGeometry( 5, 32, 32 ),
-      new MeshBasicMaterial( {color: 0xFFAB40} )
+      new SphereGeometry(5, 32, 32),
+      new MeshBasicMaterial({ color: 0xFFAB40 })
     );
     sphere.position.z = 10;
-    controlPointSpheres.push(sphere);
-  }
+    return sphere;
+  });
 
   const group = new Group();
   group.add(threeMesh);
