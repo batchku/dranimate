@@ -45,7 +45,6 @@ class Stage extends Component {
   onDeleteSelectedPuppet = () => dranimate.deleteSelectedPuppet();
 
   onEditSelectedPuppet = () => {
-    console.log('onSelectPuppet', dranimate.getSelectedPuppet());
     editorHelper.setItem(dranimate.getSelectedPuppet());
     this.setState({ editorIsOpen: true });
   };
@@ -61,12 +60,6 @@ class Stage extends Component {
           editorHelper.setItem(result);
           this.setState({ editorIsOpen: true });
         }
-
-        // editorHelper.setItem(result);
-        // const isPuppet = !!result.id;
-        // isPuppet ?
-        //   dranimate.addPuppet(result) :
-        //   this.openEditor();
       })
       .catch(error => console.log('error', error));
   }

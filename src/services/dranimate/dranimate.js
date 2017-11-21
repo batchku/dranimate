@@ -58,7 +58,7 @@ var Dranimate = function () {
       camera.position.z = CAMERA_DEPTH;
 
       mouseHandler = new DranimateMouseHandler(renderer.domElement, panHandler);
-      // leapHandler = new DranimateLeapHandler(renderer.domElement, panHandler, puppets);
+      leapHandler = new DranimateLeapHandler(renderer.domElement, panHandler, puppets);
 
       refreshCamera();
       animate();
