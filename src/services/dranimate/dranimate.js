@@ -40,17 +40,15 @@ var Dranimate = function () {
 
     this.setup = function (canvasContainer) {
       /* Initialize THREE canvas and scene */
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const halfWidth = width / 2;
-      const halfHeight = height / 2;
+      const halfWidth = window.innerWidth / 2;
+      const halfHeight = window.innerHeight / 2;
       // OrthographicCamera: left, right, top, bottom, near, far
       // puppet.z = 0, controlPoint.z = 10
       camera = new OrthographicCamera(-halfWidth, halfWidth, -halfHeight, halfHeight, CAMERA_DEPTH - 10, CAMERA_DEPTH + 1);
       scene = new Scene();
       renderer = new WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.setSize(width, height);
+      // renderer.setSize(width, height);
       renderer.setClearColor(0xFFFFFF, 1);
       canvasContainer.appendChild(renderer.domElement);
       camera.position.x = 0;
@@ -77,6 +75,30 @@ var Dranimate = function () {
     this.onMouseMove = event => mouseHandler.onMouseMove(event, puppets, zoom);
 
     this.onMouseUp = event => mouseHandler.onMouseUp(event, puppets, zoom);
+
+    // TODO: create touch handler
+    this.onTouchStart = event => {
+      // event.nativeEvent.preventDefault();
+      event.stopPropagation();
+      if (event.touches.length > 1) { return; }
+      this.onMouseMove(event.touches[0], true); // force a "mouse hover"
+      this.onMouseDown(event.touches[0], true);
+    };
+
+    // TODO: create touch handler
+    this.onTouchMove = event => {
+      // event.nativeEvent.preventDefault();
+      event.stopPropagation();
+      this.onMouseMove(event.touches[0], true);
+    };
+
+    // TODO: create touch handler
+    this.onTouchEnd = event => {
+      // event.nativeEvent.preventDefault();
+      event.stopPropagation();
+      if (event.touches.length) { return; }
+      this.onMouseUp(event);
+    };
 
     // this.createNewPuppet = function (vertices, faces, controlPoints, image, imageNoBG) {
     //
@@ -163,10 +185,7 @@ var Dranimate = function () {
       }
     }, false);
 
-    window.addEventListener('resize', $event => {
-      refreshCamera();
-      renderer.setSize( window.innerWidth, window.innerHeight );
-    }, false );
+    window.addEventListener('resize', $event => refreshCamera(), false );
 
 /*****************************
     Draw/update loop
@@ -180,6 +199,7 @@ var Dranimate = function () {
       camera.top = -height;
       camera.bottom = height;
       camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     function animate() {

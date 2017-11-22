@@ -66,12 +66,15 @@ class Stage extends Component {
 
   render() {
     return (
-      <div>
+      <div className={styles.stage}>
         <div
           className={styles.dranimateCanvas}
           onMouseDown={this.onMouseDown}
           onMouseMove={dranimate.onMouseMove}
           onMouseUp={dranimate.onMouseUp}
+          onTouchStart={dranimate.onTouchStart}
+          onTouchMove={dranimate.onTouchMove}
+          onTouchEnd={dranimate.onTouchEnd}
           ref={input => this.dranimateStageContainer = input}
         />
         <TopBar className={styles.topBar}/>

@@ -160,6 +160,7 @@ var ImageToMesh = function () {
     };
 
     this.onTouchMove = event => {
+      event.nativeEvent.preventDefault();
       event.stopPropagation();
       this.onMouseMove(event.touches[0], true);
     };
