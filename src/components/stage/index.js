@@ -67,13 +67,14 @@ class Stage extends Component {
   render() {
     return (
       <div>
-        <TopBar />
         <div
+          className={styles.dranimateCanvas}
           onMouseDown={this.onMouseDown}
           onMouseMove={dranimate.onMouseMove}
           onMouseUp={dranimate.onMouseUp}
           ref={input => this.dranimateStageContainer = input}
         />
+        <TopBar className={styles.topBar}/>
         <ParamControl
           className={styles.paramControl}
           selectedPuppet={this.state.selectedPuppet}

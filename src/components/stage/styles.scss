@@ -1,7 +1,14 @@
 @import '~styles/index';
 
-.puppetContainer {
-  border: 1px solid black;
+.dranimateCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+.topBar {
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 .fab {

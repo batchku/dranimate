@@ -78,11 +78,11 @@ var ImageToMesh = function () {
         console.log('------imageToMesh.setup', i2mCanvas)
     }
 
-    this.onMouseMove = function(evt) {
-      evt.preventDefault();
-      const rect = evt.target.getBoundingClientRect();
-      mouseAbs.x = (evt.clientX - rect.left) / zoom;
-      mouseAbs.y = (evt.clientY - rect.top)  / zoom;
+    this.onMouseMove = (event, isTouch) => {
+      if (!isTouch) { event.preventDefault(); };
+      const rect = event.target.getBoundingClientRect();
+      mouseAbs.x = (event.clientX - rect.left) / zoom;
+      mouseAbs.y = (event.clientY - rect.top)  / zoom;
       mouse.x = mouseAbs.x - panHandler.getPanPosition().x;
       mouse.y = mouseAbs.y - panHandler.getPanPosition().y;
       mouse.x = Math.round(mouse.x);
@@ -111,8 +111,8 @@ var ImageToMesh = function () {
       }
     };
 
-    this.onMouseDown = function(evt) {
-      evt.preventDefault();
+    this.onMouseDown = (event, isTouch) => {
+      if (!isTouch) { event.preventDefault(); };
       mouseState = MOUSE_STATE.DOWN;
 
       panHandler.onMouseDown(mouseAbs.x, mouseAbs.y, zoom);
@@ -129,13 +129,13 @@ var ImageToMesh = function () {
       }
     };
 
-    this.onContextMenu = function (evt) {
-      evt.preventDefault();
+    this.onContextMenu = event => {
+      event.preventDefault();
       return false;
     }
 
-    this.onMouseUp = event => {
-      event.preventDefault();
+    this.onMouseUp = (event, isTouch) => {
+      if (!isTouch) { event.preventDefault(); };
       mouseState = MOUSE_STATE.UP;
     }
 
@@ -150,6 +150,24 @@ var ImageToMesh = function () {
       if (mouseState !== MOUSE_STATE.DOWN) {
         mouseState = MOUSE_STATE.UP;
       }
+    };
+
+    this.onTouchStart = event => {
+      event.stopPropagation();
+      if (event.touches.length > 1) { return; }
+      this.onMouseMove(event.touches[0], true); // build highlight data by forcing a "mouse hover"
+      this.onMouseDown(event.touches[0], true);
+    };
+
+    this.onTouchMove = event => {
+      event.stopPropagation();
+      this.onMouseMove(event.touches[0], true);
+    };
+
+    this.onTouchEnd = event => {
+      event.stopPropagation();
+      if (event.touches.length) { return; }
+      this.onMouseUp(event);
     };
 
     this.generateMesh = function () {

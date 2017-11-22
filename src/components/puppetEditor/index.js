@@ -121,6 +121,9 @@ class PuppetEditor extends Component {
               onMouseUp={this.imageToMesh.onMouseUp}
               onMouseOut={this.imageToMesh.onMouseOut}
               onMouseOver={this.imageToMesh.onMouseOver}
+              onTouchStart={this.imageToMesh.onTouchStart}
+              onTouchMove={this.imageToMesh.onTouchMove}
+              onTouchEnd={this.imageToMesh.onTouchEnd}
             />
             <ZoomPanner
               onZoomSelect={this.onZoomSelect}

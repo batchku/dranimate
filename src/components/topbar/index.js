@@ -6,12 +6,14 @@ class TopBar extends Component {
 
   render() {
     return (
-      <div className={styles.topbar}>
-        <div className={`${styles.topbarItem} ${styles.aboutContainer}`}>
-          <p className={styles.aboutLabel}>Dranimate</p>
-          <p className={styles.aboutInfo}>About</p>
+      <div className={this.props.className}>
+        <div className={styles.topbar}>
+          <div className={`${styles.topbarItem} ${styles.aboutContainer}`}>
+            <p className={styles.aboutLabel}>Dranimate</p>
+            <p className={styles.aboutInfo}>About</p>
+          </div>
         </div>
-      </div>
+      </div>  
     );
   }
 }
