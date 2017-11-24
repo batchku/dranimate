@@ -21,6 +21,23 @@ class Stage extends Component {
   }
 
   componentDidMount = () => {
+    // passive touch event listeners seem to be needed, which react does not support
+    this.dranimateStageContainer.addEventListener(
+      'touchstart',
+      event => dranimate.onTouchStart(event),
+      { passive: false }
+    );
+    this.dranimateStageContainer.addEventListener(
+      'touchmove',
+      event => dranimate.onTouchMove(event),
+      { passive: false }
+    );
+    this.dranimateStageContainer.addEventListener(
+      'touchend',
+      event => dranimate.onTouchEnd(event),
+      { passive: false }
+    );
+
     dranimate.setup(this.dranimateStageContainer);
   };
 
@@ -72,9 +89,6 @@ class Stage extends Component {
           onMouseDown={this.onMouseDown}
           onMouseMove={dranimate.onMouseMove}
           onMouseUp={dranimate.onMouseUp}
-          onTouchStart={dranimate.onTouchStart}
-          onTouchMove={dranimate.onTouchMove}
-          onTouchEnd={dranimate.onTouchEnd}
           ref={input => this.dranimateStageContainer = input}
         />
         <TopBar className={styles.topBar}/>

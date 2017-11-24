@@ -19,6 +19,10 @@ function loadDranimateFile(element) {
   if (!file) {
     return Promise.reject(error);
   }
+  if (file.name.includes('.json')) {
+    // TODO: why does mobile android not recognizing json mime type???
+    return loadPuppetFromFile(file);
+  }
   const fileType = Object.keys(mimeTypeMap)
     .find(key => mimeTypeMap[key].includes(file.type));
   if (!fileType) {

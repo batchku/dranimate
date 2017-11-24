@@ -90,7 +90,7 @@ function buildFromOptions(options) {
 
   const controlPointSpheres = controlPoints.map(() => {
     const sphere = new Mesh(
-      new SphereGeometry(5, 32, 32),
+      new SphereGeometry(15, 32, 32),
       new MeshBasicMaterial({ color: 0xFFAB40 })
     );
     sphere.position.z = 10;

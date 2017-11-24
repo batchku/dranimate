@@ -5,6 +5,7 @@ import {
 } from 'three';
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
 import DranimateLeapHandler from 'services/dranimate/leapHandler';
+import DranimateTouchHandler from 'services/dranimate/touchHandler';
 import PanHandler from 'services/util/panHandler';
 import { clamp } from 'services/util/math';
 
@@ -31,6 +32,7 @@ var Dranimate = function () {
     const panHandler = new PanHandler();
     let leapHandler;
     let mouseHandler;
+    let touchHandler;
 
     let isInRenderLoop = true;
 
@@ -56,6 +58,7 @@ var Dranimate = function () {
       camera.position.z = CAMERA_DEPTH;
 
       mouseHandler = new DranimateMouseHandler(renderer.domElement, panHandler);
+      touchHandler = new DranimateTouchHandler(renderer.domElement, panHandler);
       leapHandler = new DranimateLeapHandler(renderer.domElement, panHandler, puppets);
 
       refreshCamera();
@@ -76,29 +79,11 @@ var Dranimate = function () {
 
     this.onMouseUp = event => mouseHandler.onMouseUp(event, puppets, zoom);
 
-    // TODO: create touch handler
-    this.onTouchStart = event => {
-      // event.nativeEvent.preventDefault();
-      event.stopPropagation();
-      if (event.touches.length > 1) { return; }
-      this.onMouseMove(event.touches[0], true); // force a "mouse hover"
-      this.onMouseDown(event.touches[0], true);
-    };
+    this.onTouchStart = event => touchHandler.onTouchStart(event, puppets, zoom);
 
-    // TODO: create touch handler
-    this.onTouchMove = event => {
-      // event.nativeEvent.preventDefault();
-      event.stopPropagation();
-      this.onMouseMove(event.touches[0], true);
-    };
+    this.onTouchMove = event => touchHandler.onTouchMove(event, puppets, zoom);
 
-    // TODO: create touch handler
-    this.onTouchEnd = event => {
-      // event.nativeEvent.preventDefault();
-      event.stopPropagation();
-      if (event.touches.length) { return; }
-      this.onMouseUp(event);
-    };
+    this.onTouchEnd = event => touchHandler.onTouchEnd(event, puppets, zoom);
 
     // this.createNewPuppet = function (vertices, faces, controlPoints, image, imageNoBG) {
     //

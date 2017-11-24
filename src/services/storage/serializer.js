@@ -29,7 +29,7 @@ function getJsonFromPuppet(puppet) {
 
 function savePuppetToFile(puppet) {
   const puppetJsonString = getJsonFromPuppet(puppet);
-  var blob = new Blob([puppetJsonString], {type: 'application/json;charset=utf-8'});
+  var blob = new Blob([puppetJsonString], {type: 'application/json'});
   FileSaver.saveAs(blob, 'testpuppet.json');
 }
 
