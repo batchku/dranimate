@@ -45,6 +45,23 @@ class PuppetEditor extends Component {
     else {
       this.props.onClose();
     }
+
+    // passive touch event listeners seem to be needed, which react does not support
+    this.canvasElement.addEventListener(
+      'touchstart',
+      event => this.imageToMesh.onTouchStart(event),
+      { passive: false }
+    );
+    this.canvasElement.addEventListener(
+      'touchmove',
+      event => this.imageToMesh.onTouchMove(event),
+      { passive: false }
+    );
+    this.canvasElement.addEventListener(
+      'touchend',
+      event => this.imageToMesh.onTouchEnd(event),
+      { passive: false }
+    );
   }
 
   runSlic = () => {
@@ -121,9 +138,6 @@ class PuppetEditor extends Component {
               onMouseUp={this.imageToMesh.onMouseUp}
               onMouseOut={this.imageToMesh.onMouseOut}
               onMouseOver={this.imageToMesh.onMouseOver}
-              onTouchStart={this.imageToMesh.onTouchStart}
-              onTouchMove={this.imageToMesh.onTouchMove}
-              onTouchEnd={this.imageToMesh.onTouchEnd}
             />
             <ZoomPanner
               onZoomSelect={this.onZoomSelect}

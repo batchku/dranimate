@@ -130,11 +130,11 @@ var Dranimate = function () {
     }
 
     this.getSelectedPuppet = function () {
-      return mouseHandler.getSelectedPuppet();
+      return mouseHandler.getSelectedPuppet() || touchHandler.getSelectedPuppet();
     }
 
     this.deleteSelectedPuppet = function () {
-      const selectedPuppet = mouseHandler.getSelectedPuppet();
+      const selectedPuppet = this.getSelectedPuppet();
       if (!selectedPuppet) {
         return;
       }
@@ -143,6 +143,7 @@ var Dranimate = function () {
       scene.remove(selectedPuppet.group);
       puppets.splice(index, 1);
       mouseHandler.onRemovePuppet();
+      touchHandler.onRemovePuppet();
     }
 
     // this.startRenderLoop = () => {

@@ -24,9 +24,11 @@ export default class DranimateTouchHandler {
     this.rendererElement = rendererElement;
     this.panHandler = panHandler;
     this.touchMap = new Map();
+    this.selectedPuppet;
   }
 
   onTouchStart(event, puppets, zoom) {
+    event.preventDefault();
     if(this.panHandler.getPanEnabled()) {
       const firstTouchLocation = getFirstTouchLocation(event, this.rendererElement);
       this.panHandler.onMouseDown(firstTouchLocation.x, firstTouchLocation.y, zoom);
@@ -39,8 +41,18 @@ export default class DranimateTouchHandler {
     const controlPoint = getPuppetAndControlPointFromPostion(puppets, relativePosition.x, relativePosition.y, 10, zoom);
     if (controlPoint) {
       this.touchMap.set(touch.identifier, controlPoint);
+      return;
     }
 
+    // IF A SINGLE FINGER TOUCHES A PUPPET BUT NOT A CONTROL POINT, SELECT THE PUPPET
+    if (event.touches.length > 1) {
+      return;
+    }
+    this.selectedPuppet = puppets.find(puppet => puppet.pointInsideMesh(relativePosition.x, relativePosition.y));
+    if (this.selectedPuppet) {
+      this.selectedPuppet.setSelectionState(true, relativePosition.x, relativePosition.y);
+    }
+    puppets.forEach(puppet => puppet.setSelectionGUIVisible(puppet === this.selectedPuppet));
   }
 
   onTouchMove(event, puppets, zoom) {
@@ -50,6 +62,14 @@ export default class DranimateTouchHandler {
       this.panHandler.onMouseMove(firstTouchLocation.x, firstTouchLocation.y, zoom);
       return;
     }
+
+    if (this.selectedPuppet) {
+      const firstTouch = event.touches[0];
+      const relativePosition = getRelativeTouchPosition(firstTouch.clientX, firstTouch.clientY, this.rendererElement, this.panHandler, zoom);
+      this.selectedPuppet.incrementPosition(relativePosition.x, relativePosition.y);
+      return;
+    }
+
     // FOR EACH TOUCH POINT ASSOCIATED WITH A CONTROL POINT, UPDATE CONTROL POINT
     Object.values(event.touches)
       .filter(touch => this.touchMap.has(touch.identifier))
@@ -64,11 +84,25 @@ export default class DranimateTouchHandler {
   }
 
   onTouchEnd(event, puppets, zoom) {
+    event.preventDefault();
     const currentTouchIds = Object.values(event.touches).map(touch => touch.identifier);
     // IF A REMOVED TOUCH POINT WAS ASSOCIATED WITH A CONTROL POINT, REMOVE IT FROM TOUCHMAP
     [...this.touchMap.keys()]
       .filter(touchId => !currentTouchIds.includes(touchId))
       .forEach(touchId => this.touchMap.delete(touchId));
+
+    if (this.selectedPuppet && !event.touches.length) {
+      this.selectedPuppet.setSelectionState(false);
+      this.selectedPuppet = null;
+    }
+  }
+
+  getSelectedPuppet() {
+    return this.selectedPuppet;
+  }
+
+  onRemovePuppet() {
+    this.selectedPuppet = null;
   }
 
 }

@@ -153,20 +153,19 @@ var ImageToMesh = function () {
     };
 
     this.onTouchStart = event => {
-      event.stopPropagation();
+      event.preventDefault();
       if (event.touches.length > 1) { return; }
       this.onMouseMove(event.touches[0], true); // build highlight data by forcing a "mouse hover"
       this.onMouseDown(event.touches[0], true);
     };
 
     this.onTouchMove = event => {
-      event.nativeEvent.preventDefault();
-      event.stopPropagation();
+      event.preventDefault();
       this.onMouseMove(event.touches[0], true);
     };
 
     this.onTouchEnd = event => {
-      event.stopPropagation();
+      event.preventDefault();
       if (event.touches.length) { return; }
       this.onMouseUp(event);
     };
