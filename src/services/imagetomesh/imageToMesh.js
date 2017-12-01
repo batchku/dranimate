@@ -63,6 +63,7 @@ var ImageToMesh = function () {
     let blankContext;
 
     var zoom;
+    let lastTouchTime = 0;
 
     const panHandler = new PanHandler();
 
@@ -183,6 +184,13 @@ var ImageToMesh = function () {
     this.onTouchStart = event => {
       event.preventDefault();
       if (event.touches.length > 1) { return; }
+      const now = performance.now();
+      const lastTouchDelta = now - lastTouchTime;
+      lastTouchTime = now;
+      if (lastTouchDelta < 200) {
+        this.onDoubleClick();
+        return;
+      }
       this.onMouseMove(event.touches[0], true); // build highlight data by forcing a "mouse hover"
       this.onMouseDown(event.touches[0], true);
     };
@@ -196,6 +204,15 @@ var ImageToMesh = function () {
       event.preventDefault();
       if (event.touches.length) { return; }
       this.onMouseUp(event);
+    };
+
+    this.onDoubleClick = event => {
+      if (selectState === SELECT_STATE.CONTROL_POINT && activeControlPointIndex > -1) {
+        // remove active control point
+        controlPoints.splice(activeControlPointIndex, 1);
+        activeControlPointIndex = -1;
+        redraw();
+      }
     };
 
     this.generateMesh = (puppetId) => {
