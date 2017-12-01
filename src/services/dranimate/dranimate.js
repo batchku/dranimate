@@ -96,9 +96,9 @@ var Dranimate = function () {
     // }
 
     this.addPuppet = function (p) {
-      const matchingPuppet = puppets.find(puppet => puppet.id === p.id);
-      if(matchingPuppet) {
-        console.log('TODO: save puppet instead of adding');
+      const matchingIndex = puppets.findIndex(puppet => puppet.id === p.id);
+      if(matchingIndex > -1) {
+        this.removePuppetByIndex(matchingIndex);
       }
       puppets.push(p);
       scene.add(p.group);
@@ -139,11 +139,19 @@ var Dranimate = function () {
         return;
       }
       const index = puppets.indexOf(selectedPuppet);
-      selectedPuppet.cleanup();
-      scene.remove(selectedPuppet.group);
-      puppets.splice(index, 1);
+      this.removePuppetByIndex(index);
       mouseHandler.onRemovePuppet();
       touchHandler.onRemovePuppet();
+    }
+
+    this.removePuppetByIndex = function(index) {
+      const puppet = puppets[index];
+      if (!puppet) {
+        return;
+      }
+      puppet.cleanup();
+      scene.remove(puppet.group);
+      puppets.splice(index, 1);
     }
 
     // this.startRenderLoop = () => {

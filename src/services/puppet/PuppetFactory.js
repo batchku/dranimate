@@ -13,7 +13,6 @@ import {
   Vector3
 } from 'three';
 import Puppet from 'services/puppet/puppet';
-import dranimate from 'services/dranimate/dranimate';
 import generateUniqueId from 'services/util/uuid';
 
 // Temporary guard against this nasty guy: https://github.com/cmuartfab/dranimate-browser_archive/issues/1
@@ -134,7 +133,5 @@ export default function requestPuppetCreation(options) {
     backgroundRemovalData: options.backgroundRemovalData,
     ...buildFromOptions(options)
   };
-  const p = new Puppet(puppetData);
-  dranimate.addPuppet(p);
-  return p;
+  return new Puppet(puppetData);
 }

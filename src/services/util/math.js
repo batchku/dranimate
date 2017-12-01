@@ -15,4 +15,11 @@ function pointIsInsideTriangle(x, y, p1, p2, p3) {
   return ((b1 === b2) && (b2 === b3));
 }
 
-export { clamp, pointIsInsideTriangle };
+function getDistance(x1, y1, x2, y2) {
+  return Math.sqrt(
+    Math.pow(x1 - x2, 2) +
+    Math.pow(y1 - y2, 2)
+  );
+}
+
+export { clamp, pointIsInsideTriangle, getDistance };

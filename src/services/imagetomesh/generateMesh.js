@@ -1,6 +1,7 @@
 import Delaunay from 'delaunay-fast';
 import loadImage from 'services/util/imageLoader';
 import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
+import requestPuppetCreation from 'services/puppet/PuppetFactory';
 
 
 function findEdgesOfImage(imageNoBackgroundData, contourData) {
@@ -188,22 +189,24 @@ function generateTriangles(contourPoints, controlPoints, imageNoBackgroundData) 
 }
 
 // TODO: make this return a class that puppet factory can take to create puppet
-function generateMesh(image, imageNoBackgroundData, originalImageData, context, dummyContext, dummyCanvas, controlPoints, slic) {
+function generateMesh(puppetId, image, imageNoBackgroundData, originalImageData, context, dummyContext, dummyCanvas, controlPoints, slic) {
   const contourData = findEdgesOfImage(imageNoBackgroundData, context.createImageData(slic.result.width, slic.result.height));
   return removeBackgroundFromImage(slic, imageNoBackgroundData, originalImageData, dummyContext, dummyCanvas)
     .then((onlySelectionImage) => {
       const contourPoints = recalculateContourPoints(contourData);
       const geoData = generateTriangles(contourPoints, controlPoints, imageNoBackgroundData);
       return Promise.resolve({
+        id: puppetId,
         image,
-        onlySelectionImage,
         vertices: geoData.vertices,
-        triangles: geoData.triangles,
-        controlPointIndices: geoData.controlPointIndices,
+        faces: geoData.triangles,
+        controlPoints: geoData.controlPointIndices,
         controlPointPositions: controlPoints,
-        imageNoBackgroundData
+        imageNoBG: onlySelectionImage,
+        backgroundRemovalData: imageNoBackgroundData
       });
     })
+    .then(puppetParams => requestPuppetCreation(puppetParams));
 }
 
 export { generateMesh };

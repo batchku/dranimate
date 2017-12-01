@@ -5,7 +5,7 @@ import ZoomPanner from 'components/zoomPanner';
 import ImageToMesh from 'services/imageToMesh/imageToMesh'
 import editorHelper from 'services/imageToMesh/EditorHelper';
 import generateUniqueId from 'services/util/uuid';
-import requestPuppetCreation from 'services/puppet/PuppetFactory';
+import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
 
 class PuppetEditor extends Component {
@@ -82,33 +82,12 @@ class PuppetEditor extends Component {
       alert('Puppet must have at least two control points');
       return;
     }
-    this.imageToMesh.generateMesh()
-      .then((puppetData) => {
-        // TODO: this block should live in the image to mesh file
-        const id = editorHelper.isPuppet ? editorHelper.getItem().id : generateUniqueId();
-        //
-        // vertices,
-        // triangles,
-        // image,
-        // onlySelectionImage,
-        // controlPoints,
-        // controlPointIndices,
-        // imageNoBackgroundData
-
-        const puppetParams = {
-          id,
-          vertices: puppetData.vertices,
-          faces: puppetData.triangles,
-          controlPoints: puppetData.controlPointIndices, // AHHHHHHH!!!!
-          controlPointPositions: puppetData.controlPoints,
-          image: puppetData.image,
-          imageNoBG: puppetData.onlySelectionImage,
-          backgroundRemovalData: puppetData.imageNoBackgroundData
-        };
-        console.log('puppetParams.controlPoints', puppetParams.controlPoints)
-        console.log('puppetParams.controlPointPositions', puppetParams.controlPointPositions)
-
-        const puppet = requestPuppetCreation(puppetParams);
+    const puppetId = editorHelper.isPuppet ? editorHelper.getItem().id : generateUniqueId();
+    this.imageToMesh.generateMesh(puppetId)
+      .then((puppet) => {
+        if (puppet) {
+          dranimate.addPuppet(puppet);
+        }
         this.props.onClose();
       });
   }

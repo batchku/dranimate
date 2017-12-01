@@ -13,6 +13,7 @@ import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
 import loadImage from 'services/util/imageLoader';
 import PanHandler from 'services/util/panHandler';
 import { generateMesh } from 'services/imagetomesh/generateMesh';
+import { getDistance } from 'services/util/math';
 
 const SELECT_STATE = {
   PAN: 'PAN',
@@ -54,6 +55,7 @@ var ImageToMesh = function () {
 
     var controlPoints;
     var controlPointIndices;
+    let activeControlPointIndex = -1;
 
     var dummyCanvas;
     var dummyContext;
@@ -89,6 +91,32 @@ var ImageToMesh = function () {
       mouse.y = Math.round(mouse.y);
 
       if (selectState === SELECT_STATE.CONTROL_POINT) {
+        if (!controlPoints.length) { return; }
+
+        // Hover state control point logic
+        if (mouseState === MOUSE_STATE.UP) {
+          const nearestControlPoint = controlPoints
+            .map((cp, index) => ({
+              index,
+              distance: getDistance(mouse.x, mouse.y, cp[0], cp[1])
+            }))
+            .filter(cp => cp.distance < 10)
+            .sort((a, b) => a.distance - b.distance)[0];
+
+          if (nearestControlPoint !== undefined) {
+            activeControlPointIndex = nearestControlPoint.index;
+          }
+          else {
+            activeControlPointIndex = -1;
+          }
+        }
+        // Dragging control point logic
+        if (mouseState === MOUSE_STATE.DOWN && controlPoints[activeControlPointIndex]) {
+          const cp = controlPoints[activeControlPointIndex];
+          cp[0] = mouse.x;
+          cp[1] = mouse.y;
+        }
+        redraw();
         return;
       }
       if (mouseState !== MOUSE_STATE.DOWN) {
@@ -117,7 +145,7 @@ var ImageToMesh = function () {
 
       panHandler.onMouseDown(mouseAbs.x, mouseAbs.y, zoom);
 
-      if (selectState === SELECT_STATE.CONTROL_POINT) {
+      if (selectState === SELECT_STATE.CONTROL_POINT && activeControlPointIndex < 0) {
         controlPoints.push([mouse.x, mouse.y]);
         redraw();
       }
@@ -170,8 +198,8 @@ var ImageToMesh = function () {
       this.onMouseUp(event);
     };
 
-    this.generateMesh = function () {
-      return generateMesh(image, imageNoBackgroundData, originalImageData, context, dummyContext, dummyCanvas, controlPoints, slic);
+    this.generateMesh = (puppetId) => {
+      return generateMesh(puppetId, image, imageNoBackgroundData, originalImageData, context, dummyContext, dummyCanvas, controlPoints, slic);
     }
 
     // TODO: this should be the constructor
@@ -199,7 +227,6 @@ var ImageToMesh = function () {
         controlPointIndices = [];
 
         zoom = 1.0;
-
         if(controlPointPositions) {
           controlPoints = controlPointPositions;
         }
@@ -394,15 +421,15 @@ var ImageToMesh = function () {
         context.globalAlpha = 1.0;
 
         if(controlPoints && controlPoints.length) {
-            context.fillStyle = '#00FFFF';
-            for(var i = 0; i < controlPoints.length; i++) {
-                var cpx = controlPoints[i][0];
-                var cpy = controlPoints[i][1];
-
-                context.beginPath();
-                context.arc(cpx, cpy, 3, 0, 2 * Math.PI, false);
-                context.fill();
-            }
+          context.fillStyle = '#0099EE';
+          controlPoints.forEach((cp, index) => {
+            const x = cp[0];
+            const y = cp[1];
+            const radius = index === activeControlPointIndex ? 10 : 5;
+            context.beginPath();
+            context.arc(x, y, radius, 0, 2 * Math.PI);
+            context.fill();
+          });
         }
 
         context.restore();

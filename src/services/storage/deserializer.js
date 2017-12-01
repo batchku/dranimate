@@ -36,8 +36,7 @@ function buildPuppetFromImagesAndJson(image, imageNoBG, puppetData) {
     backgroundRemovalData
   };
   // TODO: move this logic to caller
-  const puppet = requestPuppetCreation(puppetParams);
-  return puppet;
+  return requestPuppetCreation(puppetParams);
 }
 
 function loadPuppetFromFile(file) {
