@@ -1,6 +1,6 @@
 {
   "name": "Dranimate",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Dranimate web app",
   "scripts": {
     "build": "npm run clean && npm run build:webpack && npm run build:copy",
