@@ -1,0 +1,45 @@
+@import '~styles/index';
+
+.stage {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.dranimateCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+.topBar {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.fab {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 15px;
+}
+
+.hiddenFilePicker {
+  display: none;
+}
+
+.zoomPanner {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 15px;
+  border: 1px solid $color-black;
+}
+
+.paramControl {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 15px;
+  border: 1px solid $color-black;
+}

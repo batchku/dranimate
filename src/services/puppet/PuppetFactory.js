@@ -1,0 +1,137 @@
+import {
+  Box3,
+  BoxHelper,
+  Color,
+  Face3,
+  Geometry,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  SphereGeometry,
+  Texture,
+  Vector2,
+  Vector3
+} from 'three';
+import Puppet from 'services/puppet/puppet';
+import generateUniqueId from 'services/util/uuid';
+
+// Temporary guard against this nasty guy: https://github.com/cmuartfab/dranimate-browser_archive/issues/1
+const errorMessage = 'Must load largest puppet first.'
+let mostFaces = 0;
+
+//------- LOGIC FOR BUILDING PUPPETS, THIS IS TO KEEP CONSTRUCTION OUTSIDE OF PUPPET ENTITY ------//
+function buildFromOptions(options) {
+  const image = options.image;
+  const id = options.id || generateUniqueId();
+  const verts = options.vertices;
+  const faces = options.faces;
+  const controlPoints = options.controlPoints;
+  const imageNoBG = options.imageNoBG;
+
+  /* Generate wireframe material */
+  const wireframeMaterial = new MeshBasicMaterial({
+    color: 0xFF0000,
+    wireframe: true,
+    wireframeLinewidth: 1
+  });
+
+  /* Generate image material */
+  const canvas = document.createElement('canvas');
+  canvas.width  = imageNoBG.width;
+  canvas.height = imageNoBG.height;
+  const context = canvas.getContext('2d');
+  // canvas.getContext('2d');
+  context.drawImage(imageNoBG, 0, 0, imageNoBG.width, imageNoBG.height, 0, 0, canvas.width, canvas.height);
+
+  const geometry = new Geometry();
+  const imageTexture = new Texture(canvas);
+  imageTexture.needsUpdate = true;
+  const texturedMaterial = new MeshBasicMaterial({
+    map: imageTexture,
+    transparent: true
+  });
+
+  const vertsFlatArray = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
+  const facesFlatArray = faces.map(face => face);
+
+  // add geometry vertices
+  verts.map((vertex) => new Vector3(vertex[0], vertex[1], 0))
+    .forEach(vertex => geometry.vertices.push(vertex));
+
+
+  for(var i = 0; i < facesFlatArray.length; i+=3) {
+    const f1 = facesFlatArray[i];
+    const f2 = facesFlatArray[i + 1];
+    const f3 = facesFlatArray[i + 2];
+    geometry.faces.push(new Face3(f1, f2, f3 ));
+    geometry.faceVertexUvs[0].push( [
+      new Vector2(geometry.vertices[f1].x / imageNoBG.width, 1 - geometry.vertices[f1].y / imageNoBG.height),
+      new Vector2(geometry.vertices[f2].x / imageNoBG.width, 1 - geometry.vertices[f2].y / imageNoBG.height),
+      new Vector2(geometry.vertices[f3].x / imageNoBG.width, 1 - geometry.vertices[f3].y / imageNoBG.height)
+    ]);
+  }
+
+  geometry.dynamic = true;
+  // geometry.translate(-200, -200, 0);
+
+  /* Expand mesh to show finer edges of image (as opposed to rough triangle edges of mesh) */
+  console.log("TODO: expand mesh")
+
+  const threeMesh = new Mesh(geometry, texturedMaterial);
+
+  const boundingBox = new BoxHelper(threeMesh, new Color(0xFF9900));
+  boundingBox.visible = false;
+
+  const box3 = new Box3();
+  box3.setFromObject(boundingBox);
+  const size = box3.getSize(new Vector3());
+  const center = new Vector2(size.x / 2, size.y / 2);
+
+  const controlPointSpheres = controlPoints.map(() => {
+    const sphere = new Mesh(
+      new SphereGeometry(15, 32, 32),
+      new MeshBasicMaterial({ color: 0xFFAB40 })
+    );
+    sphere.position.z = 10;
+    return sphere;
+  });
+
+  const group = new Group();
+  group.add(threeMesh);
+  group.add(boundingBox);
+  controlPointSpheres.forEach(cp => group.add(cp));
+
+  return {
+    image,
+    id,
+    wireframeMaterial,
+    texturedMaterial,
+    verts,
+    faces,
+    controlPoints,
+    vertsFlatArray,
+    facesFlatArray,
+    threeMesh,
+    boundingBox,
+    controlPointSpheres,
+    group
+  };
+}
+
+export default function requestPuppetCreation(options) {
+  if (!mostFaces) {
+    mostFaces = options.faces.length;
+  }
+  if (options.faces.length > mostFaces) {
+    alert(errorMessage);
+    return false;
+  }
+
+  const puppetData = {
+    imageNoBG: options.imageNoBG,
+    controlPointPositions: options.controlPointPositions,
+    backgroundRemovalData: options.backgroundRemovalData,
+    ...buildFromOptions(options)
+  };
+  return new Puppet(puppetData);
+}
