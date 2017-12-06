@@ -35,6 +35,7 @@ var Dranimate = function () {
     let touchHandler;
 
     let isInRenderLoop = true;
+    let isRecording = false;
 
 /*****************************
     API
@@ -154,6 +155,8 @@ var Dranimate = function () {
       puppets.splice(index, 1);
     }
 
+    this.setRecording = isRec => isRecording = isRec;
+
     // this.startRenderLoop = () => {
     //   isInRenderLoop = true;
     //   this.animate();
@@ -205,7 +208,7 @@ var Dranimate = function () {
     }
 
     function update() {
-      puppets.forEach(puppet => puppet.update());
+      puppets.forEach(puppet => puppet.update(isRecording));
       panHandler.update(camera);
     }
 

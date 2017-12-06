@@ -3,6 +3,7 @@ import PuppetEditor from 'components/puppetEditor';
 import Fab from 'components/fab';
 import TopBar from 'components/topbar';
 import ParamControl from 'components/paramControl';
+import Recorder from 'components/recorder';
 import ZoomPanner from 'components/zoomPanner';
 import { loadDranimateFile } from 'services/util/file';
 import editorHelper from 'services/imageToMesh/EditorHelper';
@@ -98,11 +99,13 @@ class Stage extends Component {
           onEditSelectedPuppet={this.onEditSelectedPuppet}
           onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
         />
-        <ZoomPanner
-          className={styles.zoomPanner}
-          onPanSelect={this.onPanSelect}
-          onZoomSelect={this.onZoomSelect}
-        />
+        <div className={styles.lowerLeft}>
+          <ZoomPanner
+            onPanSelect={this.onPanSelect}
+            onZoomSelect={this.onZoomSelect}
+          />
+          <Recorder />
+        </div>
         <Fab
           className={styles.fab}
           onClick={this.onFabClick}

@@ -133,7 +133,7 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
 }
 
-Puppet.prototype.update = function() {
+Puppet.prototype.update = function(isRecording) {
   const dx = this._x - this.prevx;
   const dy = this._y - this.prevy;
 
@@ -196,11 +196,15 @@ Puppet.prototype.update = function() {
     }
     this.needsUpdate = false;
   }
-
-  if(this.isRecording) {
-    var recordedFrame = this.threeMesh.clone();
-    this.recordedFrames.push(recordedFrame);
+  
+  if (isRecording) {
+    console.log('record frame');
   }
+
+  // if(this.isRecording) {
+  //   var recordedFrame = this.threeMesh.clone();
+  //   this.recordedFrames.push(recordedFrame);
+  // }
 
 };
 
