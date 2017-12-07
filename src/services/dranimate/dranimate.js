@@ -3,6 +3,9 @@ import {
   Scene,
   WebGLRenderer
 } from 'three';
+import CCapture from 'CCapture.js';
+// import GIF from 'gif.js';
+// import GIF_WORKER from 'GIF_WORKER';
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
 import DranimateLeapHandler from 'services/dranimate/leapHandler';
 import DranimateTouchHandler from 'services/dranimate/touchHandler';
@@ -37,6 +40,7 @@ var Dranimate = function () {
     let isInRenderLoop = true;
     let isRecording = false;
     let gifIsRecording = false;
+    let gifRecorder;
 
 /*****************************
     API
@@ -167,7 +171,22 @@ var Dranimate = function () {
 
     this.setGifIsRecording = function(isRec) {
       gifIsRecording = isRec;
-      console.log('gifIsRecording', gifIsRecording);
+      isInRenderLoop = gifIsRecording;
+      if (gifIsRecording) {
+        console.log('start gif recording');
+        gifRecorder = new CCapture({
+          format: 'gif',
+          workersPath: 'workers/', // TODO
+          framerate: 60,
+          verbose: true
+        });
+        gifRecorder.start();
+      }
+      else {
+        console.log('stop gif recording');
+        gifRecorder.stop();
+        gifRecorder.save(blob => window.open(URL.createObjectURL(blob)));
+      }
     }
 
     // this.startRenderLoop = () => {
@@ -227,7 +246,9 @@ var Dranimate = function () {
 
     function render() {
       renderer.render(scene, camera);
-      // if (gifIsRecording) {}
+      if (gifIsRecording) {
+        gifRecorder.capture(renderer.domElement);
+      }
     }
 
 };

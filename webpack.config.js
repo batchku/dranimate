@@ -2,6 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const webpackConfig = {
   entry: {
@@ -20,7 +21,16 @@ const webpackConfig = {
       template: './src/index.html',
       filename: 'index.html',
       inject: 'body'
-    })
+    }),
+    new webpack.ProvidePlugin({
+      GIF: 'gif.js',
+    }),
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, 'node_modules/gif.js/dist/gif.worker.js'),
+        to: 'workers/gif.worker.js'
+      }
+    ])
   ],
   module: {
     rules: [
