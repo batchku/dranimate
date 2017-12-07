@@ -9,12 +9,22 @@ class Recorder extends Component {
     this.state = {
       isRecording: false
     };
+    this.keyListener = window.addEventListener('keydown', this.handleKeyPress.bind(this));
   }
 
-  onRecordClick = event => {
+  componentWillUnmount() {
+    window.removeEventListener(this.keyListener);
+  }
+
+  onRecordToggle = () => {
     const isRecording = !this.state.isRecording;
     this.setState({ isRecording });
     dranimate.setRecording(isRecording);
+  };
+
+  handleKeyPress = event => {
+    if (!event.code === 'Space') { return; }
+    this.onRecordToggle();
   };
 
   render() {
@@ -22,7 +32,8 @@ class Recorder extends Component {
       <div className={this.props.className}>
         <button
           className={ this.state.isRecording ? styles.recorder : styles.recorderActive }
-          onClick={this.onRecordClick}>
+          onClick={this.onRecordToggle}
+        >
           { this.state.isRecording ? 'Stop' : 'Record' }
         </button>
       </div>

@@ -1,6 +1,7 @@
 // import * as THREE from 'three';
 import { Vector2 } from 'three';
 import ARAP from 'services/arap/arap';
+import { PuppetRecording } from 'services/puppet/puppetRecording';
 import { pointIsInsideTriangle } from 'services/util/math';
 // TODO: only import needed three deps
 
@@ -20,6 +21,9 @@ var Puppet = function(puppetData) {
   // RECORDING
   this.isRecording = false;
   this.recordedFrames = [];
+  this.puppetRecording = new PuppetRecording();
+  // this.initialArapFrames ...?
+  this.initialControlPoints = [];
 
   // GRAPHICS
   this.image = puppetData.image;
@@ -63,6 +67,13 @@ Puppet.prototype.initArap = function() {
     var cpi = this.controlPoints[i];
     ARAP.setControlPointPosition(this.arapMeshID, cpi, this.verts[cpi][0], this.verts[cpi][1]);
   }
+  // this.initialControlPoints = this.controlPoints.map(controlPointIndex => ({
+  //   controlPointIndex,
+  //   x: this.verts[controlPointIndex][0],
+  //   y: this.verts[controlPointIndex][1]
+  // }));
+  this.initialControlPoints = this.controlPoints.map(cpi => this.verts[cpi].map(cp => cp));
+  console.log('initialControlPoints', this.initialControlPoints);
 }
 
 Puppet.prototype.incrementPosition = function(x, y) {
@@ -104,11 +115,15 @@ Puppet.prototype.setSelectionState = function(isBeingDragged, x, y){
 
 Puppet.prototype.startRecording = function () {
   this.isRecording = true;
+  console.log('hello start');
+  this.puppetRecording = new PuppetRecording(this.initialControlPoints);
 }
 
 Puppet.prototype.stopRecording = function () {
   this.isRecording = false;
   this.recordedFrames = [];
+  console.log('hello stop');
+  this.puppetRecording.stop();
 }
 
 Puppet.prototype.finishRecording = function() {
@@ -131,12 +146,17 @@ Puppet.prototype.finishRecording = function() {
 Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
   this.needsUpdate = true;
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
+  if (this.isRecording) {
+    this.puppetRecording.setFrame(controlPointIndex, x, y);
+    // console.log('- - - - -setControlPointPosition', controlPointIndex, x, y)
+  }
 }
 
 Puppet.prototype.update = function(isRecording) {
   const dx = this._x - this.prevx;
   const dy = this._y - this.prevy;
 
+  // MOVE PUPPET IN XY PLANE
   if(dx !== 0 || dy !== 0) {
     if(this.controlPoints) {
       for(var i = 0; i < this.controlPoints.length; i++) {
@@ -153,53 +173,59 @@ Puppet.prototype.update = function(isRecording) {
   this.prevx = this._x;
   this.prevy = this._y;
 
+  // SCALE PUPPET
   if (this.prevScale !== this._scale) {
     this.threeMesh.scale.set(this._scale, this._scale, 1);
     this.prevScale = this._scale;
     this.needsUpdate = true;
   }
 
+  // ROTATE PUPPET
   if (this.prevRotation !== this._rotation) {
     this.threeMesh.rotation.set(0, 0, this._rotation);
     this.prevRotation = this._rotation;
     this.needsUpdate = true;
   }
 
+  const recordedFrame = this.puppetRecording.update();
+  if (recordedFrame) {
+    this.setControlPointPosition(recordedFrame.cpi, recordedFrame.x, recordedFrame.y);
+  }
+
+  // DEFORM PUPPET WITH ARAP
   if(this.needsUpdate) {
 
     /* update ARAP deformer */
     ARAP.updateMeshDeformation(this.arapMeshID);
-
-    var deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
-
-    for(var i = 0; i < deformedVerts.length; i+=2) {
-      var x = deformedVerts[i];
-      var y = deformedVerts[i+1];
-      this.threeMesh.geometry.vertices[i/2].x = x;
-      this.threeMesh.geometry.vertices[i/2].y = y;
+    const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
+    for(let i = 0; i < deformedVerts.length; i += 2) {
+      this.threeMesh.geometry.vertices[i / 2].x = deformedVerts[i];
+      this.threeMesh.geometry.vertices[i / 2].y = deformedVerts[i + 1];
     }
     this.threeMesh.geometry.dynamic = true;
     this.threeMesh.geometry.verticesNeedUpdate = true;
 
-    //this.threeMesh.geometry.computeBoundingBox();
-    //console.log(this.boundingBox)
     this.boundingBox.update();
     this.boundingBox.scale.z = 1; // To make sure volume != 0 (this will cause that warning to show up)
 
-    for(var i = 0; i < this.controlPoints.length; i++) {
-      var cpi = this.controlPoints[i];
-      var v = this.threeMesh.geometry.vertices[cpi];
-      const point = new Vector2(v.x * this._scale, v.y * this._scale);
+    // UPDATE CONTROL POINT GRAPHICS
+    this.controlPoints.forEach((controlPoint, index) => {
+      const vertex = this.threeMesh.geometry.vertices[controlPoint];
+      const point = new Vector2(vertex.x * this._scale, vertex.y * this._scale);
       point.rotateAround(this.getRotationCenter(), this.prevRotation);
-      this.controlPointSpheres[i].position.x = point.x;
-      this.controlPointSpheres[i].position.y = point.y;
-    }
+      this.controlPointSpheres[index].position.x = point.x;
+      this.controlPointSpheres[index].position.y = point.y;
+    });
+
     this.needsUpdate = false;
+
+
+    // console.log('controlPointPositions', this.controlPointPositions[0][0], this.controlPointPositions[0][1]);
   }
-  
-  if (isRecording) {
-    console.log('record frame');
-  }
+
+  // if (isRecording) {
+  //   console.log('record frame');
+  // }
 
   // if(this.isRecording) {
   //   var recordedFrame = this.threeMesh.clone();

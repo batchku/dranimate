@@ -155,7 +155,14 @@ var Dranimate = function () {
       puppets.splice(index, 1);
     }
 
-    this.setRecording = isRec => isRecording = isRec;
+    this.setRecording = function(isRec) {
+      isRecording = isRec;
+      if (this.getSelectedPuppet()) {
+        isRecording ?
+          this.getSelectedPuppet().startRecording() :
+          this.getSelectedPuppet().stopRecording();
+      }
+    };
 
     // this.startRenderLoop = () => {
     //   isInRenderLoop = true;
@@ -170,17 +177,17 @@ var Dranimate = function () {
     Dom events
 *****************************/
 
-    // TODO: move event listeners out of this file
-    document.addEventListener('keydown', $event => {
-      if($event.code === 'Space' && this.getSelectedPuppet()) {
-        this.getSelectedPuppet().startRecording();
-      }
-    }, false);
-    document.addEventListener('keyup', $event => {
-      if($event.code === 'Space' && this.getSelectedPuppet()) {
-        this.getSelectedPuppet().finishRecording();
-      }
-    }, false);
+    // // TODO: move event listeners out of this file
+    // document.addEventListener('keydown', $event => {
+    //   if($event.code === 'Space' && this.getSelectedPuppet()) {
+    //     this.getSelectedPuppet().startRecording();
+    //   }
+    // }, false);
+    // document.addEventListener('keyup', $event => {
+    //   if($event.code === 'Space' && this.getSelectedPuppet()) {
+    //     this.getSelectedPuppet().finishRecording();
+    //   }
+    // }, false);
 
     window.addEventListener('resize', $event => refreshCamera(), false );
 
