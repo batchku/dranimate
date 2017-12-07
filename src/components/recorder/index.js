@@ -7,7 +7,8 @@ class Recorder extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isRecording: false
+      puppetIsRecording: false,
+      gifIsRecording: false,
     };
     this.keyListener = window.addEventListener('keydown', this.handleKeyPress.bind(this));
   }
@@ -16,26 +17,38 @@ class Recorder extends Component {
     window.removeEventListener(this.keyListener);
   }
 
-  onRecordToggle = () => {
-    const isRecording = !this.state.isRecording;
-    this.setState({ isRecording });
-    dranimate.setRecording(isRecording);
+  onGifRecordToggle = () => {
+    const gifIsRecording = !this.state.gifIsRecording;
+    this.setState({ gifIsRecording });
+    dranimate.setGifIsRecording(gifIsRecording);
+  };
+
+  onPuppetRecordToggle = () => {
+    const puppetIsRecording = !this.state.puppetIsRecording;
+    this.setState({ puppetIsRecording });
+    dranimate.setRecording(puppetIsRecording);
   };
 
   handleKeyPress = event => {
-    if (!event.code === 'Space') { return; }
-    this.onRecordToggle();
+    if (event.keyCode !== 32) { return; }
+    this.onPuppetRecordToggle();
   };
 
   render() {
     return (
       <div className={this.props.className}>
         <button
-          className={ this.state.isRecording ? styles.recorder : styles.recorderActive }
-          onClick={this.onRecordToggle}
+          className={ this.state.puppetIsRecording ? styles.recorder : styles.recorderActive }
+          onClick={this.onPuppetRecordToggle}
         >
-          { this.state.isRecording ? 'Stop' : 'Record' }
+          { this.state.isRecording ? 'Puppet Stop' : 'Puppet Start' }
         </button>
+      <button
+        className={ this.state.gifIsRecording ? styles.recorder : styles.recorderActive }
+        onClick={this.onGifRecordToggle}
+      >
+        { this.state.isRecording ? 'GIF Stop' : 'GIF Start' }
+      </button>
       </div>
     );
   }

@@ -36,6 +36,7 @@ var Dranimate = function () {
 
     let isInRenderLoop = true;
     let isRecording = false;
+    let gifIsRecording = false;
 
 /*****************************
     API
@@ -164,6 +165,11 @@ var Dranimate = function () {
       }
     };
 
+    this.setGifIsRecording = function(isRec) {
+      gifIsRecording = isRec;
+      console.log('gifIsRecording', gifIsRecording);
+    }
+
     // this.startRenderLoop = () => {
     //   isInRenderLoop = true;
     //   this.animate();
@@ -209,9 +215,9 @@ var Dranimate = function () {
     function animate() {
       update();
       render();
-      // if (isInRenderLoop) {
+      if (isInRenderLoop) {
         requestAnimationFrame(animate);
-      // }
+      }
     }
 
     function update() {
@@ -220,7 +226,8 @@ var Dranimate = function () {
     }
 
     function render() {
-      renderer.render( scene, camera );
+      renderer.render(scene, camera);
+      // if (gifIsRecording) {}
     }
 
 };

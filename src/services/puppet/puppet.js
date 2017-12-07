@@ -115,14 +115,12 @@ Puppet.prototype.setSelectionState = function(isBeingDragged, x, y){
 
 Puppet.prototype.startRecording = function () {
   this.isRecording = true;
-  console.log('hello start');
   this.puppetRecording = new PuppetRecording(this.initialControlPoints);
 }
 
 Puppet.prototype.stopRecording = function () {
   this.isRecording = false;
   this.recordedFrames = [];
-  console.log('hello stop');
   this.puppetRecording.stop();
 }
 
@@ -148,7 +146,6 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
   if (this.isRecording) {
     this.puppetRecording.setFrame(controlPointIndex, x, y);
-    // console.log('- - - - -setControlPointPosition', controlPointIndex, x, y)
   }
 }
 
@@ -218,19 +215,7 @@ Puppet.prototype.update = function(isRecording) {
     });
 
     this.needsUpdate = false;
-
-
-    // console.log('controlPointPositions', this.controlPointPositions[0][0], this.controlPointPositions[0][1]);
   }
-
-  // if (isRecording) {
-  //   console.log('record frame');
-  // }
-
-  // if(this.isRecording) {
-  //   var recordedFrame = this.threeMesh.clone();
-  //   this.recordedFrames.push(recordedFrame);
-  // }
 
 };
 
