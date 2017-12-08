@@ -47,6 +47,7 @@ class PuppetRecording {
 
       while(shouldLookahead) {
         lookaheadIndex = (lookaheadIndex + 1) % (this.controlPointFrames.length - 1);
+        // console.log('shouldLookahead index', lookaheadIndex)
         if (pointInLoop < this.controlPointFrames[lookaheadIndex].relativeTime || lookaheadIndex === 0) {
           targetIndex = lookaheadIndex;
           shouldLookahead = false;

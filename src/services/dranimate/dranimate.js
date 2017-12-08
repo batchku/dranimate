@@ -178,7 +178,8 @@ var Dranimate = function () {
       }
       else {
         console.log('start exporting gif');
-        gifRecorder.stop()
+        render();
+        gifRecorder.stop(renderer.domElement)
           .then(objectUrl => window.open(objectUrl))
           .catch(error => console.log('gif error', error));
       }

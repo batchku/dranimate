@@ -12,7 +12,13 @@ export default class GifRecorder {
     this.lastRecordedFrame = 0;
   }
 
-  stop() {
+  stop(canvasElement) {
+    const elapsedTime = performance.now() - this.lastRecordedFrame;
+    this.recorder.addFrame(canvasElement, {
+      delay: elapsedTime,
+      copy: true
+    });
+
     return new Promise((resolve, reject) => {
       try {
         this.recorder.on('finished', blob => {
