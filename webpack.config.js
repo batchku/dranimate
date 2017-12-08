@@ -22,9 +22,6 @@ const webpackConfig = {
       filename: 'index.html',
       inject: 'body'
     }),
-    new webpack.ProvidePlugin({
-      GIF: 'gif.js',
-    }),
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, 'node_modules/gif.js/dist/gif.worker.js'),

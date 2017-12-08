@@ -149,7 +149,7 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
   }
 }
 
-Puppet.prototype.update = function(isRecording) {
+Puppet.prototype.update = function(elapsedTime, isRecording) {
   const dx = this._x - this.prevx;
   const dy = this._y - this.prevy;
 

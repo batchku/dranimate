@@ -1,6 +1,5 @@
 /* eslint no-unused-vars: 0 */
 
-import 'CCapture.js';
 import Delaunay from 'delaunay-fast';
 import FileSaver from 'file-saver';
 import 'gif.js';

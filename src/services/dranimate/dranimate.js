@@ -4,11 +4,10 @@ import {
   WebGLRenderer
 } from 'three';
 import CCapture from 'CCapture.js';
-// import GIF from 'gif.js';
-// import GIF_WORKER from 'GIF_WORKER';
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
 import DranimateLeapHandler from 'services/dranimate/leapHandler';
 import DranimateTouchHandler from 'services/dranimate/touchHandler';
+import GifRecorder from 'services/util/GifRecorder';
 import PanHandler from 'services/util/panHandler';
 import { clamp } from 'services/util/math';
 
@@ -36,6 +35,8 @@ var Dranimate = function () {
     let leapHandler;
     let mouseHandler;
     let touchHandler;
+
+    let lastUpdateTimestamp = performance.now();
 
     let isInRenderLoop = true;
     let isRecording = false;
@@ -173,19 +174,13 @@ var Dranimate = function () {
       gifIsRecording = isRec;
       isInRenderLoop = gifIsRecording;
       if (gifIsRecording) {
-        console.log('start gif recording');
-        gifRecorder = new CCapture({
-          format: 'gif',
-          workersPath: 'workers/', // TODO
-          framerate: 60,
-          verbose: true
-        });
-        gifRecorder.start();
+        gifRecorder = new GifRecorder();
       }
       else {
-        console.log('stop gif recording');
-        gifRecorder.stop();
-        gifRecorder.save(blob => window.open(URL.createObjectURL(blob)));
+        console.log('start exporting gif');
+        gifRecorder.stop()
+          .then(objectUrl => window.open(objectUrl))
+          .catch(error => console.log('gif error', error));
       }
     }
 
@@ -232,22 +227,25 @@ var Dranimate = function () {
     }
 
     function animate() {
-      update();
-      render();
+      const now = performance.now();
+      const elapsedTime = now - lastUpdateTimestamp;
+      lastUpdateTimestamp = now;
+      update(elapsedTime);
+      render(elapsedTime);
       if (isInRenderLoop) {
         requestAnimationFrame(animate);
       }
     }
 
-    function update() {
-      puppets.forEach(puppet => puppet.update(isRecording));
+    function update(elapsedTime) {
+      puppets.forEach(puppet => puppet.update(elapsedTime, isRecording));
       panHandler.update(camera);
     }
 
-    function render() {
+    function render(elapsedTime) {
       renderer.render(scene, camera);
       if (gifIsRecording) {
-        gifRecorder.capture(renderer.domElement);
+        gifRecorder.offerFrame(renderer.domElement);
       }
     }
 
