@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import PuppetEditor from 'components/puppetEditor';
-import Fab from 'components/fab';
+import Button from 'components/primitives/button';
+import Fab from 'components/primitives/fab';
 import TopBar from 'components/topbar';
 import ParamControl from 'components/paramControl';
 import Recorder from 'components/recorder';
 import ZoomPanner from 'components/zoomPanner';
+import PuppetEditor from 'components/puppetEditor';
+import Profile from 'components/profile';
 import { loadDranimateFile } from 'services/util/file';
 import editorHelper from 'services/imageToMesh/EditorHelper';
 import dranimate from 'services/dranimate/dranimate';
@@ -16,6 +18,7 @@ class Stage extends Component {
     super();
     this.state = {
       editorIsOpen: false,
+      profileIsOpen: false,
       controllerIsOpen: false,
       selectedPuppet: null
     };
@@ -52,6 +55,8 @@ class Stage extends Component {
 
   closeEditor = () => this.setState({ editorIsOpen: false });
 
+  closeProfile = () => this.setState({ profileIsOpen: false });
+
   openController = controllerIsOpen => this.setState({ controllerIsOpen });
 
   onFabClick = () => this.filePicker.click();
@@ -82,6 +87,8 @@ class Stage extends Component {
       .catch(error => console.log('error', error));
   }
 
+  onProfileClick = () => this.setState({ profileIsOpen: true });
+
   render() {
     return (
       <div className={styles.stage}>
@@ -93,6 +100,12 @@ class Stage extends Component {
           ref={input => this.dranimateStageContainer = input}
         />
         <TopBar className={styles.topBar}/>
+        <Button
+          className={styles.profileButton}
+          onClick={this.onProfileClick}
+        >
+          Profile
+        </Button>
         <ParamControl
           className={styles.paramControl}
           selectedPuppet={this.state.selectedPuppet}
@@ -117,6 +130,7 @@ class Stage extends Component {
           className={styles.hiddenFilePicker}
         />
         { this.state.editorIsOpen ? <PuppetEditor onClose={this.closeEditor}/> : null }
+        { this.state.profileIsOpen ? <Profile onClose={this.closeProfile}/> : null }
       </div>
     );
   }
