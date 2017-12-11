@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Button from 'components/primitives/button';
+import Slider from 'components/primitives/slider';
 import savePuppetToFile from 'services/storage/serializer';
 import styles from './styles.scss';
 
@@ -10,13 +12,13 @@ class ParamControl extends Component {
 
   onSaveClick = () => savePuppetToFile(this.props.selectedPuppet);
 
-  onScaleChange = event => {
-    const value = parseInt(event.target.value) / 100;
+  onScaleChange = eventValue => {
+    const value = parseInt(eventValue) / 100;
     this.props.selectedPuppet.setScale(value);
   };
 
-  onRotateChange = event => {
-    const value = parseFloat(event.target.value) / 100;
+  onRotateChange = eventValue => {
+    const value = parseFloat(eventValue) / 100;
     this.props.selectedPuppet.setRotation(value);
   };
 
@@ -24,26 +26,40 @@ class ParamControl extends Component {
     return (
       <div className={this.props.className}>
         <p>Params:</p>
-        <label htmlFor="scaleSlider">Scale</label>
-        <input
-          type="range"
-          id="scaleSlider"
-          min="1"
-          max="300"
-          onChange={this.onScaleChange}
+        <p>Scale</p>
+        <Slider
+          min={ 1 }
+          max={ 300 }
+          defaultValue={ 100 }
+          onChange={ this.onScaleChange }
         />
-        <label htmlFor="rotateSlider">Rotate</label>
-        <input
-          type="range"
-          id="rotateSlider"
-          min="-628"
-          max="628"
-          onChange={this.onRotateChange}
+        <p>Rotate</p>
+        <Slider
+          min={ -628 }
+          max={ 628 }
+          defaultValue={ 0 }
+          onChange={ this.onRotateChange }
         />
-        <p>Actions:</p>
-        <button onClick={this.props.onEditSelectedPuppet}>Edit puppet</button>
-        <button onClick={this.onSaveClick}>Save puppet</button>
-        <button onClick={this.props.onDeleteSelectedPuppet}>Delete puppet</button>
+
+        <p className={styles.actionLabel}>Actions:</p>
+        <Button
+          className={ styles.actionButton }
+          onClick={this.props.onEditSelectedPuppet}
+        >
+          Edit puppet
+        </Button>
+        <Button
+          className={ styles.actionButton }
+          onClick={this.onSaveClick}
+        >
+          Save puppet
+        </Button>
+        <Button
+          className={ styles.actionButton }
+          onClick={this.props.onDeleteSelectedPuppet}
+        >
+          Delete puppet
+        </Button>
       </div>
     );
   }

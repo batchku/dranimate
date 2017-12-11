@@ -1,0 +1,52 @@
+@import '~styles/index';
+
+$foreground-active: $color-pink-dark;
+$foreground-inactive: $color-grey-light;
+$background-active: $color-pink-light;
+$background-inactive: $color-grey-medium;
+
+$antimation-length: 0.2s;
+$circle-diameter: 20px;
+$background-width: 32px;
+$background-height: 16px;
+
+// Background inactive
+.checkboxLabel {
+  position: relative;
+  display: block;
+  height: $background-height;
+  width: $background-width;
+  background-color: $background-inactive;
+  border-radius: $background-height / 2;
+  cursor: pointer;
+  transition: background-color $antimation-length ease;
+}
+
+//Background active
+.checkboxInput:checked ~ label {
+  background-color: $background-active;
+}
+
+// Foreground inactive
+.checkboxLabel:after {
+  position: absolute;
+  left: 0;
+  top: -($circle-diameter - $background-height) / 2;
+  display: block;
+  width: $circle-diameter;
+  height: $circle-diameter;
+  border-radius: 50%;
+  background-color: $foreground-inactive;
+  content: '';
+  transition: left $antimation-length ease;
+}
+
+//Forebround active
+.checkboxInput:checked ~ label:after {
+  left: $background-width - $circle-diameter;
+  background-color: $foreground-active;
+}
+
+.checkboxInputHidden {
+  display: none;
+}

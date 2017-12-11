@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Button from 'components/primitives/button';
+import Checkbox from 'components/primitives/checkbox';
 import Loader from 'components/loader';
+import Slider from 'components/primitives/slider';
 import ZoomPanner from 'components/zoomPanner';
-import ImageToMesh from 'services/imageToMesh/imageToMesh'
-import editorHelper from 'services/imageToMesh/EditorHelper';
-import generateUniqueId from 'services/util/uuid';
 import dranimate from 'services/dranimate/dranimate';
+import editorHelper from 'services/imageToMesh/EditorHelper';
+import ImageToMesh from 'services/imageToMesh/imageToMesh';
+import generateUniqueId from 'services/util/uuid';
 import styles from './styles.scss';
+
 
 class PuppetEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      eraseDraw: true,
       selector: 'SELECT',
       threshold: 30,
-      loaderIsVisible: false
+      loaderIsVisible: false,
+      step: 0
     };
   }
 
@@ -23,10 +29,11 @@ class PuppetEditor extends Component {
   }
 
   componentDidMount() {
+    //ali asks: how do we make this width dynamic
     this.canvasElement.width = 400;
     this.canvasElement.height = 300;
     this.imageToMesh.setup(this.canvasElement);
-    // TODO: image to puppet needs 2 instantiation methods: "fromImage" and "fromPuppet"
+    // TODO: image to puppet needs 2 instantiation methods: 'fromImage' and 'fromPuppet'
     if (editorHelper.isPuppet) {
       const puppet = editorHelper.getItem();
       this.imageToMesh.editImage(
@@ -65,16 +72,38 @@ class PuppetEditor extends Component {
   }
 
   runSlic = () => {
-    console.log(".......runslic")
+    console.log('.......runslic')
     this.setState({ loaderIsVisible: true });
     setTimeout(() => {
       this.imageToMesh.doSlic(this.state.threshold);
       this.setState({ loaderIsVisible: false });
     });
-  }
+  };
 
   onCancel = () => {
     this.props.onClose();
+  };
+
+  onNext = () => {
+    const step = (this.state.step + 1 ) % 2;
+    this.onStepChange(step);
+  }
+
+  onBack = () => {
+    const step = (this.state.step - 1 + 2) % 2;
+    this.onStepChange(step);
+  }
+
+  onStepChange = (step) => {
+    if (step === 0) {
+      // set to draw / erase
+      const selector = this.state.eraseDraw ? 'SELECT' : 'DESELECT';
+      this.imageToMesh.setSelectState(selector);
+    }
+    else {
+      this.imageToMesh.setSelectState('CONTROL_POINT');
+    }
+    this.setState({ step });
   };
 
   onSave = () => {
@@ -92,21 +121,121 @@ class PuppetEditor extends Component {
       });
   }
 
-  updateThresholdUi = event => this.setState({ threshold: event.target.value });
+  updateThresholdUi = threshold => this.setState({ threshold });
 
   onZoomSelect = isZoomIn => isZoomIn ?
     this.imageToMesh.zoomIn() : this.imageToMesh.zoomOut();
 
   onCanvasSelectType = event => {
-    const selector = event.target.value;
-    this.imageToMesh.setSelectState(event.target.value);
+    const selector = event.target.checked ? 'SELECT' : 'DESELECT';
+    this.imageToMesh.setSelectState(selector);
     this.setState({ selector });
+  }
+
+  onEraseDrawChange = eraseDraw => {
+    const selector = eraseDraw ? 'SELECT' : 'DESELECT';
+    this.setState({ eraseDraw });
+    this.imageToMesh.setSelectState(selector);
+  };
+
+  renderStepOneNav() {
+    return (
+      <div className={styles.editorNav}>
+        <Button
+          onClick={this.onCancel}
+          className={ styles.navButton }
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={this.onNext}
+          className={ styles.navButton }
+        >
+          Next
+        </Button>
+      </div>
+    );
+  }
+
+  renderStepTwoNav() {
+    return (
+      <div className={styles.editorNav}>
+        <Button
+          onClick={this.onBack}
+          className={ styles.navButton }
+        >
+          Back
+        </Button>
+        <Button
+          onClick={this.onSave}
+          className={ styles.navButton }
+        >
+          Done
+        </Button>
+      </div>
+    );
+  }
+
+  renderStepOneControls() {
+    return (
+      <div className={styles.editorControlParam}>
+        <div className={styles.editorControlRow}>
+
+          <p className={styles.editorControlLabel}>1</p>
+
+          <div className={`${styles.editorControlRow} ${styles.rowSpaceAround}`}>
+
+            <div>
+              <Checkbox
+                defaultChecked={ this.state.eraseDraw }
+                onChange={ this.onEraseDrawChange }
+              />
+              <p className={styles.drawEraseLabel}>
+                { this.state.eraseDraw ? 'Draw' : 'Erase'}
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor='thresholdSlider'>Selection Threshold</label>
+              <Slider
+                min={ 20 }
+                max={ 75 }
+                defaultValue={ this.state.threshold }
+                onChange={ this.updateThresholdUi }
+                onChangeEnd={ this.runSlic }
+              />
+              <span>{this.state.threshold}</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  renderStepTwoControls() {
+    return (
+      <div className={styles.editorControlParam}>
+        <div className={styles.editorControlRow}>
+          <div className={styles.editorControlLabel}>
+            <p>2</p>
+          </div>
+          <p>Control Points</p>
+        </div>
+      </div>
+    );
   }
 
   render() {
     return (
       <div className={styles.scrim}>
         <div className={styles.puppetEditor}>
+          {
+            this.state.step === 0 ?
+              this.renderStepOneNav() :
+              this.renderStepTwoNav()
+          }
+
           <div>
             <canvas
               className={styles.editorCanvas}
@@ -123,73 +252,13 @@ class PuppetEditor extends Component {
               onZoomSelect={this.onZoomSelect}
               />
           </div>
-          <div className={styles.editorControls}>
-            <h1>Edit puppet</h1>
-            <div>
-              <p>Selection type:</p>
-              <div>
-                <input
-                  type="radio"
-                  name="selectionType"
-                  id="select"
-                  value="SELECT"
-                  onChange={this.onCanvasSelectType}
-                  checked={this.state.selector === 'SELECT'}
-                />
-                <label htmlFor="select">Select</label>
-                <br />
-                <input
-                  type="radio"
-                  name="selectionType"
-                  id="deselect"
-                  value="DESELECT"
-                  onChange={this.onCanvasSelectType}
-                  checked={this.state.selector === 'DESELECT'}
-                />
-                <label htmlFor="deselect">Deselect</label>
-                <br />
-                <input
-                  type="radio"
-                  name="selectionType"
-                  id="controlPoints"
-                  value="CONTROL_POINT"
-                  onChange={this.onCanvasSelectType}
-                  checked={this.state.selector === 'CONTROL_POINT'}
-                />
-                <label htmlFor="controlPoints">Control Points</label>
-                <br />
-                <input
-                  type="radio"
-                  name="selectionType"
-                  id="pan"
-                  value="PAN"
-                  onChange={this.onCanvasSelectType}
-                  checked={this.state.selector === 'PAN'}
-                />
-                <label htmlFor="pan">Pan</label>
-              </div>
-            </div>
 
-            <div>
-              <label htmlFor="thresholdSlider">Threshold</label>
-              <input
-                type="range"
-                id="thresholdSlider"
-                min="5"
-                max="75"
-                defaultValue={this.state.threshold}
-                onChange={this.updateThresholdUi}
-                onMouseUp={this.runSlic}
-              />
-              <span>{this.state.threshold}</span>
-              <br />
-            </div>
+          {
+            this.state.step === 0 ?
+              this.renderStepOneControls() :
+              this.renderStepTwoControls()
+          }
 
-            <div className={styles.saveCancel}>
-              <button onClick={this.onCancel}>Cancel</button>
-              <button onClick={this.onSave}>Save</button>
-            </div>
-          </div>
           <Loader isVisible={this.state.loaderIsVisible} />
         </div>
       </div>
@@ -197,7 +266,7 @@ class PuppetEditor extends Component {
   }
 }
 
-PuppetEditor.PropTypes = {
+PuppetEditor.propTypes = {
   onClose: PropTypes.func.isRequired
 };
 

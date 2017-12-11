@@ -3,9 +3,15 @@
 .pan {
   background-color: $color-primary;
   color: $color-black;
+  margin: 5px;
 }
 
 .panActive {
   background-color: $color-action;
   color: $color-white;
+  margin: 5px;
+}
+
+.zoomButton {
+  margin: 5px;
 }
