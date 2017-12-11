@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Button from 'components/primitives/button';
 import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
 
@@ -37,18 +38,18 @@ class Recorder extends Component {
   render() {
     return (
       <div className={this.props.className}>
-        <button
+        <Button
           className={ this.state.puppetIsRecording ? styles.recorder : styles.recorderActive }
           onClick={this.onPuppetRecordToggle}
         >
           { this.state.isRecording ? 'Puppet Stop' : 'Puppet Start' }
-        </button>
-      <button
+        </Button>
+      <Button
         className={ this.state.gifIsRecording ? styles.recorder : styles.recorderActive }
         onClick={this.onGifRecordToggle}
       >
         { this.state.isRecording ? 'GIF Stop' : 'GIF Start' }
-      </button>
+      </Button>
       </div>
     );
   }
