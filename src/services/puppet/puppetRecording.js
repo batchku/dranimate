@@ -27,8 +27,13 @@ class PuppetRecording {
   }
 
   setFrame(cpi, x, y) {
+    const controlPoints = [ { cpi, x, y } ];
+    this.setFrames(controlPoints);
+  }
+
+  setFrames(controlPoints) {
     const timestamp = performance.now();
-    this.controlPointFrames.push({ timestamp, cpi, x, y });
+    this.controlPointFrames.push({ timestamp, controlPoints });
   }
 
   update() {

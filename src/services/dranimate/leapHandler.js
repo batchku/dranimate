@@ -14,32 +14,48 @@ export default class DranimateLeapHandler {
     this.rendererElement = rendererElement;
     this.panHandler = panHandler;
     this.puppets = puppets;
-    this.setUpLeapMotionLoop();
+    this.controllerIsConnected = false;
+    this.leapController = new Leap.Controller({
+      frameEventName: 'deviceFrame',
+    }).connect();
+    this.lastFrameId;
   }
 
-  setUpLeapMotionLoop() {
-    const zoom = 1;
+  update(selectedPuppet) {
+    if (!selectedPuppet) {
+      return;
+    }
+    const leapFrame = this.leapController.frame();
+    if (!leapFrame.valid || !leapFrame.hands.length) {
+      return;
+    }
+    const hand = leapFrame.hands[0];
+    const thumb = transformLeapCoordinate(hand.fingers[0].distal.center());
+    const pointer = transformLeapCoordinate(hand.fingers[1].distal.center());
+    const middle = transformLeapCoordinate(hand.fingers[2].distal.center());
+    const ring = transformLeapCoordinate(hand.fingers[3].distal.center());
+    const pinky = transformLeapCoordinate(hand.fingers[4].distal.center());
+    this.moveControlPoints(selectedPuppet, [
+      { cpi: 0, x: thumb.x, y: thumb.y },
+      { cpi: 1, x: pointer.x, y: pointer.y },
+      { cpi: 2, x: middle.x, y: middle.y },
+      { cpi: 3, x: ring.x, y: ring.y },
+      { cpi: 4, x: pinky.x, y: pinky.y },
+    ]);
+  }
 
-    Leap.loop((frame) => {
-      if (!frame.hands.length) { return; }
-      if (!this.puppets.length) { return; }
-
-      const hand = frame.hands[0];
-      const thumb = transformLeapCoordinate(hand.fingers[0].distal.center());
-      const middle = transformLeapCoordinate(hand.fingers[2].distal.center());
-      const pinky = transformLeapCoordinate(hand.fingers[4].distal.center());
-      this.moveControlPoint(this.puppets[0], 0, thumb.x, thumb.y);
-      this.moveControlPoint(this.puppets[0], 1, middle.x, middle.y);
-      this.moveControlPoint(this.puppets[0], 2, pinky.x, pinky.y);
-
-      // console.log('thumb', thumb);
-      // this.handRelative = {
-      //   x: (x - boundingRect.left - halfWidth) / zoom - this.panHandler.getPanPosition().x,
-      //   y: (y - boundingRect.top - halfHeight) / zoom - this.panHandler.getPanPosition().y
-      // };
-      // this.puppets[0].incrementPosition(this.handRelative.x, this.handRelative.y);
-    });
-    // .use('screenPosition', { scale: 0.25 });
+  moveControlPoints(puppet, frames) {
+    const normalizedFrames = frames
+      .map(frame => {
+        const positionVector = new Vector2(frame.x / puppet.getScale(), frame.y / puppet.getScale());
+        positionVector.rotateAround(puppet.getRotationCenter(), -puppet.getRotation());
+        return {
+          cpi: frame.cpi,
+          x: positionVector.x,
+          y: positionVector.y
+        };
+      });
+    puppet.setControlPointPositions(normalizedFrames);
   }
 
   moveControlPoint(puppet, controlPointIndex, x, y) {

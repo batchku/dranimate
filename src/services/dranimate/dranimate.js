@@ -43,6 +43,8 @@ var Dranimate = function () {
     let gifIsRecording = false;
     let gifRecorder;
 
+    const getSelectedPuppet = () => mouseHandler.getSelectedPuppet() || touchHandler.getSelectedPuppet();
+
 /*****************************
     API
 *****************************/
@@ -137,7 +139,7 @@ var Dranimate = function () {
     }
 
     this.getSelectedPuppet = function () {
-      return mouseHandler.getSelectedPuppet() || touchHandler.getSelectedPuppet();
+      return getSelectedPuppet();
     }
 
     this.deleteSelectedPuppet = function () {
@@ -239,6 +241,7 @@ var Dranimate = function () {
     }
 
     function update(elapsedTime) {
+      leapHandler.update(getSelectedPuppet());
       puppets.forEach(puppet => puppet.update(elapsedTime, isRecording));
       panHandler.update(camera);
     }

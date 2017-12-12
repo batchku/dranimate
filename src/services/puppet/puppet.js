@@ -67,13 +67,7 @@ Puppet.prototype.initArap = function() {
     var cpi = this.controlPoints[i];
     ARAP.setControlPointPosition(this.arapMeshID, cpi, this.verts[cpi][0], this.verts[cpi][1]);
   }
-  // this.initialControlPoints = this.controlPoints.map(controlPointIndex => ({
-  //   controlPointIndex,
-  //   x: this.verts[controlPointIndex][0],
-  //   y: this.verts[controlPointIndex][1]
-  // }));
   this.initialControlPoints = this.controlPoints.map(cpi => this.verts[cpi].map(cp => cp));
-  console.log('initialControlPoints', this.initialControlPoints);
 }
 
 Puppet.prototype.incrementPosition = function(x, y) {
@@ -149,6 +143,16 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
   }
 }
 
+Puppet.prototype.setControlPointPositions = function(controlPoints) {
+  this.needsUpdate = true;
+  controlPoints.forEach(controlPoint => {
+    ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.x, controlPoint.y)
+  });
+  if (this.isRecording) {
+    this.puppetRecording.setFrames(controlPoints);
+  }
+}
+
 Puppet.prototype.update = function(elapsedTime, isRecording) {
   const dx = this._x - this.prevx;
   const dy = this._y - this.prevy;
@@ -186,7 +190,7 @@ Puppet.prototype.update = function(elapsedTime, isRecording) {
 
   const recordedFrame = this.puppetRecording.update();
   if (recordedFrame) {
-    this.setControlPointPosition(recordedFrame.cpi, recordedFrame.x, recordedFrame.y);
+    this.setControlPointPositions(recordedFrame.controlPoints);
   }
 
   // DEFORM PUPPET WITH ARAP
