@@ -139,6 +139,11 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
   this.needsUpdate = true;
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
   if (this.isRecording) {
+    //ali asks:
+    //is this where we would record control point movements
+    //relative to the center of the puppet,
+    //instead of absolut?
+    
     this.puppetRecording.setFrame(controlPointIndex, x, y);
   }
 }
