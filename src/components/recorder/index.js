@@ -24,7 +24,8 @@ class Recorder extends Component {
     dranimate.setGifIsRecording(gifIsRecording);
   };
 
-  onPuppetRecordToggle = () => {
+  onPuppetRecordToggle = (event) => {
+    console.log('on puppet record toggle click')
     const puppetIsRecording = !this.state.puppetIsRecording;
     this.setState({ puppetIsRecording });
     dranimate.setRecording(puppetIsRecording);

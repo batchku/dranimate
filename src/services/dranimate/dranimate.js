@@ -138,12 +138,8 @@ var Dranimate = function () {
       renderer.domElement.style.cursor = isEnabled ? 'move' : 'default';
     }
 
-    this.getSelectedPuppet = function () {
-      return getSelectedPuppet();
-    }
-
     this.deleteSelectedPuppet = function () {
-      const selectedPuppet = this.getSelectedPuppet();
+      const selectedPuppet = getSelectedPuppet();
       if (!selectedPuppet) {
         return;
       }
@@ -163,12 +159,14 @@ var Dranimate = function () {
       puppets.splice(index, 1);
     }
 
+    this.getSelectedPuppet = () => getSelectedPuppet();
+
     this.setRecording = function(isRec) {
       isRecording = isRec;
-      if (this.getSelectedPuppet()) {
+      if (getSelectedPuppet()) {
         isRecording ?
-          this.getSelectedPuppet().startRecording() :
-          this.getSelectedPuppet().stopRecording();
+          getSelectedPuppet().startRecording() :
+          getSelectedPuppet().stopRecording();
       }
     };
 
