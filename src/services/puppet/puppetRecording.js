@@ -10,6 +10,7 @@ class PuppetRecording {
     this.duration = 0;
     this.hasRecording = false;
     this.activeIndex = 0;
+    this.allIndices = new Set();
     this.id = Math.random();
   }
 
@@ -24,6 +25,13 @@ class PuppetRecording {
       frame.relativeTime = relativeTime;
     });
 
+    // console.log('this.controlPointFrames', this.controlPointFrames)
+
+    this.allIndices = this.controlPointFrames
+      .reduce((indexSet, frame) => {
+        frame.controlPoints.forEach(controlPoint => indexSet.add(controlPoint.cpi));
+        return indexSet;
+      }, new Set());
   }
 
   setFrame(cpi, x, y) {
@@ -34,6 +42,10 @@ class PuppetRecording {
   setFrames(controlPoints) {
     const timestamp = performance.now();
     this.controlPointFrames.push({ timestamp, controlPoints });
+  }
+
+  getIndices() {
+    return this.allIndices;
   }
 
   update() {
@@ -52,11 +64,11 @@ class PuppetRecording {
 
       while(shouldLookahead) {
         lookaheadIndex = (lookaheadIndex + 1) % (this.controlPointFrames.length - 1);
-        // console.log('shouldLookahead index', lookaheadIndex)
         if (pointInLoop < this.controlPointFrames[lookaheadIndex].relativeTime || lookaheadIndex === 0) {
           targetIndex = lookaheadIndex;
           shouldLookahead = false;
         }
+        // console.log('lookahead')
       }
 
       this.activeIndex = targetIndex;

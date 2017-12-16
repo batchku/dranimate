@@ -53,6 +53,8 @@ var Puppet = function(puppetData) {
     lastPositionX: 0,
     lastPositionY: 0
   };
+
+  this.center = puppetData.center;
 };
 
 Puppet.prototype.initArap = function() {
@@ -71,10 +73,8 @@ Puppet.prototype.initArap = function() {
 }
 
 Puppet.prototype.incrementPosition = function(x, y) {
-  const _x = x - this.selectionState.lastPositionX;
-  const _y = y - this.selectionState.lastPositionY;
-  this._x += _x;
-  this._y += _y;
+  this._x += (x - this.selectionState.lastPositionX);
+  this._y += (y - this.selectionState.lastPositionY);
   this.selectionState.lastPositionX = x;
   this.selectionState.lastPositionY = y;
 }
@@ -118,36 +118,7 @@ Puppet.prototype.stopRecording = function () {
   this.puppetRecording.stop();
 }
 
-Puppet.prototype.finishRecording = function() {
-  this.isRecording = false;
-  const gif = new GIF({
-    workers: 2,
-    quality: 10,
-    // width: 20,
-    // height: 20,
-    workerScript: '/lib_remove_me/gif/gif.worker.js',
-  });
-  this.recordedFrames.forEach(recordedFrame => {
-    // TODO: paint recorded frame to canavs and pass it to gif
-    gif.addFrame(ctx, {copy: true});
-  });
-  gif.on('finished', blob => window.open(URL.createObjectURL(blob)));
-  gif.render();
-}
-
-Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
-  this.needsUpdate = true;
-  ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
-  if (this.isRecording) {
-    //ali asks:
-    //is this where we would record control point movements
-    //relative to the center of the puppet,
-    //instead of absolut?
-    
-    this.puppetRecording.setFrame(controlPointIndex, x, y);
-  }
-}
-
+// Set one to many control points (leap motion, touch)
 Puppet.prototype.setControlPointPositions = function(controlPoints) {
   this.needsUpdate = true;
   controlPoints.forEach(controlPoint => {
@@ -158,71 +129,109 @@ Puppet.prototype.setControlPointPositions = function(controlPoints) {
   }
 }
 
-Puppet.prototype.update = function(elapsedTime, isRecording) {
+// Set a single control point (mouse interaction)
+Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
+  this.needsUpdate = true;
+  ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
+  if (this.isRecording) {
+    const point = new Vector2(x - this._x, y - this._y);
+    this.puppetRecording.setFrame(controlPointIndex, point.x, point.y);
+  }
+}
+
+Puppet.prototype.update = function(elapsedTime ) {
   const dx = this._x - this.prevx;
   const dy = this._y - this.prevy;
-
-  // MOVE PUPPET IN XY PLANE
-  if(dx !== 0 || dy !== 0) {
-    if(this.controlPoints) {
-      for(var i = 0; i < this.controlPoints.length; i++) {
-        var cpx = this.threeMesh.geometry.vertices[this.controlPoints[i]].x;
-        var cpy = this.threeMesh.geometry.vertices[this.controlPoints[i]].y;
-
-        const point = new Vector2(dx / this._scale, dy / this._scale);
-        point.rotateAround(this.getRotationCenter(), -this._rotation);
-        this.setControlPointPosition(i, cpx + point.x, cpy + point.y);
-      }
-    }
-  }
-
+  const shouldMoveXY = dx !== 0 || dy !== 0;
+  const shouldScale = this.prevScale !== this._scale;
+  const shouldRotate = this.prevRotation !== this._rotation;
   this.prevx = this._x;
   this.prevy = this._y;
 
   // SCALE PUPPET
-  if (this.prevScale !== this._scale) {
+  if (shouldScale) {
+    // const center = this.getRotationCenter();
+    // this.threeMesh.translateX(-this._x);
+    // this.threeMesh.translateY(-this._y);
     this.threeMesh.scale.set(this._scale, this._scale, 1);
+    // this.threeMesh.translateX(this._x);
+    // this.threeMesh.translateY(this._y);
     this.prevScale = this._scale;
     this.needsUpdate = true;
   }
 
   // ROTATE PUPPET
-  if (this.prevRotation !== this._rotation) {
+  if (shouldRotate) {
+    // const center = this.getRotationCenter();
+    // this.threeMesh.translateX(center.x);
+    // this.threeMesh.translateY(center.y);
     this.threeMesh.rotation.set(0, 0, this._rotation);
+    // this.threeMesh.translateX(-center.x);
+    // this.threeMesh.translateY(-center.y);
     this.prevRotation = this._rotation;
     this.needsUpdate = true;
   }
 
+  // TRANSLATE PUPPET
+  if(shouldMoveXY) {
+    this.controlPoints.forEach((controlPoint, index) => {
+      const cpx = this.threeMesh.geometry.vertices[controlPoint].x;
+      const cpy = this.threeMesh.geometry.vertices[controlPoint].y;
+      const point = new Vector2(dx, dy)
+        .multiplyScalar(1 / this._scale)
+        .rotateAround(this.getRotationCenter(), -this._rotation);
+      this.setControlPointPosition(index, cpx + point.x, cpy + point.y);
+    });
+  }
+
+  // TRANSLSATE AFTER DOING A SCALE OR ROTATE -=>-=->=-> ERROR!!!
   const recordedFrame = this.puppetRecording.update();
   if (recordedFrame) {
-    this.setControlPointPositions(recordedFrame.controlPoints);
+    const absoluteControlPoints = recordedFrame.controlPoints.map((controlPoint) => {
+      const puppetCenter = new Vector2(this._x, this._y)
+        // .multiplyScalar(1 / this._scale)
+        // .rotateAround(this.getRotationCenter(), -this._rotation);
+      const point = new Vector2(controlPoint.x, controlPoint.y)
+        .add(puppetCenter)
+        // .multiplyScalar(1 / this._scale)
+        // .rotateAround(this.getRotationCenter(), -this._rotation)
+
+      return {
+        cpi: controlPoint.cpi,
+        x: point.x,
+        y: point.y
+      };
+    });
+    // console.log('absoluteControlPoints', absoluteControlPoints)
+    this.setControlPointPositions(absoluteControlPoints);
   }
 
   // DEFORM PUPPET WITH ARAP
   if(this.needsUpdate) {
 
-    /* update ARAP deformer */
+    // UPDATE ARAP DEFORMER
     ARAP.updateMeshDeformation(this.arapMeshID);
     const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
-    for(let i = 0; i < deformedVerts.length; i += 2) {
+    for (let i = 0; i < deformedVerts.length; i += 2) {
       this.threeMesh.geometry.vertices[i / 2].x = deformedVerts[i];
       this.threeMesh.geometry.vertices[i / 2].y = deformedVerts[i + 1];
     }
-    this.threeMesh.geometry.dynamic = true;
-    this.threeMesh.geometry.verticesNeedUpdate = true;
-
-    this.boundingBox.update();
-    this.boundingBox.scale.z = 1; // To make sure volume != 0 (this will cause that warning to show up)
 
     // UPDATE CONTROL POINT GRAPHICS
     this.controlPoints.forEach((controlPoint, index) => {
       const vertex = this.threeMesh.geometry.vertices[controlPoint];
-      const point = new Vector2(vertex.x * this._scale, vertex.y * this._scale);
-      point.rotateAround(this.getRotationCenter(), this.prevRotation);
+      const point = new Vector2(vertex.x, vertex.y)
+        .multiplyScalar(this._scale)
+        .rotateAround(this.getRotationCenter(), this.prevRotation);
       this.controlPointSpheres[index].position.x = point.x;
       this.controlPointSpheres[index].position.y = point.y;
     });
 
+    // UPDATE MISC THREEJS
+    this.threeMesh.geometry.dynamic = true;
+    this.threeMesh.geometry.verticesNeedUpdate = true;
+    this.boundingBox.update();
+    this.boundingBox.scale.z = 1; // To make sure volume != 0 (this will cause that warning to show up)
     this.needsUpdate = false;
   }
 
@@ -248,8 +257,9 @@ Puppet.prototype.setSelectionGUIVisible = function (visible) {
 }
 
 Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {
-  const point = new Vector2(xUntransformed / this._scale, yUntransformed / this._scale);
-  point.rotateAround(this.getRotationCenter(), -this._rotation);
+  const point = new Vector2(xUntransformed, yUntransformed)
+    .multiplyScalar(1 / this._scale)
+    .rotateAround(this.getRotationCenter(), -this._rotation);
   const allFaces = this.threeMesh.geometry.faces;
   const allVerts = this.threeMesh.geometry.vertices;
   for(let i = 0; i < allFaces.length; i++) {

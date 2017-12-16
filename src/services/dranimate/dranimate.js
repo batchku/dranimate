@@ -1,4 +1,5 @@
 import {
+  GridHelper,
   OrthographicCamera,
   Scene,
   WebGLRenderer
@@ -69,6 +70,10 @@ var Dranimate = function () {
       mouseHandler = new DranimateMouseHandler(renderer.domElement, panHandler);
       touchHandler = new DranimateTouchHandler(renderer.domElement, panHandler);
       leapHandler = new DranimateLeapHandler(renderer.domElement, panHandler, puppets);
+
+      const gridHelper = new GridHelper(1000, 20);
+      gridHelper.geometry.rotateX(Math.PI / 2);
+      scene.add(gridHelper);
 
       refreshCamera();
       animate();

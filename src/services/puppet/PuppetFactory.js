@@ -96,6 +96,8 @@ function buildFromOptions(options) {
     return sphere;
   });
 
+
+
   const group = new Group();
   group.add(threeMesh);
   group.add(boundingBox);
@@ -114,7 +116,8 @@ function buildFromOptions(options) {
     threeMesh,
     boundingBox,
     controlPointSpheres,
-    group
+    group,
+    center
   };
 }
 
