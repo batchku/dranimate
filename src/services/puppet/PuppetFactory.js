@@ -7,6 +7,7 @@ import {
   Group,
   Mesh,
   MeshBasicMaterial,
+  Object3D,
   SphereGeometry,
   Texture,
   Vector2,
@@ -85,7 +86,8 @@ function buildFromOptions(options) {
   const box3 = new Box3();
   box3.setFromObject(boundingBox);
   const size = box3.getSize(new Vector3());
-  const center = new Vector2(size.x / 2, size.y / 2);
+  const halfSize = new Vector2(size.x, size.y).multiplyScalar(0.5);
+  geometry.translate(-halfSize.x, -halfSize.y, 0);
 
   const controlPointSpheres = controlPoints.map(() => {
     const sphere = new Mesh(
@@ -95,8 +97,6 @@ function buildFromOptions(options) {
     sphere.position.z = 10;
     return sphere;
   });
-
-
 
   const group = new Group();
   group.add(threeMesh);
@@ -117,7 +117,7 @@ function buildFromOptions(options) {
     boundingBox,
     controlPointSpheres,
     group,
-    center
+    halfSize
   };
 }
 

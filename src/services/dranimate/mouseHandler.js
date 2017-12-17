@@ -71,14 +71,20 @@ export default class DranimateMouseHandler {
       const puppet = puppets[this.activeControlPoint.puppetIndex];
       const ci = this.activeControlPoint.controlPointIndex;
       const mouseVector = new Vector2(this.mouseRelative.x, this.mouseRelative.y)
-        .multiplyScalar(1 / puppet.getScale())
-        .rotateAround(puppet.getRotationCenter(), -puppet.getRotation());
+        // .multiplyScalar(1 / puppet.getScale())
+        // .sub(puppet.getRotationCenter())
+        // .rotateAround(puppet.getRotationCenter(), -puppet.getRotation())
+        // .add(puppet.getRotationCenter());
       puppet.setControlPointPosition(ci, mouseVector.x, mouseVector.y);
       return;
     }
 
     if(this.selectedPuppet && this.selectedPuppet.selectionState.isBeingDragged) {
-      this.selectedPuppet.incrementPosition(this.mouseRelative.x, this.mouseRelative.y);
+      const mouseVector = new Vector2(this.mouseRelative.x, this.mouseRelative.y)
+        // .sub(this.selectedPuppet.getRotationCenter())
+        // .rotateAround(this.selectedPuppet.getRotationCenter(), this.selectedPuppet.getRotation())
+        // .add(this.selectedPuppet.getRotationCenter());
+      this.selectedPuppet.incrementPosition(mouseVector.x, mouseVector.y);
       return;
     }
 

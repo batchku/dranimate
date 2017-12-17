@@ -26,18 +26,18 @@ class ParamControl extends Component {
     return (
       <div className={this.props.className}>
         <p>Params:</p>
-        <p>Scale</p>
+        {/*<p>Scale</p>
         <Slider
           min={ 1 }
           max={ 300 }
           defaultValue={ 100 }
           onChange={ this.onScaleChange }
-        />
+        />*/}
         <p>Rotate</p>
         <Slider
           min={ -628 }
           max={ 628 }
-          defaultValue={ 0 }
+          defaultValue={ this.props.selectedPuppet.getRotation() }
           onChange={ this.onRotateChange }
         />
 

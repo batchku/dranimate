@@ -1,3 +1,5 @@
+import { Vector2 } from 'three';
+
 const TIME_DELTA = 0.001;
 
 class PuppetRecording {
