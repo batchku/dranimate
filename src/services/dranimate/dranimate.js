@@ -190,6 +190,13 @@ var Dranimate = function () {
       }
     }
 
+    this.onRenderToggle = () => {
+      isInRenderLoop = !isInRenderLoop;
+      if (isInRenderLoop) {
+        animate();
+      }
+    };
+
     // this.startRenderLoop = () => {
     //   isInRenderLoop = true;
     //   this.animate();

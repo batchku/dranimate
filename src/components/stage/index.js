@@ -110,6 +110,11 @@ class Stage extends Component {
             onZoomSelect={this.onZoomSelect}
           />
           <Recorder />
+          { /*
+            <Button onClick={dranimate.onRenderToggle}>
+              Render toggle
+            </Button>
+            */ }
         </div>
         <Fab
           className={styles.fab}
