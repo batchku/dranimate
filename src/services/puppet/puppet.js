@@ -6,13 +6,13 @@ import { pointIsInsideTriangle } from 'services/util/math';
 var Puppet = function(puppetData) {
 
   // PARAMETERS
-  this._x = 0.0;
+  this._x = 0.0; // TODO: change to Vector2
   this._y = 0.0;
   this._rotation = 0.0;
   this._scale = 1.0;
-  this.prevx = this._x;
+  this.prevx = this._x; // TODO: change to Vector2
   this.prevy = this._y;
-  this.prevScale = this._scale;
+  this.prevScale = this._scale; // TODO: create previous object?
   this.prevRotation = this._rotation;
   this.name = 'DEFAULT_PUPPET_NAME';
 
@@ -48,7 +48,7 @@ var Puppet = function(puppetData) {
 
   this.selectionState = {
     isBeingDragged: false,
-    lastPositionX: 0,
+    lastPositionX: 0, // TODO: change to Vector2
     lastPositionY: 0
   };
 
@@ -76,12 +76,9 @@ Puppet.prototype.incrementPosition = function(x, y) {
     this.selectionState.lastPositionY
   );
   const delta = new Vector2(x, y)
-    // .multiplyScalar(1 / this.getScale())
     .sub(lastPosition)
     .multiplyScalar(1 / this.getScale())
 
-  // this._x += (x - this.selectionState.lastPositionX);
-  // this._y += (y - this.selectionState.lastPositionY);
   this._x += delta.x;
   this._y += delta.y;
   this.selectionState.lastPositionX = x;
@@ -110,13 +107,9 @@ Puppet.prototype.setRenderWireframe = function(shouldRender) {
 
 Puppet.prototype.setSelectionState = function(isBeingDragged, x, y){
   this.selectionState.isBeingDragged = isBeingDragged;
-  const position = new Vector2(x, y)
-    // .sub(this.getRotationCenter())
-    // .multiplyScalar(1 / this.getScale())
-    // .add(this.getRotationCenter());
   if (isBeingDragged) {
-    this.selectionState.lastPositionX = position.x;
-    this.selectionState.lastPositionY = position.y;
+    this.selectionState.lastPositionX = x;
+    this.selectionState.lastPositionY = y;
   }
 }
 
@@ -148,9 +141,6 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
   if (this.isRecording) {
     const point = new Vector2(x, y)
-      // .sub(this.getRotationCenter())
-      // .multiplyScalar(1 / this.getScale())
-      // .add(this.getRotationCenter())
       .rotateAround(this.getRotationCenter(), -this.getRotation())
       .sub(new Vector2(this._x, this._y));
     this.puppetRecording.setFrame(controlPointIndex, point.x, point.y);
@@ -158,7 +148,6 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
 }
 
 Puppet.prototype.update = function(elapsedTime ) {
-  // console.log('upate');
   const dx = this._x - this.prevx;
   const dy = this._y - this.prevy;
   const shouldMoveXY = dx !== 0 || dy !== 0;
@@ -169,53 +158,9 @@ Puppet.prototype.update = function(elapsedTime ) {
 
   // SCALE PUPPET
   if (shouldScale) {
-    // const center = this.getRotationCenter();
-    // this.threeMesh.translateX(-this._x);
-    // this.threeMesh.translateY(-this._y);
-    // this.threeMesh.scale.set(this._scale, this._scale, 1);
-    // this.threeMesh.translateX(this._x);
-    // this.threeMesh.translateY(this._y);
-
     const deltaScale = 1 - (this._scale - this.prevScale);
-    this.prevScale = this._scale;
+    this.prevScale = this._scale; // TODO: remove prevScale?
     this.needsUpdate = true;
-
-    // this.controlPoints.forEach((controlPoint, index) => {
-    //   const {x, y} = this.threeMesh.geometry.vertices[controlPoint];
-    //   const point = new Vector2(x, y)
-    //     .multiplyScalar(1 / deltaScale);
-    //   this.setControlPointPosition(index, point.x, point.y);
-    // });
-
-    // ARAP.updateMeshDeformation(this.arapMeshID);
-    // const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
-    // for (let i = 0; i < deformedVerts.length; i += 2) {
-    //   const vertex = this.threeMesh.geometry.vertices[i / 2];
-    //   const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
-    //     .sub(this.getRotationCenter())
-    //     .multiplyScalar(this._scale)
-    //     .add(this.getRotationCenter());
-    //   vertex.x = point.x;
-    //   vertex.y = point.y;
-    // }
-    //
-    // // UPDATE CONTROL POINT GRAPHICS
-    // this.controlPoints.forEach((controlPoint, index) => {
-    //   const vertex = this.threeMesh.geometry.vertices[controlPoint];
-    //   const point = new Vector2(vertex.x, vertex.y)
-    //     // .multiplyScalar(this.getScale());
-    //   this.controlPointSpheres[index].position.x = point.x;
-    //   this.controlPointSpheres[index].position.y = point.y;
-    // });
-    //
-    // // UPDATE MISC THREEJS
-    // this.threeMesh.geometry.dynamic = true;
-    // this.threeMesh.geometry.verticesNeedUpdate = true;
-    // this.boundingBox.update();
-    // this.boundingBox.scale.z = 1; // To make sure volume != 0 (this will cause that warning to show up)
-    // this.needsUpdate = false;
-    // console.log('done');
-    // return;
   }
 
   // ROTATE PUPPET
@@ -225,11 +170,12 @@ Puppet.prototype.update = function(elapsedTime ) {
 
     this.controlPoints.forEach((controlPoint, index) => {
       const {x, y} = this.threeMesh.geometry.vertices[controlPoint];
+      const puppetCenter = this.getRotationCenter();
       const point = new Vector2(x, y)
-        .sub(this.getRotationCenter())
+        .sub(puppetCenter)
         .multiplyScalar(1 / this.getScale())
-        .add(this.getRotationCenter())
-        .rotateAround(this.getRotationCenter(), deltaRotation)
+        .add(puppetCenter)
+        .rotateAround(puppetCenter, deltaRotation)
       this.setControlPointPosition(index, point.x, point.y);
     });
   }
@@ -250,7 +196,6 @@ Puppet.prototype.update = function(elapsedTime ) {
   const recordedFrame = this.puppetRecording.update();
   if (recordedFrame) {
     const absoluteControlPoints = recordedFrame.controlPoints.map((controlPoint) => {
-      const puppetCenter = new Vector2(this._x, this._y)
       const point = new Vector2(controlPoint.x, controlPoint.y)
         .add(puppetCenter)
         .rotateAround(this.getRotationCenter(), this.getRotation());
@@ -272,16 +217,10 @@ Puppet.prototype.update = function(elapsedTime ) {
     const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
     for (let i = 0; i < deformedVerts.length; i += 2) {
       const vertex = this.threeMesh.geometry.vertices[i / 2];
-      let point;
-      // if (!shouldMoveXY) {
-        point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
-          .sub(this.getRotationCenter())
-          .multiplyScalar(this.getScale())
-          .add(this.getRotationCenter());
-      // }
-      // else {
-      //   point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
-      // }
+      const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
+        .sub(this.getRotationCenter())
+        .multiplyScalar(this.getScale())
+        .add(this.getRotationCenter());
 
       vertex.x = point.x;
       vertex.y = point.y;
@@ -290,9 +229,7 @@ Puppet.prototype.update = function(elapsedTime ) {
     // UPDATE CONTROL POINT GRAPHICS
     this.controlPoints.forEach((controlPoint, index) => {
       const vertex = this.threeMesh.geometry.vertices[controlPoint];
-      // const point = new Vector2(vertex.x, vertex.y)
       const controlPointSphere = this.controlPointSpheres[index];
-        // .multiplyScalar(this.getScale());
       controlPointSphere.position.x = vertex.x;
       controlPointSphere.position.y = vertex.y;
     });
@@ -311,9 +248,8 @@ Puppet.prototype.getRotationCenter = function() {
   return new Vector2(
     this._x + this.halfSize.x,
     this._y + this.halfSize.y
-  )
-    // .multiplyScalar(1 / this.getScale())
-}
+  );
+};
 
 Puppet.prototype.cleanup = function () {
   console.error("Warning: Puppet.cleanup() not yet implemented! You are wasting memory! >:(")
@@ -326,7 +262,6 @@ Puppet.prototype.setSelectionGUIVisible = function (visible) {
 
 Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {
   const point = new Vector2(xUntransformed, yUntransformed)
-    // .multiplyScalar(1 / this.getScale());
   const allFaces = this.threeMesh.geometry.faces;
   const allVerts = this.threeMesh.geometry.vertices;
   for(let i = 0; i < allFaces.length; i++) {
