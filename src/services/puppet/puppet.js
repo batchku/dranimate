@@ -140,9 +140,11 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
   this.needsUpdate = true;
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
   if (this.isRecording) {
+    const puppetCenter = this.getRotationCenter();
     const point = new Vector2(x, y)
-      .rotateAround(this.getRotationCenter(), -this.getRotation())
-      .sub(new Vector2(this._x, this._y));
+      .rotateAround(puppetCenter, -this.getRotation())
+      .sub(new Vector2(this._x, this._y))
+
     this.puppetRecording.setFrame(controlPointIndex, point.x, point.y);
   }
 }
@@ -167,10 +169,9 @@ Puppet.prototype.update = function(elapsedTime ) {
   if (shouldRotate) {
     const deltaRotation = this._rotation - this.prevRotation;
     this.prevRotation = this._rotation;
-
+    const puppetCenter = this.getRotationCenter();
     this.controlPoints.forEach((controlPoint, index) => {
       const {x, y} = this.threeMesh.geometry.vertices[controlPoint];
-      const puppetCenter = this.getRotationCenter();
       const point = new Vector2(x, y)
         .sub(puppetCenter)
         .multiplyScalar(1 / this.getScale())
@@ -182,12 +183,13 @@ Puppet.prototype.update = function(elapsedTime ) {
 
   // TRANSLATE PUPPET
   if(shouldMoveXY) {
+    const puppetCenter = this.getRotationCenter();
     this.controlPoints.forEach((controlPoint, index) => {
       const {x, y} = this.threeMesh.geometry.vertices[controlPoint];
       const delta = new Vector2(x, y)
-        .sub(this.getRotationCenter())
+        .sub(puppetCenter)
         .multiplyScalar(1 / this.getScale())
-        .add(this.getRotationCenter())
+        .add(puppetCenter)
         .add(new Vector2(dx, dy));
       this.setControlPointPosition(index, delta.x, delta.y);
     });
@@ -195,10 +197,12 @@ Puppet.prototype.update = function(elapsedTime ) {
 
   const recordedFrame = this.puppetRecording.update();
   if (recordedFrame) {
+    const puppetCenter = this.getRotationCenter();
     const absoluteControlPoints = recordedFrame.controlPoints.map((controlPoint) => {
       const point = new Vector2(controlPoint.x, controlPoint.y)
-        .add(puppetCenter)
-        .rotateAround(this.getRotationCenter(), this.getRotation());
+        .add(new Vector2(this._x, this._y))
+        .rotateAround(puppetCenter, this.getRotation())
+
 
       return {
         cpi: controlPoint.cpi,
@@ -215,12 +219,13 @@ Puppet.prototype.update = function(elapsedTime ) {
     // UPDATE ARAP DEFORMER
     ARAP.updateMeshDeformation(this.arapMeshID);
     const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
+    const puppetCenter = this.getRotationCenter();
     for (let i = 0; i < deformedVerts.length; i += 2) {
       const vertex = this.threeMesh.geometry.vertices[i / 2];
       const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
-        .sub(this.getRotationCenter())
+        .sub(puppetCenter)
         .multiplyScalar(this.getScale())
-        .add(this.getRotationCenter());
+        .add(puppetCenter);
 
       vertex.x = point.x;
       vertex.y = point.y;
