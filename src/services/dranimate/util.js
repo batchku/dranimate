@@ -10,9 +10,9 @@ function getPuppetAndControlPointFromPostion(puppets, x, y, distanceThreshold, z
     const closeControlPointIndex = controlPoints.findIndex((controlPoint, index) => {
       const mouseVector = new Vector2(x, y)
         // .multiplyScalar(1 / puppet.getScale())
-        // .rotateAround(puppet.getRotationCenter(), -puppet.getRotation());
+        // .rotateAround(puppet.getCenter(), -puppet.getRotation());
       // const mouseVector = new Vector2(x / puppet.getScale(), y / puppet.getScale());
-      // mouseVector.rotateAround(puppet.getRotationCenter(), -puppet.getRotation());
+      // mouseVector.rotateAround(puppet.getCenter(), -puppet.getRotation());
       const vert = verts[controlPoint];
       const dist = vert.distanceTo(new Vector3(mouseVector.x, mouseVector.y, 0)); //TODO: vector2?
       return (dist < distanceThreshold * zoom);

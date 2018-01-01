@@ -6,11 +6,12 @@ class PuppetRecording {
 
   constructor() {
     const now = performance.now();
+    this.hasRecording = false;
+    this.isRecording = true;
     this.controlPointFrames = [];
     this.startTime = now;
     this.stopTime = now;
     this.duration = 0;
-    this.hasRecording = false;
     this.activeIndex = 0;
     this.allIndices = new Set();
     this.id = Math.random();
@@ -20,6 +21,7 @@ class PuppetRecording {
     this.stopTime = performance.now();
     this.duration = this.stopTime - this.startTime;
     this.hasRecording = true;
+    this.isRecording = false;
 
     // attach relative times to each frames
     this.controlPointFrames.forEach((frame) => {

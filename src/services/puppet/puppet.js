@@ -21,12 +21,11 @@ var Puppet = function(puppetData) {
     isBeingDragged: false,
     lastPosition: new Vector2(0, 0)
   };
-
   this.name = 'DEFAULT_PUPPET_NAME';
 
   // RECORDING
-  this.isRecording = false; // TODO: move this into puppetRecording
   this.puppetRecording = new PuppetRecording();
+  this.puppetRecording.isRecording = false;
 
   // GRAPHICS
   this.image = puppetData.image;
@@ -34,7 +33,6 @@ var Puppet = function(puppetData) {
   this.imageNoBG = puppetData.imageNoBG;
   this.controlPointPositions = puppetData.controlPointPositions; // are these just unedited control points?
   this.backgroundRemovalData = puppetData.backgroundRemovalData;
-  this.hasMeshData = true; // TODO: remove
   this.wireframeMaterial = this.wireframeMaterial;
   this.texturedMaterial = puppetData.texturedMaterial;
   this.verts = puppetData.verts;
@@ -109,12 +107,10 @@ Puppet.prototype.setSelectionState = function(isBeingDragged, x, y){
 }
 
 Puppet.prototype.startRecording = function () {
-  this.isRecording = true;
   this.puppetRecording = new PuppetRecording();
 }
 
 Puppet.prototype.stopRecording = function () {
-  this.isRecording = false;
   this.puppetRecording.stop();
 }
 
@@ -124,7 +120,7 @@ Puppet.prototype.setControlPointPositions = function(controlPoints) {
   controlPoints.forEach(controlPoint => {
     ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.x, controlPoint.y)
   });
-  if (this.isRecording) {
+  if (this.puppetRecording.isRecording) {
     this.puppetRecording.setFrames(controlPoints);
   }
 }
@@ -133,8 +129,8 @@ Puppet.prototype.setControlPointPositions = function(controlPoints) {
 Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
   this.needsUpdate = true;
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
-  if (this.isRecording) {
-    const puppetCenter = this.getRotationCenter();
+  if (this.puppetRecording.isRecording) {
+    const puppetCenter = this.getCenter();
     const point = new Vector2(x, y)
       .rotateAround(puppetCenter, -this.getRotation())
       .sub(puppetCenter);
@@ -161,7 +157,7 @@ Puppet.prototype.update = function(elapsedTime ) {
   if (shouldRotate) {
     const deltaRotation = this.current.rotation - this.previous.rotation;
     this.previous.rotation = this.current.rotation;
-    const puppetCenter = this.getRotationCenter();
+    const puppetCenter = this.getCenter();
     this.controlPoints.forEach((controlPoint, index) => {
       const {x, y} = this.threeMesh.geometry.vertices[controlPoint];
       const point = new Vector2(x, y)
@@ -175,7 +171,7 @@ Puppet.prototype.update = function(elapsedTime ) {
 
   // TRANSLATE PUPPET
   if(shouldMoveXY) {
-    const puppetCenter = this.getRotationCenter();
+    const puppetCenter = this.getCenter();
     const xyDelta = new Vector2(dx, dy);
     this.controlPoints.forEach((controlPoint, index) => {
       const vertexPosition = this.threeMesh.geometry.vertices[controlPoint].clone();
@@ -190,7 +186,7 @@ Puppet.prototype.update = function(elapsedTime ) {
 
   const recordedFrame = this.puppetRecording.update();
   if (recordedFrame) {
-    const puppetCenter = this.getRotationCenter();
+    const puppetCenter = this.getCenter();
     const absoluteControlPoints = recordedFrame.controlPoints.map((controlPoint) => {
       const point = new Vector2(controlPoint.x, controlPoint.y)
         .add(puppetCenter)
@@ -211,7 +207,7 @@ Puppet.prototype.update = function(elapsedTime ) {
     // UPDATE ARAP DEFORMER
     ARAP.updateMeshDeformation(this.arapMeshID);
     const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
-    const puppetCenter = this.getRotationCenter();
+    const puppetCenter = this.getCenter();
     for (let i = 0; i < deformedVerts.length; i += 2) {
       const vertex = this.threeMesh.geometry.vertices[i / 2];
       const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
@@ -244,8 +240,7 @@ Puppet.prototype.update = function(elapsedTime ) {
 
 };
 
-// TODO: rename to 'getCenter'
-Puppet.prototype.getRotationCenter = function() {
+Puppet.prototype.getCenter = function() {
   return this.current.center.clone();
 };
 

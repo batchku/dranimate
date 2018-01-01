@@ -39,7 +39,7 @@ var Dranimate = function () {
 
     let lastUpdateTimestamp = performance.now();
 
-    let isInRenderLoop = true;
+    let isInRenderLoop = false;
     let isRecording = false;
     let gifIsRecording = false;
     let gifRecorder;
