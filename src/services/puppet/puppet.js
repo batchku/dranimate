@@ -8,6 +8,7 @@ var Puppet = function(puppetData) {
   // PARAMETERS
   this._x = 0.0; // TODO: change to Vector2
   this._y = 0.0;
+  this.displayCenter = puppetData.halfSize.clone();
   this._rotation = 0.0;
   this._scale = 1.0;
   this.prevx = this._x; // TODO: change to Vector2
@@ -41,6 +42,7 @@ var Puppet = function(puppetData) {
   this.boundingBox = puppetData.boundingBox;
   this.controlPointSpheres = puppetData.controlPointSpheres;
   this.group = puppetData.group;
+  this.centerSphere = puppetData.centerSphere;
 
   this.undeformedVertices = this.verts;
   this.needsUpdate = true;
@@ -78,7 +80,10 @@ Puppet.prototype.incrementPosition = function(x, y) {
   const delta = new Vector2(x, y)
     .sub(lastPosition)
     .multiplyScalar(1 / this.getScale())
-
+  // this.displayCenter.add(
+  //   new Vector2(x, y)
+  //     .sub(lastPosition)
+  // );
   this._x += delta.x;
   this._y += delta.y;
   this.selectionState.lastPositionX = x;
@@ -141,9 +146,20 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, x, y) {
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], x, y);
   if (this.isRecording) {
     const puppetCenter = this.getRotationCenter();
+    const scaledCenter = this.getRotationCenter()
+      .sub(puppetCenter)
+      .multiplyScalar(1 / this.getScale())
+      .add(puppetCenter)
+      // .multiplyScalar(1 / this.getScale());
     const point = new Vector2(x, y)
+      // .sub(puppetCenter)
+      // .multiplyScalar(1 / this.getScale())
+      // .add(puppetCenter)
       .rotateAround(puppetCenter, -this.getRotation())
-      .sub(new Vector2(this._x, this._y))
+      .sub(scaledCenter)
+      // .multiplyScalar(1 / this.getScale())
+      // .add(puppetCenter)
+      // .sub(new Vector2(this._x, this._y))
 
     this.puppetRecording.setFrame(controlPointIndex, point.x, point.y);
   }
@@ -160,9 +176,10 @@ Puppet.prototype.update = function(elapsedTime ) {
 
   // SCALE PUPPET
   if (shouldScale) {
-    const deltaScale = 1 - (this._scale - this.prevScale);
+    const deltaScale = this._scale - this.prevScale;
     this.prevScale = this._scale; // TODO: remove prevScale?
     this.needsUpdate = true;
+    // this.displayCenter.multiplyScalar(deltaScale);
   }
 
   // ROTATE PUPPET
@@ -183,8 +200,16 @@ Puppet.prototype.update = function(elapsedTime ) {
 
   // TRANSLATE PUPPET
   if(shouldMoveXY) {
+    // let recordedIndices = [];
+    // if (recordedFrame) {
+    //   recordedIndices = recordedFrame.controlPoints.map(controlPoint => controlPoint.cpi);
+    //   console.log('recordedIndices', recordedIndices);
+    // }
+
     const puppetCenter = this.getRotationCenter();
     this.controlPoints.forEach((controlPoint, index) => {
+      // if (recordedIndices.includes(index)) { return; }
+
       const {x, y} = this.threeMesh.geometry.vertices[controlPoint];
       const delta = new Vector2(x, y)
         .sub(puppetCenter)
@@ -193,14 +218,30 @@ Puppet.prototype.update = function(elapsedTime ) {
         .add(new Vector2(dx, dy));
       this.setControlPointPosition(index, delta.x, delta.y);
     });
+
+    // this.displayCenter.add(delta);
+    this.displayCenter.add(
+      new Vector2(dx, dy)
+        .multiplyScalar(this.getScale())
+    );
+    // this.puppetRecording.translateFrames(dx, dy);
   }
 
   const recordedFrame = this.puppetRecording.update();
   if (recordedFrame) {
     const puppetCenter = this.getRotationCenter();
+    const scaledCenter = this.getRotationCenter()
+      .sub(puppetCenter)
+      .multiplyScalar(this.getScale())
+      .add(puppetCenter)
+      // .multiplyScalar(this.getScale());
     const absoluteControlPoints = recordedFrame.controlPoints.map((controlPoint) => {
+      const scaledPosition = new Vector2(this._x, this._y)
       const point = new Vector2(controlPoint.x, controlPoint.y)
-        .add(new Vector2(this._x, this._y))
+        // .sub(puppetCenter)
+        // .multiplyScalar(this.getScale())
+        // .add(puppetCenter)
+        .add(scaledCenter)
         .rotateAround(puppetCenter, this.getRotation())
 
 
@@ -239,6 +280,13 @@ Puppet.prototype.update = function(elapsedTime ) {
       controlPointSphere.position.y = vertex.y;
     });
 
+    // const displayCenter = this.getDisplayCenter();
+    // this.centerSphere.position.x = displayCenter.x;
+    // this.centerSphere.position.y = displayCenter.y;
+    this.centerSphere.position.x = this.displayCenter.x;
+    this.centerSphere.position.y = this.displayCenter.y;
+    // console.log(this.centerSphere.position);
+
     // UPDATE MISC THREEJS
     this.threeMesh.geometry.dynamic = true;
     this.threeMesh.geometry.verticesNeedUpdate = true;
@@ -250,10 +298,21 @@ Puppet.prototype.update = function(elapsedTime ) {
 };
 
 Puppet.prototype.getRotationCenter = function() {
+  // return new Vector2(
+  //   this._x + this.halfSize.x,
+  //   this._y + this.halfSize.y
+  // );
   return new Vector2(
-    this._x + this.halfSize.x,
-    this._y + this.halfSize.y
+    this._x,
+    this._y
   );
+
+};
+
+Puppet.prototype.getDisplayCenter = function() {
+  // return new Vector2(this._x, this._y)
+  //   .multiplyScalar(this.getScale());
+  return this.displayCenter.clone();
 };
 
 Puppet.prototype.cleanup = function () {
