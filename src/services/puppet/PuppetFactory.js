@@ -98,6 +98,7 @@ function buildFromOptions(options) {
     return sphere;
   });
 
+  // FOR TESTING THE CENTER OF THE PUPPET:
   const centerSphere = new Mesh(
     new SphereGeometry(15, 32, 32),
     new MeshBasicMaterial({ color: 0x3300FF })
@@ -107,7 +108,7 @@ function buildFromOptions(options) {
   const group = new Group();
   group.add(threeMesh);
   group.add(boundingBox);
-  group.add(centerSphere);
+  // group.add(centerSphere);
   controlPointSpheres.forEach(cp => group.add(cp));
 
   return {

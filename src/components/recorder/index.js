@@ -25,7 +25,6 @@ class Recorder extends Component {
   };
 
   onPuppetRecordToggle = (event) => {
-    console.log('on puppet record toggle click')
     const puppetIsRecording = !this.state.puppetIsRecording;
     this.setState({ puppetIsRecording });
     dranimate.setRecording(puppetIsRecording);

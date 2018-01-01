@@ -236,8 +236,9 @@ Puppet.prototype.update = function(elapsedTime ) {
       controlPointSphere.position.y = vertex.y;
     });
 
-    this.centerSphere.position.x = this.current.center.x;
-    this.centerSphere.position.y = this.current.center.y;
+    // FOR TESTING THE CENTER OF THE PUPPET:
+    // this.centerSphere.position.x = this.current.center.x;
+    // this.centerSphere.position.y = this.current.center.y;
 
     // UPDATE MISC THREEJS
     this.threeMesh.geometry.dynamic = true;
