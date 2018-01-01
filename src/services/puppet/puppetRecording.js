@@ -38,11 +38,13 @@ class PuppetRecording {
       }, new Set());
   }
 
+  // TODO: change to (cpi, Vector2)
   setFrame(cpi, x, y) {
     const controlPoints = [ { cpi, x, y } ];
     this.setFrames(controlPoints);
   }
 
+  // TODO: change to ([ cpi, Vector2 ])
   setFrames(controlPoints) {
     const timestamp = performance.now();
     this.controlPointFrames.push({ timestamp, controlPoints });

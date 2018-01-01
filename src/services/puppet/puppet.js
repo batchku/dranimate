@@ -3,7 +3,7 @@ import ARAP from 'services/arap/arap';
 import { PuppetRecording } from 'services/puppet/puppetRecording';
 import { pointIsInsideTriangle } from 'services/util/math';
 
-var Puppet = function(puppetData) {
+const Puppet = function(puppetData) {
 
   // PARAMETERS
   this.current = {
@@ -121,7 +121,18 @@ Puppet.prototype.setControlPointPositions = function(controlPoints) {
     ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.x, controlPoint.y)
   });
   if (this.puppetRecording.isRecording) {
-    this.puppetRecording.setFrames(controlPoints);
+    const puppetCenter = this.getCenter();
+    const normalizedControlPoints = controlPoints.map((controlPoint) => {
+      const position = new Vector2(controlPoint.x, controlPoint.y)
+        .rotateAround(puppetCenter, -this.getRotation())
+        .sub(puppetCenter);
+      return {
+        cpi: controlPoint.cpi,
+        x: position.x,
+        y: position.y
+      };
+    });
+    this.puppetRecording.setFrames(normalizedControlPoints);
   }
 }
 
@@ -268,4 +279,4 @@ Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {
   return false;
 }
 
-module.exports = Puppet;
+export default Puppet;

@@ -18,7 +18,7 @@ const ZOOM = {
 };
 const CAMERA_DEPTH = 100;
 
-var Dranimate = function () {
+const Dranimate = function () {
     /* debugging memory issue */
 
     let that = this;
@@ -209,18 +209,6 @@ var Dranimate = function () {
 /*****************************
     Dom events
 *****************************/
-
-    // // TODO: move event listeners out of this file
-    // document.addEventListener('keydown', $event => {
-    //   if($event.code === 'Space' && this.getSelectedPuppet()) {
-    //     this.getSelectedPuppet().startRecording();
-    //   }
-    // }, false);
-    // document.addEventListener('keyup', $event => {
-    //   if($event.code === 'Space' && this.getSelectedPuppet()) {
-    //     this.getSelectedPuppet().finishRecording();
-    //   }
-    // }, false);
 
     window.addEventListener('resize', $event => refreshCamera(), false );
 
