@@ -71,14 +71,13 @@ export default class DranimateTouchHandler {
         const puppet = puppets[controlPoint.puppetIndex];
         const puppetCenter = puppet.getCenter();
         const relativePosition = getRelativeTouchPosition(touch.clientX, touch.clientY, this.rendererElement, this.panHandler, zoom);
-        const positionVector = new Vector2(relativePosition.x, relativePosition.y)
+        const position = new Vector2(relativePosition.x, relativePosition.y)
           .sub(puppetCenter)
           .multiplyScalar(1 / puppet.getScale())
           .add(puppetCenter);
         return {
           cpi: controlPoint.controlPointIndex,
-          x: positionVector.x,
-          y: positionVector.y
+          position
         };
       });
 

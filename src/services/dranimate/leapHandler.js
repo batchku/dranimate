@@ -35,36 +35,29 @@ export default class DranimateLeapHandler {
     const middle = transformLeapCoordinate(hand.fingers[2].distal.center());
     const ring = transformLeapCoordinate(hand.fingers[3].distal.center());
     const pinky = transformLeapCoordinate(hand.fingers[4].distal.center());
-    this.moveControlPoints(selectedPuppet, [
-      { cpi: 0, x: thumb.x, y: thumb.y },
-      { cpi: 1, x: pointer.x, y: pointer.y },
-      { cpi: 2, x: middle.x, y: middle.y },
-      { cpi: 3, x: ring.x, y: ring.y },
-      { cpi: 4, x: pinky.x, y: pinky.y },
+    this.normalizeControlPoints(selectedPuppet, [
+      { cpi: 0, position: new Vector2(thumb.x, thumb.y) },
+      { cpi: 1, position: new Vector2(pointer.x, pointer.y) },
+      { cpi: 2, position: new Vector2(middle.x, middle.y) },
+      { cpi: 3, position: new Vector2(ring.x, ring.y) },
+      { cpi: 4, position: new Vector2(pinky.x, pinky.y) }
     ]);
   }
 
-  moveControlPoints(puppet, frames) {
+  normalizeControlPoints(puppet, frames) {
+    const puppetCenter = puppet.getCenter();
     const normalizedFrames = frames
-      .map(frame => {
-        const puppetCenter = puppet.getCenter();
-        const positionVector = new Vector2(frame.x, frame.y)
+      .map((frame) => {
+        const position = frame.position
           .sub(puppetCenter)
           .multiplyScalar(1 / puppet.getScale())
           .add(puppetCenter);
         return {
           cpi: frame.cpi,
-          x: positionVector.x,
-          y: positionVector.y
+          position
         };
       });
     puppet.setControlPointPositions(normalizedFrames);
-  }
-
-  moveControlPoint(puppet, controlPointIndex, x, y) {
-    const positionVector = new Vector2(x / puppet.getScale(), y / puppet.getScale());
-    positionVector.rotateAround(puppet.getCenter(), -puppet.getRotation());
-    puppet.setControlPointPosition(controlPointIndex, positionVector.x, positionVector.y);
   }
 
 }

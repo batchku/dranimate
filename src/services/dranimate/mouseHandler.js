@@ -75,7 +75,7 @@ export default class DranimateMouseHandler {
         .sub(puppetCenter)
         .multiplyScalar(1 / puppet.getScale())
         .add(puppetCenter);
-      puppet.setControlPointPosition(ci, mouseVector.x, mouseVector.y);
+      puppet.setControlPointPosition(ci, mouseVector);
       return;
     }
 
