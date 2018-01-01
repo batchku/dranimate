@@ -47,8 +47,11 @@ export default class DranimateLeapHandler {
   moveControlPoints(puppet, frames) {
     const normalizedFrames = frames
       .map(frame => {
-        const positionVector = new Vector2(frame.x / puppet.getScale(), frame.y / puppet.getScale());
-        positionVector.rotateAround(puppet.getCenter(), -puppet.getRotation());
+        const puppetCenter = puppet.getCenter();
+        const positionVector = new Vector2(frame.x, frame.y)
+          .sub(puppetCenter)
+          .multiplyScalar(1 / puppet.getScale())
+          .add(puppetCenter);
         return {
           cpi: frame.cpi,
           x: positionVector.x,
