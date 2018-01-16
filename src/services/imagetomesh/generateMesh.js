@@ -3,7 +3,6 @@ import loadImage from 'services/util/imageLoader';
 import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
 import requestPuppetCreation from 'services/puppet/PuppetFactory';
 
-
 function findEdgesOfImage(imageNoBackgroundData, contourData) {
     const width = imageNoBackgroundData.width;
     const height = imageNoBackgroundData.height;
@@ -194,13 +193,13 @@ function generateMesh(puppetId, image, imageNoBackgroundData, originalImageData,
   return removeBackgroundFromImage(slic, imageNoBackgroundData, originalImageData, dummyContext, dummyCanvas)
     .then((onlySelectionImage) => {
       const contourPoints = recalculateContourPoints(contourData);
-      const geoData = generateTriangles(contourPoints, controlPoints, imageNoBackgroundData);
+      const geometry = generateTriangles(contourPoints, controlPoints, imageNoBackgroundData);
       return Promise.resolve({
         id: puppetId,
         image,
-        vertices: geoData.vertices,
-        faces: geoData.triangles,
-        controlPoints: geoData.controlPointIndices,
+        vertices: geometry.vertices,
+        faces: geometry.triangles,
+        controlPoints: geometry.controlPointIndices,
         controlPointPositions: controlPoints,
         imageNoBG: onlySelectionImage,
         backgroundRemovalData: imageNoBackgroundData

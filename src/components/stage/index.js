@@ -8,7 +8,7 @@ import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/profile';
 import { loadDranimateFile } from 'services/util/file';
-import editorHelper from 'services/imageToMesh/EditorHelper';
+import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
 import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
 
@@ -35,13 +35,15 @@ class Stage extends Component {
     dranimate.setup(this.dranimateStageContainer);
   };
 
+  // componentDidUpdate = (prevProps, prevState) => {
+  //   console.log('this.state', this.state);
+  // }
+
   onMouseDown = event => {
     dranimate.onMouseDown(event);
     const selectedPuppet = dranimate.getSelectedPuppet();
     this.setState({ selectedPuppet });
   };
-
-  // openEditor = () => this.setState({ editorIsOpen: true });
 
   closeEditor = () => this.setState({ editorIsOpen: false });
 
@@ -58,7 +60,8 @@ class Stage extends Component {
   onDeleteSelectedPuppet = () => dranimate.deleteSelectedPuppet();
 
   onEditSelectedPuppet = () => {
-    editorHelper.setItem(dranimate.getSelectedPuppet());
+    console.log('setItem?', dranimate.getSelectedPuppet())
+    puppetEditorStateService.setItem(dranimate.getSelectedPuppet());
     this.setState({ editorIsOpen: true });
   };
 
@@ -70,7 +73,7 @@ class Stage extends Component {
           dranimate.addPuppet(result);
         }
         else {
-          editorHelper.setItem(result);
+          puppetEditorStateService.setItem(result);
           this.setState({ editorIsOpen: true });
         }
       })
@@ -126,7 +129,13 @@ class Stage extends Component {
           onChange={this.onFileChange}
           className={styles.hiddenFilePicker}
         />
-        { this.state.editorIsOpen ? <PuppetEditor onClose={this.closeEditor}/> : null }
+        {
+          this.state.editorIsOpen ?
+            <PuppetEditor
+              onClose={this.closeEditor}
+            /> :
+            null
+        }
         { this.state.profileIsOpen ? <Profile onClose={this.closeProfile}/> : null }
       </div>
     );

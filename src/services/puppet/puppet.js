@@ -5,7 +5,7 @@ import { pointIsInsideTriangle } from 'services/util/math';
 
 const Puppet = function(puppetData) {
 
-  // PARAMETERS
+  // INITIAL VALUES
   this.current = {
     position: new Vector2(0, 0),
     center: puppetData.halfSize.clone(),
@@ -48,12 +48,7 @@ const Puppet = function(puppetData) {
   this.undeformedVertices = this.verts;
   this.needsUpdate = true;
 
-  // INIT
-  this.initArap();
-};
-
-Puppet.prototype.initArap = function() {
-  /* Setup new ARAP mesh */
+  // SETUP NEW ARAP MESH
   console.log('----Puppet.generateMesh from ', this.vertsFlatArray.length / 2);
   this.arapMeshID = ARAP.createNewARAPMesh(this.vertsFlatArray, this.facesFlatArray);
   /* Add control points */
@@ -64,7 +59,7 @@ Puppet.prototype.initArap = function() {
     var cpi = this.controlPoints[i];
     ARAP.setControlPointPosition(this.arapMeshID, cpi, this.verts[cpi][0], this.verts[cpi][1]);
   }
-}
+};
 
 Puppet.prototype.incrementPosition = function(x, y) {
   const position = new Vector2(x, y);
@@ -201,7 +196,6 @@ Puppet.prototype.update = function(elapsedTime ) {
       const point = controlPoint.position.clone()
         .add(puppetCenter)
         .rotateAround(puppetCenter, this.getRotation());
-
       return {
         cpi: controlPoint.cpi,
         position: point
