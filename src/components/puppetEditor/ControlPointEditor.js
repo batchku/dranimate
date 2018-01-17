@@ -57,7 +57,7 @@ class ControlPointEditor extends Component {
 
         <div>
           <canvas
-            className={styles.editorCanvas}
+            className={styles.editorCanvasChecker}
             ref={input => this.canvasElement = input}
             onMouseMove={this.controlPointService.onMouseMove}
             onMouseDown={this.controlPointService.onMouseDown}

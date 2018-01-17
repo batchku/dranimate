@@ -6,11 +6,13 @@ import Loader from 'components/loader';
 import ImageEditor from 'components/puppetEditor/ImageEditor';
 import ControlPointEditor from 'components/puppetEditor/ControlPointEditor';
 import Slider from 'components/primitives/slider';
-import ZoomPanner from 'components/zoomPanner';
 import dranimate from 'services/dranimate/dranimate';
 import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
 import ImageToMesh from 'services/imageToMesh/imageToMesh';
 import generateUniqueId from 'services/util/uuid';
+import { generateMesh } from 'services/imagetomesh/generateMesh';
+import { getImageDataFromImage } from 'services/imagetomesh/ImageUtil';
+import loadImage from 'services/util/imageLoader';
 import styles from './styles.scss';
 
 const STEPS = {
@@ -46,9 +48,7 @@ class PuppetEditor extends Component {
     }
   }
 
-  onClose = () => {
-    this.props.onClose();
-  }
+  onClose = () => this.props.onClose();
 
   onImageEditorNext = backgroundRemovalData => {
     this.setState({
@@ -71,7 +71,6 @@ class PuppetEditor extends Component {
     const puppetId = puppetEditorStateService.isPuppet ?
       puppetEditorStateService.getItem().id : generateUniqueId();
 
-    console.log('TODO: generate puppet with ID', puppetId);
     // this.imageToMesh.generateMesh(puppetId)
     //   .then((puppet) => {
     //     if (puppet) {
@@ -79,6 +78,47 @@ class PuppetEditor extends Component {
     //     }
     //     this.props.onClose();
     //   });
+
+    // imageSrc: null,
+    // backgroundRemovalData: null,
+    // controlPointPositions: null,
+
+    // dummyContext.drawImage(image, 0, 0, image.width, image.height,
+    //                               0, 0, dummyCanvas.width, dummyCanvas.height);
+    // const originalImageData = dummyContext.getImageData(0, 0, dummyCanvas.width, dummyCanvas.height);
+
+    loadImage(this.state.imageSrc)
+      .then((imageElement) => {
+        const originalImageData = getImageDataFromImage(imageElement);
+        return generateMesh(puppetId, imageElement, this.state.backgroundRemovalData, originalImageData, controlPointPositions);
+      })
+      .then((puppet) => {
+        if (puppet) {
+          dranimate.addPuppet(puppet);
+        }
+        this.onClose();
+      });
+
+
+      // const puppetId = puppetEditorStateService.isPuppet ? puppetEditorStateService.getItem().id : generateUniqueId();
+      // this.imageToMesh.generateMesh(puppetId)
+      //   .then((puppet) => {
+      //     if (puppet) {
+      //       dranimate.addPuppet(puppet);
+      //     }
+      //     this.props.onClose();
+      //   });
+
+    // loadImage(this.state.imageSrc)
+    //   .then(imageElement => getImageDataFromImage(imageElement).then(originalImageData =>
+    //     generateMesh(puppetId, imageElement, this.state.backgroundRemovalData, originalImageData, controlPointPositions)
+    //   ));
+      // .then(imageElement => {
+      //   // generateMesh(puppetId, image, imageNoBackgroundData, originalImageData, controlPoints);
+      //   const originalImageData = getImageDataFromImage(imageElement);
+      //   generateMesh(puppetId, imageElement, this.state.backgroundRemovalData, originalImageData, controlPointPositions)
+      // });
+
   }
 
   render() {

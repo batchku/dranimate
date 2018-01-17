@@ -131,6 +131,7 @@ function buildFromOptions(options) {
 }
 
 export default function requestPuppetCreation(options) {
+  console.log('requestPuppetCreation', options);
   if (!mostFaces) {
     mostFaces = options.faces.length;
   }

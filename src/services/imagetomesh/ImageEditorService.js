@@ -1,8 +1,7 @@
 import SLIC from './slic.js';
-import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
+import { getImageDataFromImage } from 'services/imagetomesh/ImageUtil';
 import loadImage from 'services/util/imageLoader';
 import PanHandler from 'services/util/panHandler';
-import { generateMesh } from 'services/imagetomesh/generateMesh';
 
 const SELECT_STATE = {
   PAN: 'PAN',
@@ -205,10 +204,7 @@ const ImageEditorService = function () {
     console.log('SLIC Start', performance.now());
     const regionSize = threshold || 30;
 
-    dummyContext.drawImage(image, 0, 0, image.width, image.height,
-                                  0, 0, dummyCanvas.width, dummyCanvas.height);
-    originalImageData = dummyContext.getImageData(0, 0, dummyCanvas.width, dummyCanvas.height);
-
+    originalImageData = getImageDataFromImage(image, dummyCanvas.width, dummyCanvas.height);
     slic = new SLIC(originalImageData, { method: 'slic', regionSize });
 
     if (!imageNoBackgroundData) {

@@ -130,20 +130,20 @@ class Stage extends Component {
           onChange={this.onFileChange}
           className={styles.hiddenFilePicker}
         />
-        { /*
+        {
           this.state.editorIsOpen ?
             <PuppetEditor
               onClose={this.closeEditor}
             /> :
             null
-        */ }
-        {
+        }
+        { /*
           this.state.editorIsOpen ?
             <PuppetEditorOld
               onClose={this.closeEditor}
             /> :
             null
-        }
+        */ }
         { this.state.profileIsOpen ? <Profile onClose={this.closeProfile}/> : null }
       </div>
     );

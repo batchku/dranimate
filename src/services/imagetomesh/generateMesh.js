@@ -1,5 +1,5 @@
 import Delaunay from 'delaunay-fast';
-import extractForeground from 'services/imagetomesh/ForegroundExtractor.js';
+import { extractForeground } from 'services/imagetomesh/ImageUtil.js';
 import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
 import requestPuppetCreation from 'services/puppet/PuppetFactory';
 

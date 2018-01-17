@@ -1,4 +1,5 @@
-import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
+// import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
+import { extractForeground, getImageDataFromImage } from 'services/imagetomesh/ImageUtil.js';
 import loadImage from 'services/util/imageLoader';
 import PanHandler from 'services/util/panHandler';
 import { getDistance } from 'services/util/math';
@@ -29,6 +30,7 @@ const ControlPointService = function () {
   let imageNoBackgroundData;
   let imageNoBackgroundImage = new Image();
   let imageBackgroundMaskImage = new Image();
+  let foregroundImage;
 
   let controlPoints = [];
   let controlPointIndices = [];
@@ -88,8 +90,13 @@ const ControlPointService = function () {
       .then(imgSrc => loadImage(imgSrc))
       .then(img => {
         image = img;
+        const originalImageData = getImageDataFromImage(image, dummyCanvas.width, dummyCanvas.height);
+        return extractForeground(originalImageData, imageNoBackgroundData);
+      })
+      .then(imageNoBG => {
+        foregroundImage = imageNoBG;
         redraw();
-      });
+      })
   };
 
   this.onMouseMove = (event, isTouch) => {
@@ -202,42 +209,21 @@ const ControlPointService = function () {
 *****************************/
 
   const redraw = () => {
+    context.fillStyle = '#0099EE';
     context.clearRect(0, 0, width, height);
-
-    context.save();
-    // context.scale(zoom, zoom);
-    // context.translate(panHandler.getPanPosition().x, panHandler.getPanPosition().y);
-
-    context.fillStyle = 'tomato';
-    // context.globalAlpha = 1.0;
-    context.fillRect(0, 0, width, height);
-    // context.drawImage(image, 0, 0, image.width, image.height, 0, 0, width, height);
-    // context.drawImage(highlightImage,
-    //                   0, 0, highlightImage.width, highlightImage.height,
-    //                   0, 0, width, height);
-    // context.globalAlpha = 0.8;
-    // context.drawImage(imageNoBackgroundImage,
-    //                   0, 0, imageNoBackgroundImage.width, imageNoBackgroundImage.height,
-    //                   0, 0, width, height);
-
-    context.drawImage(imageNoBackgroundImage,
+    context.drawImage(foregroundImage,
                       0, 0, width, height,
                       0, 0, width, height);
-    // context.globalAlpha = 1.0;
 
     if(controlPoints && controlPoints.length) {
-      context.fillStyle = '#0099EE';
       controlPoints.forEach((cp, index) => {
-        const x = cp[0];
-        const y = cp[1];
+        const [x, y] = cp;
         const radius = index === activeControlPointIndex ? 10 : 5;
         context.beginPath();
         context.arc(x, y, radius, 0, 2 * Math.PI);
         context.fill();
       });
     }
-
-    context.restore();
   }
 
 }
