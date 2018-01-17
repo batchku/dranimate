@@ -1,4 +1,3 @@
-// import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
 import { extractForeground, getImageDataFromImage } from 'services/imagetomesh/ImageUtil.js';
 import loadImage from 'services/util/imageLoader';
 import PanHandler from 'services/util/panHandler';
@@ -18,34 +17,14 @@ const ControlPointService = function () {
   let mouse = {};
   let mouseAbs = {};
 
-  let image;
-  let originalImageData;
-
-  let slic;
-  let slicSegmentsCentroids;
-
-  let highlightData;
-  let highlightImage = new Image();
-
-  let imageNoBackgroundData;
-  let imageNoBackgroundImage = new Image();
-  let imageBackgroundMaskImage = new Image();
   let foregroundImage;
-
   let controlPoints = [];
   let controlPointIndices = [];
   let activeControlPointIndex = -1;
 
-  let dummyCanvas = document.createElement('canvas');
-  let dummyContext = dummyCanvas.getContext('2d');
-  let blankCanvas = document.createElement('canvas');
-  let blankContext = blankCanvas.getContext('2d');
-
   let zoom = 1;
   let lastTouchTime = 0;
-
   const panHandler = new PanHandler();
-
   let mouseState = MOUSE_STATE.UP;
 
 /*****************************
@@ -56,47 +35,23 @@ const ControlPointService = function () {
     width = canvas.width;
     height = canvas.height;
     context = canvas.getContext('2d');
-    imageNoBackgroundData = backgroundRemovalData;
     controlPoints = controlPointPositions || [];
+    context.fillStyle = '#0099EE';
 
     loadImage(imageData)
       .then((img) => {
-        let normWidth = img.width;
-        let normHeight = img.height;
-        const largerSize = Math.max(normWidth, normHeight);
-
-        normWidth /= largerSize;
-        normHeight /= largerSize;
-
-        normWidth *= 400;
-        normHeight *= 400;
-
-        dummyCanvas.width = normWidth;
-        dummyCanvas.height = normHeight;
-
+        const largerSize = Math.max(img.width, img.height);
+        const normWidth = (img.width / largerSize) * 400;
+        const normHeight = (img.height / largerSize) * 400;
         width = normWidth;
         height = normHeight;
-
-        dummyContext.putImageData(imageNoBackgroundData, 0, 0);
-        imageNoBackgroundImage.src = dummyCanvas.toDataURL('image/png');
-
-        dummyContext.clearRect(0, 0, dummyCanvas.width, dummyCanvas.height);
-        dummyContext.drawImage(img,
-          0, 0, img.width, img.height,
-          0, 0, dummyCanvas.width, dummyCanvas.height
-        );
-        return Promise.resolve(dummyCanvas.toDataURL('image/png'));
+        const originalImageData = getImageDataFromImage(img, width, height);
+        return extractForeground(originalImageData, backgroundRemovalData);
       })
-      .then(imgSrc => loadImage(imgSrc))
-      .then(img => {
-        image = img;
-        const originalImageData = getImageDataFromImage(image, dummyCanvas.width, dummyCanvas.height);
-        return extractForeground(originalImageData, imageNoBackgroundData);
-      })
-      .then(imageNoBG => {
+      .then((imageNoBG) => {
         foregroundImage = imageNoBG;
         redraw();
-      })
+      });
   };
 
   this.onMouseMove = (event, isTouch) => {
@@ -209,21 +164,20 @@ const ControlPointService = function () {
 *****************************/
 
   const redraw = () => {
-    context.fillStyle = '#0099EE';
     context.clearRect(0, 0, width, height);
     context.drawImage(foregroundImage,
                       0, 0, width, height,
                       0, 0, width, height);
-
-    if(controlPoints && controlPoints.length) {
-      controlPoints.forEach((cp, index) => {
-        const [x, y] = cp;
-        const radius = index === activeControlPointIndex ? 10 : 5;
-        context.beginPath();
-        context.arc(x, y, radius, 0, 2 * Math.PI);
-        context.fill();
-      });
+    if (!controlPoints || !controlPoints.length) {
+      return;
     }
+    controlPoints.forEach((cp, index) => {
+      const [x, y] = cp;
+      const radius = index === activeControlPointIndex ? 10 : 5;
+      context.beginPath();
+      context.arc(x, y, radius, 0, 2 * Math.PI);
+      context.fill();
+    });
   }
 
 }

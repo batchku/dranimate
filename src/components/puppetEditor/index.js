@@ -71,25 +71,10 @@ class PuppetEditor extends Component {
     const puppetId = puppetEditorStateService.isPuppet ?
       puppetEditorStateService.getItem().id : generateUniqueId();
 
-    // this.imageToMesh.generateMesh(puppetId)
-    //   .then((puppet) => {
-    //     if (puppet) {
-    //       dranimate.addPuppet(puppet);
-    //     }
-    //     this.props.onClose();
-    //   });
-
-    // imageSrc: null,
-    // backgroundRemovalData: null,
-    // controlPointPositions: null,
-
-    // dummyContext.drawImage(image, 0, 0, image.width, image.height,
-    //                               0, 0, dummyCanvas.width, dummyCanvas.height);
-    // const originalImageData = dummyContext.getImageData(0, 0, dummyCanvas.width, dummyCanvas.height);
-
     loadImage(this.state.imageSrc)
       .then((imageElement) => {
-        const originalImageData = getImageDataFromImage(imageElement);
+        const { width, height} = this.state.backgroundRemovalData;
+        const originalImageData = getImageDataFromImage(imageElement, width, height);
         return generateMesh(puppetId, imageElement, this.state.backgroundRemovalData, originalImageData, controlPointPositions);
       })
       .then((puppet) => {
@@ -98,27 +83,6 @@ class PuppetEditor extends Component {
         }
         this.onClose();
       });
-
-
-      // const puppetId = puppetEditorStateService.isPuppet ? puppetEditorStateService.getItem().id : generateUniqueId();
-      // this.imageToMesh.generateMesh(puppetId)
-      //   .then((puppet) => {
-      //     if (puppet) {
-      //       dranimate.addPuppet(puppet);
-      //     }
-      //     this.props.onClose();
-      //   });
-
-    // loadImage(this.state.imageSrc)
-    //   .then(imageElement => getImageDataFromImage(imageElement).then(originalImageData =>
-    //     generateMesh(puppetId, imageElement, this.state.backgroundRemovalData, originalImageData, controlPointPositions)
-    //   ));
-      // .then(imageElement => {
-      //   // generateMesh(puppetId, image, imageNoBackgroundData, originalImageData, controlPoints);
-      //   const originalImageData = getImageDataFromImage(imageElement);
-      //   generateMesh(puppetId, imageElement, this.state.backgroundRemovalData, originalImageData, controlPointPositions)
-      // });
-
   }
 
   render() {
