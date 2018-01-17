@@ -4,7 +4,6 @@ import {
   Scene,
   WebGLRenderer
 } from 'three';
-import CCapture from 'CCapture.js';
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
 import DranimateLeapHandler from 'services/dranimate/leapHandler';
 import DranimateTouchHandler from 'services/dranimate/touchHandler';
@@ -19,17 +18,9 @@ const ZOOM = {
 const CAMERA_DEPTH = 100;
 
 const Dranimate = function () {
-    /* debugging memory issue */
-
-    let that = this;
-
     let container;
-
     let camera, scene, renderer;
-
     const puppets = [];
-
-    // var controlPointToControl = 0;
 
     let zoom = 1.0;
     const panHandler = new PanHandler();
