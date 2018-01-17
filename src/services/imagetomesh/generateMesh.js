@@ -3,10 +3,13 @@ import loadImage from 'services/util/imageLoader';
 import CanvasUtils from 'services/imagetomesh/canvasUtils.js';
 import requestPuppetCreation from 'services/puppet/PuppetFactory';
 
-function findEdgesOfImage(imageNoBackgroundData, contourData) {
+function findEdgesOfImage(imageNoBackgroundData) {
     const width = imageNoBackgroundData.width;
     const height = imageNoBackgroundData.height;
     const data = imageNoBackgroundData.data;
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    const contourData = context.createImageData(imageNoBackgroundData.width, imageNoBackgroundData.height);
 
     for (let i = 0; i < height; ++i) {
       for (let j = 0; j < width; ++j) {
@@ -40,25 +43,28 @@ function findEdgesOfImage(imageNoBackgroundData, contourData) {
     return contourData;
 }
 
-function removeBackgroundFromImage(slic, imageNoBackgroundData, originalImageData, dummyContext, dummyCanvas) {
-    for (let i = 0; i < slic.result.data.length; i += 4) {
-      if(imageNoBackgroundData.data[i+3] !== 255) {
-        originalImageData.data[i]     = 0;
-        originalImageData.data[i + 1] = 0;
-        originalImageData.data[i + 2] = 0;
-        originalImageData.data[i + 3] = 0;
-      }
+function removeBackgroundFromImage(imageNoBackgroundData, originalImageData) {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  canvas.width = originalImageData.width;
+  canvas.height = originalImageData.height;
+
+  for (let i = 0; i < imageNoBackgroundData.data.length; i += 4) {
+    if(imageNoBackgroundData.data[i + 3] !== 255) {
+      originalImageData.data[i]     = 0;
+      originalImageData.data[i + 1] = 0;
+      originalImageData.data[i + 2] = 0;
+      originalImageData.data[i + 3] = 0;
     }
-    dummyContext.putImageData(originalImageData, 0, 0);
-    return loadImage(dummyCanvas.toDataURL('image/png'));
+  }
+  context.putImageData(originalImageData, 0, 0);
+  return loadImage(canvas.toDataURL('image/png'));
 }
 
 function recalculateContourPoints(contourData) {
-
     const contourPointsRaw = [];
 
     /* Convert contour image into list of points */
-
     for (let x = 0; x < contourData.width; ++x) {
         for (let y = 0; y < contourData.height; ++y) {
             if(CanvasUtils.getColorAtXY(x,y,"a",contourData) == 255) {
@@ -68,9 +74,6 @@ function recalculateContourPoints(contourData) {
     }
 
     /* Resample list of points */
-
-    // const contourPoints = [];
-
     const resampleDist = 10;
     for(let i = 0; i < contourPointsRaw.length; i++) {
         const a = contourPointsRaw[i];
@@ -92,11 +95,6 @@ function recalculateContourPoints(contourData) {
     }
 
     return contourPointsRaw;
-
-    // contourPoints = contourPointsRaw;
-
-    // redraw();
-
 }
 
 function generateTriangles(contourPoints, controlPoints, imageNoBackgroundData) {
@@ -188,10 +186,10 @@ function generateTriangles(contourPoints, controlPoints, imageNoBackgroundData) 
 }
 
 // TODO: make this return a class that puppet factory can take to create puppet
-function generateMesh(puppetId, image, imageNoBackgroundData, originalImageData, context, dummyContext, dummyCanvas, controlPoints, slic) {
-  const contourData = findEdgesOfImage(imageNoBackgroundData, context.createImageData(slic.result.width, slic.result.height));
-  return removeBackgroundFromImage(slic, imageNoBackgroundData, originalImageData, dummyContext, dummyCanvas)
-    .then((onlySelectionImage) => {
+function generateMesh(puppetId, image, imageNoBackgroundData, originalImageData, controlPoints) {
+  const contourData = findEdgesOfImage(imageNoBackgroundData);
+  return removeBackgroundFromImage(imageNoBackgroundData, originalImageData)
+    .then((imageNoBG) => {
       const contourPoints = recalculateContourPoints(contourData);
       const geometry = generateTriangles(contourPoints, controlPoints, imageNoBackgroundData);
       return Promise.resolve({
@@ -201,7 +199,7 @@ function generateMesh(puppetId, image, imageNoBackgroundData, originalImageData,
         faces: geometry.triangles,
         controlPoints: geometry.controlPointIndices,
         controlPointPositions: controlPoints,
-        imageNoBG: onlySelectionImage,
+        imageNoBG,
         backgroundRemovalData: imageNoBackgroundData
       });
     })

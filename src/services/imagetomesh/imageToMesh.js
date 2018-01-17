@@ -216,7 +216,7 @@ var ImageToMesh = function () {
     };
 
     this.generateMesh = (puppetId) => {
-      return generateMesh(puppetId, image, imageNoBackgroundData, originalImageData, context, dummyContext, dummyCanvas, controlPoints, slic);
+      return generateMesh(puppetId, image, imageNoBackgroundData, originalImageData, controlPoints);
     }
 
     // TODO: this should be the constructor

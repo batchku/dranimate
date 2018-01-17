@@ -6,7 +6,7 @@ import Loader from 'components/loader';
 import Slider from 'components/primitives/slider';
 import ZoomPanner from 'components/zoomPanner';
 import dranimate from 'services/dranimate/dranimate';
-import editorHelper from 'services/imageToMesh/EditorHelper';
+import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
 import ImageToMesh from 'services/imageToMesh/imageToMesh';
 import generateUniqueId from 'services/util/uuid';
 import styles from './styles.scss';
@@ -34,8 +34,8 @@ class PuppetEditor extends Component {
     this.canvasElement.height = 300;
     this.imageToMesh.setup(this.canvasElement);
     // TODO: image to puppet needs 2 instantiation methods: 'fromImage' and 'fromPuppet'
-    if (editorHelper.isPuppet) {
-      const puppet = editorHelper.getItem();
+    if (puppetEditorStateService.isPuppet) {
+      const puppet = puppetEditorStateService.getItem();
       this.imageToMesh.editImage(
         puppet.image.src,
         puppet.controlPointPositions,
@@ -44,8 +44,8 @@ class PuppetEditor extends Component {
       .then(() => this.runSlic())
       .catch(error => console.log('error', error));
     }
-    else if (editorHelper.getItem()) {
-      this.imageToMesh.editImage(editorHelper.getItem())
+    else if (puppetEditorStateService.getItem()) {
+      this.imageToMesh.editImage(puppetEditorStateService.getItem())
         .then(() => this.runSlic())
         .catch(error => console.log('error', error));
     }
@@ -112,7 +112,7 @@ class PuppetEditor extends Component {
       alert('Puppet must have at least two control points');
       return;
     }
-    const puppetId = editorHelper.isPuppet ? editorHelper.getItem().id : generateUniqueId();
+    const puppetId = puppetEditorStateService.isPuppet ? puppetEditorStateService.getItem().id : generateUniqueId();
     this.imageToMesh.generateMesh(puppetId)
       .then((puppet) => {
         if (puppet) {
