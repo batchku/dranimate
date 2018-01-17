@@ -1,7 +1,6 @@
 {
   "plugins": [
     "transform-class-properties",
-    "transform-object-rest-spread"
   ],
   "presets": [
     [
@@ -11,6 +10,7 @@
         }
       }
     ],
-    "@babel/react"
+    "@babel/react",
+    "@babel/preset-stage-3"
   ]
 }

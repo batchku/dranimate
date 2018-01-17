@@ -1,4 +1,5 @@
 import {
+  GridHelper,
   OrthographicCamera,
   Scene,
   WebGLRenderer
@@ -6,6 +7,7 @@ import {
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
 import DranimateLeapHandler from 'services/dranimate/leapHandler';
 import DranimateTouchHandler from 'services/dranimate/touchHandler';
+import GifRecorder from 'services/util/GifRecorder';
 import PanHandler from 'services/util/panHandler';
 import { clamp } from 'services/util/math';
 
@@ -15,18 +17,10 @@ const ZOOM = {
 };
 const CAMERA_DEPTH = 100;
 
-var Dranimate = function () {
-    /* debugging memory issue */
-
-    let that = this;
-
+const Dranimate = function () {
     let container;
-
     let camera, scene, renderer;
-
     const puppets = [];
-
-    // var controlPointToControl = 0;
 
     let zoom = 1.0;
     const panHandler = new PanHandler();
@@ -34,7 +28,14 @@ var Dranimate = function () {
     let mouseHandler;
     let touchHandler;
 
+    let lastUpdateTimestamp = performance.now();
+
     let isInRenderLoop = true;
+    let isRecording = false;
+    let gifIsRecording = false;
+    let gifRecorder;
+
+    const getSelectedPuppet = () => mouseHandler.getSelectedPuppet() || touchHandler.getSelectedPuppet();
 
 /*****************************
     API
@@ -60,6 +61,10 @@ var Dranimate = function () {
       mouseHandler = new DranimateMouseHandler(renderer.domElement, panHandler);
       touchHandler = new DranimateTouchHandler(renderer.domElement, panHandler);
       leapHandler = new DranimateLeapHandler(renderer.domElement, panHandler, puppets);
+
+      const gridHelper = new GridHelper(1000, 20);
+      gridHelper.geometry.rotateX(Math.PI / 2);
+      scene.add(gridHelper);
 
       refreshCamera();
       animate();
@@ -129,12 +134,8 @@ var Dranimate = function () {
       renderer.domElement.style.cursor = isEnabled ? 'move' : 'default';
     }
 
-    this.getSelectedPuppet = function () {
-      return mouseHandler.getSelectedPuppet() || touchHandler.getSelectedPuppet();
-    }
-
     this.deleteSelectedPuppet = function () {
-      const selectedPuppet = this.getSelectedPuppet();
+      const selectedPuppet = getSelectedPuppet();
       if (!selectedPuppet) {
         return;
       }
@@ -154,6 +155,39 @@ var Dranimate = function () {
       puppets.splice(index, 1);
     }
 
+    this.getSelectedPuppet = () => getSelectedPuppet();
+
+    this.setRecording = function(isRec) {
+      isRecording = isRec;
+      if (getSelectedPuppet()) {
+        isRecording ?
+          getSelectedPuppet().startRecording() :
+          getSelectedPuppet().stopRecording();
+      }
+    };
+
+    this.setGifIsRecording = function(isRec) {
+      gifIsRecording = isRec;
+      isInRenderLoop = gifIsRecording;
+      if (gifIsRecording) {
+        gifRecorder = new GifRecorder();
+      }
+      else {
+        console.log('start exporting gif');
+        render();
+        gifRecorder.stop(renderer.domElement)
+          .then(objectUrl => window.open(objectUrl))
+          .catch(error => console.log('gif error', error));
+      }
+    }
+
+    this.onRenderToggle = () => {
+      isInRenderLoop = !isInRenderLoop;
+      if (isInRenderLoop) {
+        animate();
+      }
+    };
+
     // this.startRenderLoop = () => {
     //   isInRenderLoop = true;
     //   this.animate();
@@ -166,18 +200,6 @@ var Dranimate = function () {
 /*****************************
     Dom events
 *****************************/
-
-    // TODO: move event listeners out of this file
-    document.addEventListener('keydown', $event => {
-      if($event.code === 'Space' && this.getSelectedPuppet()) {
-        this.getSelectedPuppet().startRecording();
-      }
-    }, false);
-    document.addEventListener('keyup', $event => {
-      if($event.code === 'Space' && this.getSelectedPuppet()) {
-        this.getSelectedPuppet().finishRecording();
-      }
-    }, false);
 
     window.addEventListener('resize', $event => refreshCamera(), false );
 
@@ -197,20 +219,27 @@ var Dranimate = function () {
     }
 
     function animate() {
-      update();
-      render();
-      // if (isInRenderLoop) {
+      const now = performance.now();
+      const elapsedTime = now - lastUpdateTimestamp;
+      lastUpdateTimestamp = now;
+      update(elapsedTime);
+      render(elapsedTime);
+      if (isInRenderLoop) {
         requestAnimationFrame(animate);
-      // }
+      }
     }
 
-    function update() {
-      puppets.forEach(puppet => puppet.update());
+    function update(elapsedTime) {
+      leapHandler.update(getSelectedPuppet());
+      puppets.forEach(puppet => puppet.update(elapsedTime, isRecording));
       panHandler.update(camera);
     }
 
-    function render() {
-      renderer.render( scene, camera );
+    function render(elapsedTime) {
+      renderer.render(scene, camera);
+      if (gifIsRecording) {
+        gifRecorder.offerFrame(renderer.domElement);
+      }
     }
 
 };

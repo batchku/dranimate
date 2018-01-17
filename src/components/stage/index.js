@@ -3,11 +3,12 @@ import Button from 'components/primitives/button';
 import Fab from 'components/primitives/fab';
 import TopBar from 'components/topbar';
 import ParamControl from 'components/paramControl';
+import Recorder from 'components/recorder';
 import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/profile';
 import { loadDranimateFile } from 'services/util/file';
-import editorHelper from 'services/imageToMesh/EditorHelper';
+import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
 import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
 
@@ -26,31 +27,23 @@ class Stage extends Component {
   componentDidMount = () => {
     // passive touch event listeners seem to be needed, which react does not support
     this.dranimateStageContainer.addEventListener(
-      'touchstart',
-      event => dranimate.onTouchStart(event),
-      { passive: false }
-    );
-    this.dranimateStageContainer.addEventListener(
       'touchmove',
       event => dranimate.onTouchMove(event),
-      { passive: false }
-    );
-    this.dranimateStageContainer.addEventListener(
-      'touchend',
-      event => dranimate.onTouchEnd(event),
       { passive: false }
     );
 
     dranimate.setup(this.dranimateStageContainer);
   };
 
+  // componentDidUpdate = (prevProps, prevState) => {
+  //   console.log('this.state', this.state);
+  // }
+
   onMouseDown = event => {
     dranimate.onMouseDown(event);
     const selectedPuppet = dranimate.getSelectedPuppet();
     this.setState({ selectedPuppet });
   };
-
-  // openEditor = () => this.setState({ editorIsOpen: true });
 
   closeEditor = () => this.setState({ editorIsOpen: false });
 
@@ -67,7 +60,8 @@ class Stage extends Component {
   onDeleteSelectedPuppet = () => dranimate.deleteSelectedPuppet();
 
   onEditSelectedPuppet = () => {
-    editorHelper.setItem(dranimate.getSelectedPuppet());
+    console.log('setItem?', dranimate.getSelectedPuppet())
+    puppetEditorStateService.setItem(dranimate.getSelectedPuppet());
     this.setState({ editorIsOpen: true });
   };
 
@@ -79,7 +73,7 @@ class Stage extends Component {
           dranimate.addPuppet(result);
         }
         else {
-          editorHelper.setItem(result);
+          puppetEditorStateService.setItem(result);
           this.setState({ editorIsOpen: true });
         }
       })
@@ -96,6 +90,8 @@ class Stage extends Component {
           onMouseDown={this.onMouseDown}
           onMouseMove={dranimate.onMouseMove}
           onMouseUp={dranimate.onMouseUp}
+          onTouchStart={dranimate.onTouchStart}
+          onTouchEnd={dranimate.onTouchEnd}
           ref={input => this.dranimateStageContainer = input}
         />
         <TopBar className={styles.topBar}/>
@@ -111,11 +107,18 @@ class Stage extends Component {
           onEditSelectedPuppet={this.onEditSelectedPuppet}
           onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
         />
-        <ZoomPanner
-          className={styles.zoomPanner}
-          onPanSelect={this.onPanSelect}
-          onZoomSelect={this.onZoomSelect}
-        />
+        <div className={styles.lowerLeft}>
+          <ZoomPanner
+            onPanSelect={this.onPanSelect}
+            onZoomSelect={this.onZoomSelect}
+          />
+          <Recorder />
+          {
+            /* <Button onClick={dranimate.onRenderToggle}>
+              Render toggle
+            </Button> */
+           }
+        </div>
         <Fab
           className={styles.fab}
           onClick={this.onFabClick}
@@ -126,7 +129,13 @@ class Stage extends Component {
           onChange={this.onFileChange}
           className={styles.hiddenFilePicker}
         />
-        { this.state.editorIsOpen ? <PuppetEditor onClose={this.closeEditor}/> : null }
+        {
+          this.state.editorIsOpen ?
+            <PuppetEditor
+              onClose={this.closeEditor}
+            /> :
+            null
+        }
         { this.state.profileIsOpen ? <Profile onClose={this.closeProfile}/> : null }
       </div>
     );

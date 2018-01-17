@@ -7,6 +7,7 @@ import {
   Group,
   Mesh,
   MeshBasicMaterial,
+  Object3D,
   SphereGeometry,
   Texture,
   Vector2,
@@ -85,7 +86,8 @@ function buildFromOptions(options) {
   const box3 = new Box3();
   box3.setFromObject(boundingBox);
   const size = box3.getSize(new Vector3());
-  const center = new Vector2(size.x / 2, size.y / 2);
+  const halfSize = new Vector2(size.x, size.y).multiplyScalar(0.5);
+  geometry.translate(-halfSize.x, -halfSize.y, 0);
 
   const controlPointSpheres = controlPoints.map(() => {
     const sphere = new Mesh(
@@ -96,9 +98,17 @@ function buildFromOptions(options) {
     return sphere;
   });
 
+  // FOR TESTING THE CENTER OF THE PUPPET:
+  const centerSphere = new Mesh(
+    new SphereGeometry(15, 32, 32),
+    new MeshBasicMaterial({ color: 0x3300FF })
+  );
+  centerSphere.position.z = 20;
+
   const group = new Group();
   group.add(threeMesh);
   group.add(boundingBox);
+  // group.add(centerSphere);
   controlPointSpheres.forEach(cp => group.add(cp));
 
   return {
@@ -114,11 +124,14 @@ function buildFromOptions(options) {
     threeMesh,
     boundingBox,
     controlPointSpheres,
-    group
+    group,
+    halfSize,
+    centerSphere
   };
 }
 
 export default function requestPuppetCreation(options) {
+  console.log('requestPuppetCreation', options);
   if (!mostFaces) {
     mostFaces = options.faces.length;
   }

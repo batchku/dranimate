@@ -28,7 +28,6 @@ export default class DranimateTouchHandler {
   }
 
   onTouchStart(event, puppets, zoom) {
-    event.preventDefault();
     if(this.panHandler.getPanEnabled()) {
       const firstTouchLocation = getFirstTouchLocation(event, this.rendererElement);
       this.panHandler.onMouseDown(firstTouchLocation.x, firstTouchLocation.y, zoom);
@@ -57,12 +56,38 @@ export default class DranimateTouchHandler {
 
   onTouchMove(event, puppets, zoom) {
     event.preventDefault();
+
+    // PAN CAMERA
     if(this.panHandler.getPanEnabled()) {
       const firstTouchLocation = getFirstTouchLocation(event, this.rendererElement);
       this.panHandler.onMouseMove(firstTouchLocation.x, firstTouchLocation.y, zoom);
       return;
     }
 
+    const normalizedTouchPoints = Object.values(event.touches)
+      .filter(touch => this.touchMap.has(touch.identifier))
+      .map((touch) => {
+        const controlPoint = this.touchMap.get(touch.identifier);
+        const puppet = puppets[controlPoint.puppetIndex];
+        const puppetCenter = puppet.getCenter();
+        const relativePosition = getRelativeTouchPosition(touch.clientX, touch.clientY, this.rendererElement, this.panHandler, zoom);
+        const position = new Vector2(relativePosition.x, relativePosition.y)
+          .sub(puppetCenter)
+          .multiplyScalar(1 / puppet.getScale())
+          .add(puppetCenter);
+        return {
+          cpi: controlPoint.controlPointIndex,
+          position
+        };
+      });
+
+    // EDIT CONTROL POINTS
+    if (normalizedTouchPoints.length) {
+      this.selectedPuppet.setControlPointPositions(normalizedTouchPoints);
+      return;
+    }
+
+    // MOVE PUPPET XY
     if (this.selectedPuppet) {
       const firstTouch = event.touches[0];
       const relativePosition = getRelativeTouchPosition(firstTouch.clientX, firstTouch.clientY, this.rendererElement, this.panHandler, zoom);
@@ -70,31 +95,14 @@ export default class DranimateTouchHandler {
       return;
     }
 
-    // FOR EACH TOUCH POINT ASSOCIATED WITH A CONTROL POINT, UPDATE CONTROL POINT
-    Object.values(event.touches)
-      .filter(touch => this.touchMap.has(touch.identifier))
-      .forEach((touch) => {
-        const controlPoint = this.touchMap.get(touch.identifier);
-        const puppet = puppets[controlPoint.puppetIndex];
-        const relativePosition = getRelativeTouchPosition(touch.clientX, touch.clientY, this.rendererElement, this.panHandler, zoom);
-        const positionVector = new Vector2(relativePosition.x / puppet.getScale(), relativePosition.y / puppet.getScale());
-        positionVector.rotateAround(puppet.getRotationCenter(), -puppet.getRotation());
-        puppet.setControlPointPosition(controlPoint.controlPointIndex, positionVector.x, positionVector.y);
-      });
   }
 
   onTouchEnd(event, puppets, zoom) {
-    event.preventDefault();
     const currentTouchIds = Object.values(event.touches).map(touch => touch.identifier);
     // IF A REMOVED TOUCH POINT WAS ASSOCIATED WITH A CONTROL POINT, REMOVE IT FROM TOUCHMAP
     [...this.touchMap.keys()]
       .filter(touchId => !currentTouchIds.includes(touchId))
       .forEach(touchId => this.touchMap.delete(touchId));
-
-    if (this.selectedPuppet && !event.touches.length) {
-      this.selectedPuppet.setSelectionState(false);
-      this.selectedPuppet = null;
-    }
   }
 
   getSelectedPuppet() {

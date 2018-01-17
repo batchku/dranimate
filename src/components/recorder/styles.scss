@@ -1,0 +1,13 @@
+@import '~styles/index';
+
+.recorder {
+  background-color: $color-action;
+  color: $color-white;
+  min-width: 90px;
+}
+
+.recorderActive {
+  background-color: $color-primary;
+  color: $color-black;
+  min-width: 90px;
+}

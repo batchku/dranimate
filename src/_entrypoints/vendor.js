@@ -2,10 +2,11 @@
 
 import Delaunay from 'delaunay-fast';
 import FileSaver from 'file-saver';
+import 'gif.js';
 import 'leapjs';
 import 'leapjs-plugins';
 import PropTypes from 'prop-types';
-import React from 'react';
+import 'react';
 import ReactDOM from 'react-dom';
 import 'react-router-dom';
 import 'three';

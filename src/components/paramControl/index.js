@@ -37,7 +37,7 @@ class ParamControl extends Component {
         <Slider
           min={ -628 }
           max={ 628 }
-          defaultValue={ 0 }
+          defaultValue={ this.props.selectedPuppet.getRotation() }
           onChange={ this.onRotateChange }
         />
 
