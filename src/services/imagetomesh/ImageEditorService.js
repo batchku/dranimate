@@ -54,38 +54,19 @@ const ImageEditorService = function () {
       width = canvas.width;
       height = canvas.height;
       context = canvas.getContext('2d');
-
-      if(backgroundRemovalData) {
-        imageNoBackgroundData = backgroundRemovalData;
-      }
+      imageNoBackgroundData = backgroundRemovalData;
 
       return loadImage(imageData)
         .then((img) => {
-          let normWidth = img.width;
-          let normHeight = img.height;
-          const largerSize = Math.max(normWidth, normHeight);
-
-          normWidth /= largerSize;
-          normHeight /= largerSize;
-
-          normWidth *= 400;
-          normHeight *= 400;
-
-          dummyCanvas.width = normWidth;
-          dummyCanvas.height = normHeight;
-
+          const largerSize = Math.max(img.width, img.height);
+          const normWidth = (img.width / largerSize) * 400;
+          const normHeight = (img.height / largerSize) * 400;
           width = normWidth;
           height = normHeight;
-
-          dummyContext.clearRect(0, 0, dummyCanvas.width, dummyCanvas.height);
-          dummyContext.drawImage(img,
-            0, 0, img.width, img.height,
-            0, 0, dummyCanvas.width, dummyCanvas.height
-          );
-          return Promise.resolve(dummyCanvas.toDataURL('image/png'));
-        })
-        .then(imgSrc => loadImage(imgSrc))
-        .then(img => image = img);
+          dummyCanvas.width = normWidth;
+          dummyCanvas.height = normHeight;
+          image = img;
+        });
     };
 
     this.onMouseMove = (event, isTouch) => {
