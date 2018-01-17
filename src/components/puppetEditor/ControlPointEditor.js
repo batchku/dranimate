@@ -1,14 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
-import Checkbox from 'components/primitives/checkbox';
-import Slider from 'components/primitives/slider';
-import ZoomPanner from 'components/zoomPanner';
-import dranimate from 'services/dranimate/dranimate';
 import ControlPointService from 'services/imageToMesh/ControlPointService';
-import generateUniqueId from 'services/util/uuid';
 import styles from './styles.scss';
-
 
 class ControlPointEditor extends Component {
   componentWillMount() {

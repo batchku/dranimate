@@ -33,7 +33,6 @@ const ImageEditorService = function () {
 
   let imageNoBackgroundData;
   let imageNoBackgroundImage = new Image();
-  let imageBackgroundMaskImage = new Image();
 
   let dummyCanvas = document.createElement('canvas');
   let dummyContext = dummyCanvas.getContext('2d');

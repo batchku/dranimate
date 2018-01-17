@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Button from 'components/primitives/button';
-import Checkbox from 'components/primitives/checkbox';
 import Loader from 'components/loader';
 import ImageEditor from 'components/puppetEditor/ImageEditor';
 import ControlPointEditor from 'components/puppetEditor/ControlPointEditor';
 import Slider from 'components/primitives/slider';
 import dranimate from 'services/dranimate/dranimate';
 import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
-import ImageToMesh from 'services/imageToMesh/imageToMesh';
 import generateUniqueId from 'services/util/uuid';
 import { generateMesh } from 'services/imagetomesh/generateMesh';
 import { getImageDataFromImage } from 'services/imagetomesh/ImageUtil';

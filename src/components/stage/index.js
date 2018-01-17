@@ -6,7 +6,6 @@ import ParamControl from 'components/paramControl';
 import Recorder from 'components/recorder';
 import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
-import PuppetEditorOld from 'components/puppetEditorOld';
 import Profile from 'components/profile';
 import { loadDranimateFile } from 'services/util/file';
 import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
@@ -137,13 +136,6 @@ class Stage extends Component {
             /> :
             null
         }
-        { /*
-          this.state.editorIsOpen ?
-            <PuppetEditorOld
-              onClose={this.closeEditor}
-            /> :
-            null
-        */ }
         { this.state.profileIsOpen ? <Profile onClose={this.closeProfile}/> : null }
       </div>
     );

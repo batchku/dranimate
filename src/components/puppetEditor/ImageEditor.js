@@ -5,9 +5,7 @@ import Checkbox from 'components/primitives/checkbox';
 import Loader from 'components/loader';
 import Slider from 'components/primitives/slider';
 import ZoomPanner from 'components/zoomPanner';
-import dranimate from 'services/dranimate/dranimate';
 import ImageEditorService from 'services/imageToMesh/imageEditorService';
-import generateUniqueId from 'services/util/uuid';
 import styles from './styles.scss';
 
 
@@ -30,14 +28,6 @@ class ImageEditor extends Component {
   componentDidMount() {
     this.canvasElement.width = 400;
     this.canvasElement.height = 300;
-    // this.imageEditorService.setup(this.canvasElement);
-
-    // console.log('this.props.imgSrc', this.props.imageSrc);
-    // console.log('this.props.backgroundRemovalData', this.props.backgroundRemovalData);
-
-    // this.imageEditorService.editImage(this.props.imageSrc, this.props.backgroundRemovalData)
-    //   .then(() => this.runSlic())
-    //   .catch(error => console.log('error', error));
 
     this.imageEditorService.init(this.canvasElement, this.props.imageSrc, this.props.backgroundRemovalData)
       .then(() => this.runSlic())
@@ -78,7 +68,6 @@ class ImageEditor extends Component {
   };
 
   onNext = () => {
-    console.log('TODO: ship out data');
     const imageForegroundSelection = this.imageEditorService.getImageForegroundSelection();
     this.props.onNext(imageForegroundSelection);
   };
