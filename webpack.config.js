@@ -5,9 +5,10 @@ const webpackMerge = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const webpackConfig = {
+  context: path.resolve(__dirname, 'src'),
   entry: {
-    vendor: './src/_entrypoints/vendor.js',
-    main: './src/_entrypoints/main.js'
+    vendor: './_entrypoints/vendor.js',
+    main: './_entrypoints/main.js'
   },
   output: {
     publicPath: '',
@@ -18,7 +19,7 @@ const webpackConfig = {
       name: ['main', 'vendor']
     }),
     new HtmlWebpackPlugin({
-      template: './src/index.html',
+      template: 'index.html',
       filename: 'index.html',
       inject: 'body'
     }),

@@ -4,10 +4,11 @@
   "description": "Dranimate web app",
   "scripts": {
     "build": "npm run clean && npm run build:webpack && npm run build:copy",
-    "build:copy": "cp src/assets/favicon.ico dist/favicon.ico; cp src/manifest.json dist/manifest.json; cp src/assets/dranimate.png dist/dranimate.png; cp -r src/assets dist/assets;",
+    "build:copy:arap": "mkdir dist/arap; cp src/arap/deform2d.js dist/arap/deform2d.js",
+    "build:copy": "npm run build:copy:arap; cp src/manifest.json dist/manifest.json",
     "build:webpack": "webpack --colors --progress --display-error-details",
     "clean": "rm -rf dist",
-    "dev": "webpack-dev-server --inline --colors --progress --content-base .",
+    "dev": "webpack-dev-server --inline --colors --progress --content-base src",
     "lint": "eslint src"
   },
   "devDependencies": {
