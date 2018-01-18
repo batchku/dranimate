@@ -1939,8 +1939,6 @@ function (_Component) {
     key: "render",
     value: function render() {
       return _react.default.createElement(_reactRouterDom.BrowserRouter, null, _react.default.createElement("div", null, _react.default.createElement(_reactRouterDom.Route, {
-        exact: true,
-        path: "/",
         component: _stage.default
       })));
     }
