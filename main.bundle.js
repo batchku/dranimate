@@ -2345,7 +2345,7 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, ".styles__button___2gotw {\n  color: #616161;\n  background-color: #EEE;\n  border: 1px solid #FF3571;\n  border-radius: 4px; }\n", ""]);
+exports.push([module.i, ".styles__button___2gotw {\n  color: #616161;\n  background-color: #EEE;\n  border: 1px solid #AD0034;\n  border-radius: 4px; }\n", ""]);
 
 // exports
 exports.locals = {
@@ -4660,8 +4660,7 @@ var Puppet = function Puppet(puppetData) {
   };
   this.name = 'DEFAULT_PUPPET_NAME'; // RECORDING
 
-  this.puppetRecording = new _puppetRecording.PuppetRecording();
-  this.puppetRecording.isRecording = false; // GRAPHICS
+  this.puppetRecording = new _puppetRecording.PuppetRecording(); // GRAPHICS
 
   this.image = puppetData.image;
   this.id = puppetData.id;
@@ -4737,11 +4736,11 @@ Puppet.prototype.setSelectionState = function (isBeingDragged, x, y) {
 };
 
 Puppet.prototype.startRecording = function () {
-  this.puppetRecording = new _puppetRecording.PuppetRecording();
+  this.puppetRecording = new _puppetRecording.PuppetRecording(performance.now());
 };
 
 Puppet.prototype.stopRecording = function () {
-  this.puppetRecording.stop();
+  this.puppetRecording.stop(performance.now());
 }; // Set one to many control points (leap motion, touch)
 
 
@@ -4762,7 +4761,7 @@ Puppet.prototype.setControlPointPositions = function (controlPoints) {
         position: position
       };
     });
-    this.puppetRecording.setFrames(normalizedControlPoints);
+    this.puppetRecording.setFrame(normalizedControlPoints, performance.now());
   }
 }; // Set a single control point (mouse interaction)
 
@@ -4775,7 +4774,11 @@ Puppet.prototype.setControlPointPosition = function (controlPointIndex, position
   if (this.puppetRecording.isRecording) {
     var puppetCenter = this.getCenter();
     var point = position.rotateAround(puppetCenter, -this.getRotation()).sub(puppetCenter);
-    this.puppetRecording.setFrame(controlPointIndex, point);
+    var frame = [{
+      cpi: controlPointIndex,
+      position: point
+    }];
+    this.puppetRecording.setFrame(frame, performance.now());
   }
 };
 
@@ -4816,15 +4819,16 @@ Puppet.prototype.update = function (elapsedTime) {
 
     var xyDelta = new _three.Vector2(dx, dy);
     this.controlPoints.forEach(function (controlPoint, index) {
-      var vertexPosition = _this2.threeMesh.geometry.vertices[controlPoint].clone();
+      var position = _this2.threeMesh.geometry.vertices[controlPoint].clone();
 
+      var vertexPosition = new _three.Vector2(position.x, position.y);
       var point = vertexPosition.sub(_puppetCenter).multiplyScalar(1 / _this2.getScale()).add(_puppetCenter).add(xyDelta);
 
       _this2.setControlPointPosition(index, point);
     });
   }
 
-  var recordedFrame = this.puppetRecording.update();
+  var recordedFrame = this.puppetRecording.update(performance.now());
 
   if (recordedFrame) {
     var _puppetCenter2 = this.getCenter();
@@ -5069,27 +5073,29 @@ var TIME_DELTA = 0.001;
 var PuppetRecording =
 /*#__PURE__*/
 function () {
-  function PuppetRecording() {
+  function PuppetRecording(timestamp) {
     _classCallCheck(this, PuppetRecording);
 
-    var now = performance.now();
+    var now = timestamp !== undefined ? timestamp : performance.now();
     this.hasRecording = false;
     this.isRecording = true;
     this.controlPointFrames = [];
+    this.relativePoints = [];
     this.startTime = now;
     this.stopTime = now;
     this.duration = 0;
-    this.activeIndex = 0;
-    this.allIndices = new Set();
+    this.activeIndex = -1; // this.allIndices = new Set();
+
     this.id = Math.random();
+    this.lastServedIndex;
   }
 
   _createClass(PuppetRecording, [{
     key: "stop",
-    value: function stop() {
+    value: function stop(timestamp) {
       var _this = this;
 
-      this.stopTime = performance.now();
+      this.stopTime = timestamp;
       this.duration = this.stopTime - this.startTime;
       this.hasRecording = true;
       this.isRecording = false; // attach relative times to each frames
@@ -5097,73 +5103,63 @@ function () {
       this.controlPointFrames.forEach(function (frame) {
         var relativeTime = (frame.timestamp - _this.startTime) / _this.duration;
         frame.relativeTime = relativeTime;
-      }); // console.log('this.controlPointFrames', this.controlPointFrames)
-
-      this.allIndices = this.controlPointFrames.reduce(function (indexSet, frame) {
-        frame.controlPoints.forEach(function (controlPoint) {
-          return indexSet.add(controlPoint.cpi);
-        });
-        return indexSet;
-      }, new Set());
-    }
-  }, {
-    key: "setFrame",
-    value: function setFrame(cpi, position) {
-      var controlPoints = [{
-        cpi: cpi,
-        position: position
-      }];
-      this.setFrames(controlPoints);
-    }
-  }, {
-    key: "setFrames",
-    value: function setFrames(controlPoints) {
-      var timestamp = performance.now();
-      this.controlPointFrames.push({
-        timestamp: timestamp,
-        controlPoints: controlPoints
+      });
+      this.relativePoints = this.controlPointFrames.map(function (frame, index) {
+        return {
+          index: index,
+          relativeTime: frame.relativeTime
+        };
       });
     }
   }, {
-    key: "getIndices",
-    value: function getIndices() {
-      return this.allIndices;
+    key: "setFrame",
+    value: function setFrame(controlPoints, timestamp) {
+      this.controlPointFrames.push({
+        controlPoints: controlPoints,
+        timestamp: timestamp
+      });
     }
   }, {
     key: "update",
-    value: function update() {
+    value: function update(timestamp) {
+      if (!timestamp || timestamp <= this.stopTime) {
+        throw new Error('Update must take place after recording has stopped');
+      }
+
       if (!this.hasRecording) {
         return;
       }
 
-      var timeSinceStop = performance.now() - this.stopTime;
-      var pointInLoop = timeSinceStop / this.duration % 1;
-      var nextIndex = (this.activeIndex + 1) % (this.controlPointFrames.length - 1);
-      var nextFrame = this.controlPointFrames[nextIndex]; // if point in loop is greater than the next frame, get the lastest frame that is not ahead of point in loop
+      var timeSinceStop = timestamp - this.stopTime;
+      var relativeTimeInLoop = timeSinceStop / this.duration % 1;
 
-      if (pointInLoop > nextFrame.relativeTime) {
-        var shouldLookahead = true;
-        var lookaheadIndex = nextIndex;
-        var targetIndex = nextIndex;
+      var closestIndex = this._getNearestIndexForRelativePoint(relativeTimeInLoop);
 
-        while (shouldLookahead) {
-          lookaheadIndex = (lookaheadIndex + 1) % (this.controlPointFrames.length - 1);
+      if (this.lastServedIndex !== closestIndex) {
+        this.lastServedIndex = closestIndex;
+        return this.controlPointFrames[closestIndex];
+      }
+    } // Binary search for nearset relativePoint
 
-          if (pointInLoop < this.controlPointFrames[lookaheadIndex].relativeTime || lookaheadIndex === 0) {
-            targetIndex = lookaheadIndex;
-            shouldLookahead = false;
-          } // console.log('lookahead')
+  }, {
+    key: "_getNearestIndexForRelativePoint",
+    value: function _getNearestIndexForRelativePoint(relativeTimeInLoop) {
+      var low = 0;
+      var high = this.relativePoints.length - 1;
 
+      while (low < high) {
+        var mid = Math.floor((low + high) / 2);
+        var d1 = Math.abs(this.relativePoints[mid].relativeTime - relativeTimeInLoop);
+        var d2 = Math.abs(this.relativePoints[mid + 1].relativeTime - relativeTimeInLoop);
+
+        if (d2 <= d1) {
+          low = mid + 1;
+        } else {
+          high = mid;
         }
-
-        this.activeIndex = targetIndex;
-        return this.controlPointFrames[targetIndex];
       }
 
-      if (Math.abs(pointInLoop - nextFrame.relativeTime) < TIME_DELTA) {
-        this.activeIndex = nextIndex;
-        return nextFrame;
-      }
+      return this.relativePoints[high].index;
     }
   }]);
 
