@@ -25,7 +25,6 @@ const Puppet = function(puppetData) {
 
   // RECORDING
   this.puppetRecording = new PuppetRecording();
-  this.puppetRecording.isRecording = false;
 
   // GRAPHICS
   this.image = puppetData.image;
@@ -102,11 +101,11 @@ Puppet.prototype.setSelectionState = function(isBeingDragged, x, y){
 }
 
 Puppet.prototype.startRecording = function () {
-  this.puppetRecording = new PuppetRecording();
+  this.puppetRecording = new PuppetRecording(performance.now());
 }
 
 Puppet.prototype.stopRecording = function () {
-  this.puppetRecording.stop();
+  this.puppetRecording.stop(performance.now());
 }
 
 // Set one to many control points (leap motion, touch)
@@ -126,7 +125,7 @@ Puppet.prototype.setControlPointPositions = function(controlPoints) {
         position
       };
     });
-    this.puppetRecording.setFrames(normalizedControlPoints);
+    this.puppetRecording.setFrame(normalizedControlPoints, performance.now());
   }
 }
 
@@ -139,11 +138,15 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, position)
     const point = position
       .rotateAround(puppetCenter, -this.getRotation())
       .sub(puppetCenter);
-    this.puppetRecording.setFrame(controlPointIndex, point);
+    const frame = [{
+      cpi: controlPointIndex,
+      position: point,
+    }];
+    this.puppetRecording.setFrame(frame, performance.now());
   }
 }
 
-Puppet.prototype.update = function(elapsedTime ) {
+Puppet.prototype.update = function(elapsedTime) {
   const dx = this.current.position.x - this.previous.position.x;
   const dy = this.current.position.y - this.previous.position.y;
   const shouldMoveXY = dx !== 0 || dy !== 0;
@@ -179,7 +182,8 @@ Puppet.prototype.update = function(elapsedTime ) {
     const puppetCenter = this.getCenter();
     const xyDelta = new Vector2(dx, dy);
     this.controlPoints.forEach((controlPoint, index) => {
-      const vertexPosition = this.threeMesh.geometry.vertices[controlPoint].clone();
+      const position = this.threeMesh.geometry.vertices[controlPoint].clone();
+      const vertexPosition = new Vector2(position.x, position.y);
       const point = vertexPosition
         .sub(puppetCenter)
         .multiplyScalar(1 / this.getScale())
@@ -189,7 +193,7 @@ Puppet.prototype.update = function(elapsedTime ) {
     });
   }
 
-  const recordedFrame = this.puppetRecording.update();
+  const recordedFrame = this.puppetRecording.update(performance.now());
   if (recordedFrame) {
     const puppetCenter = this.getCenter();
     const absoluteControlPoints = recordedFrame.controlPoints.map((controlPoint) => {

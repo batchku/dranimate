@@ -4,86 +4,71 @@ const TIME_DELTA = 0.001;
 
 class PuppetRecording {
 
-  constructor() {
-    const now = performance.now();
+  constructor(timestamp) {
+    const now = (timestamp !== undefined) ? timestamp : performance.now();
     this.hasRecording = false;
     this.isRecording = true;
     this.controlPointFrames = [];
+    this.relativePoints = [];
     this.startTime = now;
     this.stopTime = now;
     this.duration = 0;
-    this.activeIndex = 0;
-    this.allIndices = new Set();
+    this.activeIndex = -1;
+    // this.allIndices = new Set();
     this.id = Math.random();
+    this.lastServedIndex;
   }
 
-  stop() {
-    this.stopTime = performance.now();
+  stop(timestamp) {
+    this.stopTime = timestamp;
     this.duration = this.stopTime - this.startTime;
     this.hasRecording = true;
     this.isRecording = false;
-
     // attach relative times to each frames
     this.controlPointFrames.forEach((frame) => {
       const relativeTime = (frame.timestamp - this.startTime) / this.duration;
       frame.relativeTime = relativeTime;
     });
-
-    // console.log('this.controlPointFrames', this.controlPointFrames)
-
-    this.allIndices = this.controlPointFrames
-      .reduce((indexSet, frame) => {
-        frame.controlPoints.forEach(controlPoint => indexSet.add(controlPoint.cpi));
-        return indexSet;
-      }, new Set());
+    this.relativePoints = this.controlPointFrames.map((frame, index) => ({
+      index,
+      relativeTime: frame.relativeTime
+    }));
   }
 
-  setFrame(cpi, position) {
-    const controlPoints = [ { cpi, position } ];
-    this.setFrames(controlPoints);
+  setFrame(controlPoints, timestamp) {
+    this.controlPointFrames.push({ controlPoints, timestamp });
   }
 
-  setFrames(controlPoints) {
-    const timestamp = performance.now();
-    this.controlPointFrames.push({ timestamp, controlPoints });
-  }
-
-  getIndices() {
-    return this.allIndices;
-  }
-
-  update() {
+  update(timestamp) {
+    if (!timestamp || timestamp <= this.stopTime) {
+      throw new Error('Update must take place after recording has stopped');
+    }
     if (!this.hasRecording) { return; }
-    const timeSinceStop = performance.now() - this.stopTime;
-    const pointInLoop = (timeSinceStop / this.duration) % 1;
+    const timeSinceStop = timestamp - this.stopTime;
+    const relativeTimeInLoop = (timeSinceStop / this.duration) % 1;
+    const closestIndex = this._getNearestIndexForRelativePoint(relativeTimeInLoop);
+    if (this.lastServedIndex !== closestIndex) {
+      this.lastServedIndex = closestIndex;
+      return this.controlPointFrames[closestIndex];
+    }
+  }
 
-    const nextIndex = (this.activeIndex + 1) % (this.controlPointFrames.length - 1);
-    const nextFrame = this.controlPointFrames[nextIndex];
-
-    // if point in loop is greater than the next frame, get the lastest frame that is not ahead of point in loop
-    if (pointInLoop > nextFrame.relativeTime) {
-      let shouldLookahead = true;
-      let lookaheadIndex = nextIndex;
-      let targetIndex = nextIndex;
-
-      while(shouldLookahead) {
-        lookaheadIndex = (lookaheadIndex + 1) % (this.controlPointFrames.length - 1);
-        if (pointInLoop < this.controlPointFrames[lookaheadIndex].relativeTime || lookaheadIndex === 0) {
-          targetIndex = lookaheadIndex;
-          shouldLookahead = false;
-        }
-        // console.log('lookahead')
+  // Binary search for nearset relativePoint
+  _getNearestIndexForRelativePoint(relativeTimeInLoop) {
+    let low = 0;
+    let high = this.relativePoints.length - 1;
+    while (low < high) {
+      const mid = Math.floor((low + high) / 2);
+      const d1 = Math.abs(this.relativePoints[mid].relativeTime - relativeTimeInLoop);
+      const d2 = Math.abs(this.relativePoints[mid + 1].relativeTime - relativeTimeInLoop);
+      if (d2 <= d1) {
+        low = mid + 1;
       }
-
-      this.activeIndex = targetIndex;
-      return this.controlPointFrames[targetIndex];
+      else {
+        high = mid;
+      }
     }
-
-    if (Math.abs(pointInLoop - nextFrame.relativeTime) < TIME_DELTA) {
-      this.activeIndex = nextIndex;
-      return nextFrame;
-    }
-
+    return this.relativePoints[high].index;
   }
 
 }
