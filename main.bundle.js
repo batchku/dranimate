@@ -2345,7 +2345,7 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, ".styles__button___2gotw {\n  color: #616161;\n  background-color: #EEE;\n  border: 1px solid #FF87AA;\n  border-radius: 4px; }\n", ""]);
+exports.push([module.i, ".styles__button___2gotw {\n  color: #616161;\n  background-color: #EEE;\n  border: 1px solid #FF3571;\n  border-radius: 4px; }\n", ""]);
 
 // exports
 exports.locals = {
