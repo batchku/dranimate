@@ -25,6 +25,31 @@ npm run dev
 
 - open Chrome and point it to `localhost:5000`
 
+### Other commands
+- Run tests
+```
+npm run test
+```
+- Run linter (will require a lot of work to make this practical)
+```
+npm run lint
+```
+- Build to dist (for hosting on a web server)
+```
+npm run build
+```
+- Deploy to gh-pages (this deploys your current project)
+```
+npm run deploy
+```
+- Deploy origin/master to gh-pages
+```
+git clone --depth 1 --branch master git@github.com:cmuartfab/dranimate-browser.git;
+cd dranimate-browser;
+npm install;
+npm run build;
+```
+
 ### TODO
 * Firebase integration
   - View puppets
@@ -35,7 +60,6 @@ npm run dev
 * Known areas for improvement
   - GIF recording: make gif from recorded positions instead of realtime gif recording
   - Puppet editor: make editor area resizable / responsive
-  - Puppet recording: iron out bug where recording tries to catch up (appears as visual glitch)
   - Start / Stop master render loop where appropriate: currently the render loop is always on
   - Put SLIC algorithm in web worker: currently it blocks the main thread, causing the loader to not appear
 * Infamous old issues: https://github.com/cmuartfab/dranimate-browser/issues/3
