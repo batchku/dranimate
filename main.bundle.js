@@ -30427,7 +30427,7 @@ exports = module.exports = __webpack_require__(13)(false);
 
 
 // module
-exports.push([module.i, ".styles__profileScrim___1OtLX {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n  background-color: rgba(0, 0, 0, 0.25);\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n\n.styles__profileContents___1exLL {\n  display: flex;\n  flex-direction: column;\n  background-color: #FFF;\n  padding: 20px 40px;\n  border-radius: 4px;\n  min-width: 300px;\n  max-height: 80%; }\n  @media (max-width: 620px) {\n    .styles__profileContents___1exLL {\n      min-width: none;\n      width: 100%;\n      height: 100%; } }\n\n.styles__inputField___sCz6H {\n  margin: 10px 0; }\n\n.styles__formButton___sviv4 {\n  margin: 10px 0;\n  height: 30px; }\n\n.styles__puppetCollection___1aMdP {\n  overflow-y: scroll;\n  margin: 10px 0;\n  border: 1px solid #000; }\n\n.styles__row___AMc4l {\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between; }\n", ""]);
+exports.push([module.i, ".styles__profileScrim___1OtLX {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n  background-color: rgba(0, 0, 0, 0.25);\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n\n.styles__profileContents___1exLL {\n  display: flex;\n  flex-direction: column;\n  background-color: #FFF;\n  padding: 20px 40px;\n  border-radius: 4px;\n  min-width: 300px;\n  max-height: 80%; }\n  @media (max-width: 620px) {\n    .styles__profileContents___1exLL {\n      min-width: none;\n      width: 100%;\n      height: 100%; } }\n\n.styles__inputField___sCz6H {\n  margin: 10px 0; }\n\n.styles__formButton___sviv4 {\n  margin: 10px 0;\n  height: 30px; }\n\n.styles__puppetCollection___1aMdP {\n  overflow-y: scroll;\n  margin: 10px 0;\n  border: 1px solid #000; }\n\n.styles__row___AMc4l {\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between; }\n\n.styles__bottomMargin___3BJnT {\n  margin-bottom: 20px; }\n", ""]);
 
 // exports
 exports.locals = {
@@ -30436,7 +30436,8 @@ exports.locals = {
 	"inputField": "styles__inputField___sCz6H",
 	"formButton": "styles__formButton___sviv4",
 	"puppetCollection": "styles__puppetCollection___1aMdP",
-	"row": "styles__row___AMc4l"
+	"row": "styles__row___AMc4l",
+	"bottomMargin": "styles__bottomMargin___3BJnT"
 };
 
 /***/ }),
@@ -30496,7 +30497,7 @@ function (_Component) {
       return _react.default.createElement("div", {
         className: _styles.default.profileContents
       }, _react.default.createElement("div", {
-        className: _styles.default.row
+        className: "".concat(_styles.default.row, " ").concat(_styles.default.bottomMargin)
       }, _react.default.createElement("h1", null, "User Profile:"), _react.default.createElement(_button.default, {
         onClick: _userService.default.signOut.bind(_userService.default),
         className: _styles.default.formButton
@@ -30653,11 +30654,14 @@ function (_Component) {
         className: this.props.className
       }, _react.default.createElement(_button.default, {
         onClick: this.onSaveCurrentPuppet
-      }, "Save current puppet"), _react.default.createElement("p", null, "Server Collection:"), this.state.puppets.map(function (puppetModel) {
+      }, "Save current puppet"), _react.default.createElement("h3", {
+        className: _styles.default.serverCollectionLabel
+      }, "Server Collection:"), this.state.puppets.map(function (puppetModel) {
         return _react.default.createElement("div", {
           key: puppetModel.getDatabaseId(),
           className: _styles.default.puppetContainer
         }, _react.default.createElement("br", null), _react.default.createElement("p", null, "Name ", puppetModel.getName()), _react.default.createElement("img", {
+          className: _styles.default.checkerBackground,
           src: puppetModel.thumbnailUrl
         }), _react.default.createElement("br", null), _react.default.createElement(_button.default, {
           onClick: _this3.onOpenPuppet.bind(_this3, puppetModel)
@@ -30970,11 +30974,13 @@ exports = module.exports = __webpack_require__(13)(false);
 
 
 // module
-exports.push([module.i, ".styles__puppetContainer___1SCCU {\n  border-bottom: 1px solid #000; }\n", ""]);
+exports.push([module.i, ".styles__puppetContainer___1SCCU {\n  border-bottom: 1px solid #000; }\n\n.styles__bottomMargin___3BUL6 {\n  border-bottom: 1px solid #000; }\n\n.styles__checkerBackground___WmESI {\n  border: 1px solid black;\n  background-color: #FFF;\n  background-size: 40px 40px;\n  background-position: 0 0, 20px 20px;\n  background-image: linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC), linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC); }\n", ""]);
 
 // exports
 exports.locals = {
-	"puppetContainer": "styles__puppetContainer___1SCCU"
+	"puppetContainer": "styles__puppetContainer___1SCCU",
+	"bottomMargin": "styles__bottomMargin___3BUL6",
+	"checkerBackground": "styles__checkerBackground___WmESI"
 };
 
 /***/ }),
