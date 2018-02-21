@@ -1,55 +1,62 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Loader from 'components/loader';
 import Button from 'components/primitives/button';
 import MaterialInput from 'components/primitives/materialInput';
+import SignIn from 'components/Profile/SignIn';
+import User from 'components/Profile/User';
+import userService from 'services/api/userService';
 import styles from './styles.scss';
 
 class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      password: ''
+      isAuthenticated: false,
+      loaderIsVisible: false,
     };
   }
 
-  onSignIn = () => {
-    console.log(`TODO: sign in with ${this.state.username} / ${this.state.password}`);
+  componentWillMount() {
+    userService.registerAuthChangeCallback(this.onAuthStateChange);
+    const isAuthenticated = userService.isAuthenticated();
+    this.setState({ isAuthenticated });
+  }
+
+  componentWillUnmount() {
+    userService.deregisterAuthChangeCallback(this.onAuthStateChange);
+  }
+
+  onAuthStateChange = user => {
+    const isAuthenticated = userService.isAuthenticated();
+    this.setState({ isAuthenticated });
   };
 
-  onUsernameChange = username => this.setState({ username });
+  openLoader = () => this.setState({ loaderIsVisible: true });
 
-  onPasswordChange = password => this.setState({ password });
+  closeLoader = () => this.setState({ loaderIsVisible: false });
 
   render() {
     return (
-      <div className={styles.profileScrim}>
-        <div className={styles.profileContents}>
-          <MaterialInput
-            type='text'
-            label='Username'
-            onChange={this.onUsernameChange}
-            className={ styles.inputField }
-          />
-          <MaterialInput
-            type='password'
-            label='Password'
-            onChange={this.onPasswordChange}
-            className={ styles.inputField }
-          />
-          <Button
-            onClick={ this.onSignIn }
-            className={ styles.formButton }
-          >
-            Sign In
-          </Button>
-          <Button
-            onClick={ this.props.onClose }
-            className={ styles.formButton }
-          >
-            Close
-          </Button>
-        </div>
+      <div
+        className={ styles.profileScrim }
+        onKeyPress={ this.onKeyPress }
+        onClick={ this.onScrimClick }
+        >
+        {
+          this.state.isAuthenticated ?
+            <User
+              onClose={ this.props.onClose }
+              openLoader={ this.openLoader }
+              closeLoader={ this.closeLoader }
+              /> :
+            <SignIn
+              onClose={ this.props.onClose }
+              openLoader={ this.openLoader }
+              closeLoader={ this.closeLoader }
+            />
+        }
+        <Loader isVisible={this.state.loaderIsVisible} />
       </div>
     );
   }

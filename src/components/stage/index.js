@@ -6,7 +6,7 @@ import ParamControl from 'components/paramControl';
 import Recorder from 'components/recorder';
 import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
-import Profile from 'components/profile';
+import Profile from 'components/Profile';
 import { loadDranimateFile } from 'services/util/file';
 import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
 import dranimate from 'services/dranimate/dranimate';

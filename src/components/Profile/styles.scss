@@ -15,11 +15,12 @@
 .profileContents {
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  // flex-wrap: wrap;
   background-color: $color-white;
   padding: 20px 40px;
   border-radius: 4px;
   min-width: 300px;
+  max-height: 80%;
 
   @include sm() {
     min-width: none;
@@ -35,4 +36,20 @@
 .formButton {
   margin: 10px 0;
   height: 30px;
+}
+
+.puppetCollection {
+  overflow-y: scroll;
+  margin: 10px 0;
+  border: 1px solid $color-black;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.bottomMargin {
+  margin-bottom: 20px;
 }

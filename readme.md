@@ -47,7 +47,7 @@ npm run deploy
 git clone --depth 1 --branch master git@github.com:cmuartfab/dranimate-browser.git;
 cd dranimate-browser;
 npm install;
-npm run build;
+npm run deploy;
 ```
 
 ### TODO

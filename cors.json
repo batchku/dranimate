@@ -1,0 +1,10 @@
+[
+  {
+    "origin": [
+      "http://localhost:5000",
+      "https://cmuartfab.github.io"
+    ],
+    "method": ["GET"],
+    "maxAgeSeconds": 3600
+  }
+]

@@ -27,10 +27,14 @@ function getJsonFromPuppet(puppet) {
   return JSON.stringify(puppetData);
 }
 
-function savePuppetToFile(puppet) {
+function getPuppetJsonFile(puppet) {
   const puppetJsonString = getJsonFromPuppet(puppet);
-  var blob = new Blob([puppetJsonString], {type: 'application/json'});
-  FileSaver.saveAs(blob, 'testpuppet.json');
+  return new Blob([puppetJsonString], {type: 'application/json'});
 }
 
-export default savePuppetToFile;
+function savePuppetToFile(puppet) {
+  const puppetJsonFile = getPuppetJsonFile(puppet);
+  FileSaver.saveAs(puppetJsonFile, 'testpuppet.json');
+}
+
+export { getPuppetJsonFile, savePuppetToFile };

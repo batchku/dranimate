@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
 import Slider from 'components/primitives/slider';
-import savePuppetToFile from 'services/storage/serializer';
+import { savePuppetToFile } from 'services/storage/serializer';
 import styles from './styles.scss';
 
 class ParamControl extends Component {
