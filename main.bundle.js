@@ -27489,7 +27489,7 @@ exports = module.exports = __webpack_require__(13)(false);
 
 
 // module
-exports.push([module.i, ".styles__scrim___3brSS {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n  background-color: rgba(0, 0, 0, 0.25);\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n\n.styles__puppetEditor___V4di8 {\n  display: flex;\n  flex-direction: column;\n  flex-wrap: wrap;\n  background-color: white;\n  padding-left: 40px;\n  padding-right: 40px;\n  border-radius: 4px; }\n  @media (max-width: 620px) {\n    .styles__puppetEditor___V4di8 {\n      width: 100%;\n      height: 100%; } }\n\n.styles__editorControlRow___avcJD {\n  height: 90px;\n  display: flex;\n  flex-direction: row;\n  align-items: center; }\n\n.styles__rowSpaceAround___1Yrmb {\n  width: 100%;\n  justify-content: space-around; }\n\n.styles__editorControlDisable___1eQ0h {\n  display: none;\n  pointer-events: none; }\n\n.styles__editorControlLabel___2ieCH {\n  font-size: 40px;\n  padding-right: 10px; }\n\n.styles__editorCanvas___18fS0 {\n  border: 1px solid black; }\n\n.styles__editorCanvasChecker___3GRU3 {\n  border: 1px solid black;\n  background-color: #FFF;\n  background-size: 40px 40px;\n  background-position: 0 0, 20px 20px;\n  background-image: linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC), linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC); }\n\n.styles__editorControls___2O4Xh {\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n  padding: 20px; }\n\n.styles__editorNav___1VSuf {\n  margin: 10px 0;\n  font-size: 20px;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between; }\n\n.styles__navButton___EfAnt {\n  height: 20px;\n  min-width: 80px; }\n\n.styles__save___16VH- {\n  display: flex;\n  flex-direction: row;\n  justify-content: flex-end; }\n\n.styles__drawEraseLabel___1EAco {\n  min-width: 50px;\n  margin-top: 10px; }\n", ""]);
+exports.push([module.i, ".styles__scrim___3brSS {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n  background-color: rgba(0, 0, 0, 0.25);\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n\n.styles__puppetEditor___V4di8 {\n  display: flex;\n  flex-direction: column;\n  flex-wrap: wrap;\n  background-color: white;\n  padding: 20px 40px;\n  border-radius: 4px; }\n  @media (max-width: 620px) {\n    .styles__puppetEditor___V4di8 {\n      width: 100%;\n      height: 100%; } }\n\n.styles__editorControlRow___avcJD {\n  height: 90px;\n  display: flex;\n  flex-direction: row;\n  align-items: center; }\n\n.styles__rowSpaceAround___1Yrmb {\n  width: 100%;\n  justify-content: space-around; }\n\n.styles__editorControlDisable___1eQ0h {\n  display: none;\n  pointer-events: none; }\n\n.styles__editorControlLabel___2ieCH {\n  font-size: 40px;\n  padding-right: 10px; }\n\n.styles__editorCanvas___18fS0 {\n  border: 1px solid black; }\n\n.styles__editorCanvasChecker___3GRU3 {\n  background-color: #FFF;\n  background-size: 40px 40px;\n  background-position: 0 0, 20px 20px;\n  background-image: linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC), linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC);\n  border: 1px solid black; }\n\n.styles__editorControls___2O4Xh {\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n  padding: 20px; }\n\n.styles__editorNav___1VSuf {\n  margin: 10px 0;\n  font-size: 20px;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between; }\n\n.styles__navButton___EfAnt {\n  height: 20px;\n  min-width: 80px; }\n\n.styles__save___16VH- {\n  display: flex;\n  flex-direction: row;\n  justify-content: flex-end; }\n\n.styles__drawEraseLabel___1EAco {\n  min-width: 50px;\n  margin-top: 10px; }\n", ""]);
 
 // exports
 exports.locals = {
@@ -27803,8 +27803,6 @@ var ControlPointService = function ControlPointService() {
   };
 
   this.onTouchStart = function (event) {
-    event.preventDefault();
-
     if (event.touches.length > 1) {
       return;
     }
@@ -27832,8 +27830,6 @@ var ControlPointService = function ControlPointService() {
   };
 
   this.onTouchEnd = function (event) {
-    event.preventDefault();
-
     if (event.touches.length) {
       return;
     }
@@ -30242,6 +30238,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -30347,7 +30345,11 @@ function (_Component) {
       return _react.default.createElement("div", {
         className: _styles.default.profileContents,
         onKeyPress: this.onKeyPress
-      }, _react.default.createElement("h1", null, "Sign In"), _react.default.createElement(_materialInput.default, {
+      }, _react.default.createElement("div", {
+        className: "".concat(_styles.default.row, " ").concat(_styles.default.headerRow)
+      }, _react.default.createElement("h3", {
+        className: _styles.default.headerLabel
+      }, "Sign In")), _react.default.createElement(_materialInput.default, {
         type: "text",
         label: "Email",
         onChange: this.onEmailChange,
@@ -30357,16 +30359,16 @@ function (_Component) {
         label: "Password",
         onChange: this.onPasswordChange,
         className: _styles.default.inputField
-      }), _react.default.createElement(_button.default, {
-        onClick: this.onSignIn,
-        className: _styles.default.formButton
-      }, "Sign In With Email"), _react.default.createElement(_button.default, {
-        onClick: this.onCreateAccount,
-        className: _styles.default.formButton
-      }, "Create Account"), _react.default.createElement(_button.default, {
-        onClick: this.setSignInWithEmail.bind(this, false),
-        className: _styles.default.formButton
-      }, "Cancel"));
+      }), _react.default.createElement(_button.default, _defineProperty({
+        className: _styles.default.profileButton,
+        onClick: this.onSignIn
+      }, "className", _styles.default.formButton), "Sign In With Email"), _react.default.createElement(_button.default, _defineProperty({
+        className: _styles.default.profileButton,
+        onClick: this.onCreateAccount
+      }, "className", _styles.default.formButton), "Create Account"), _react.default.createElement(_button.default, _defineProperty({
+        className: _styles.default.profileButton,
+        onClick: this.setSignInWithEmail.bind(this, false)
+      }, "className", _styles.default.formButton), "Cancel"));
     }
   }, {
     key: "renderSignIn",
@@ -30398,12 +30400,16 @@ function (_Component) {
   }, {
     key: "renderAuthForms",
     value: function renderAuthForms() {
-      return _react.default.createElement("div", null, this.state.isSignInWithEmail ? this.renderSignInWithEmail() : this.renderSignIn());
+      return _react.default.createElement("div", {
+        className: _styles.default.blankContainer
+      }, this.state.isSignInWithEmail ? this.renderSignInWithEmail() : this.renderSignIn());
     }
   }, {
     key: "render",
     value: function render() {
-      return _react.default.createElement("div", null, this.state.errorMessage ? this.renderErrorState() : this.renderAuthForms());
+      return _react.default.createElement("div", {
+        className: _styles.default.blankContainer
+      }, this.state.errorMessage ? this.renderErrorState() : this.renderAuthForms());
     }
   }]);
 
@@ -30427,7 +30433,7 @@ exports = module.exports = __webpack_require__(13)(false);
 
 
 // module
-exports.push([module.i, ".styles__profileScrim___1OtLX {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n  background-color: rgba(0, 0, 0, 0.25);\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n\n.styles__profileContents___1exLL {\n  display: flex;\n  flex-direction: column;\n  background-color: #FFF;\n  padding: 20px 40px;\n  border-radius: 4px;\n  min-width: 300px;\n  max-height: 80%; }\n  @media (max-width: 620px) {\n    .styles__profileContents___1exLL {\n      min-width: none;\n      width: 100%;\n      height: 100%; } }\n\n.styles__inputField___sCz6H {\n  margin: 10px 0; }\n\n.styles__formButton___sviv4 {\n  margin: 10px 0;\n  height: 30px; }\n\n.styles__puppetCollection___1aMdP {\n  overflow-y: scroll;\n  margin: 10px 0;\n  border: 1px solid #000; }\n\n.styles__row___AMc4l {\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between; }\n\n.styles__bottomMargin___3BJnT {\n  margin-bottom: 20px; }\n", ""]);
+exports.push([module.i, ".styles__profileScrim___1OtLX {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n  background-color: rgba(0, 0, 0, 0.25);\n  display: flex;\n  flex-direction: column;\n  justify-content: space-around;\n  align-items: center; }\n\n.styles__profileContents___1exLL {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  background-color: #FFF;\n  border-radius: 4px;\n  min-width: 290px;\n  max-width: 75%;\n  max-height: 80%; }\n  @media (max-width: 620px) {\n    .styles__profileContents___1exLL {\n      min-width: none;\n      max-width: none;\n      max-height: none;\n      width: 100%; } }\n\n.styles__inputField___sCz6H {\n  margin: 10px; }\n\n.styles__formButton___sviv4 {\n  margin: 10px 0;\n  height: 30px;\n  margin: 10px; }\n\n.styles__puppetCollection___1aMdP {\n  border: 1px solid #000;\n  overflow-y: scroll;\n  margin-top: 20px; }\n\n.styles__row___AMc4l {\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between; }\n\n.styles__bottomMargin___3BJnT {\n  margin-bottom: 20px; }\n\n.styles__blankContainer___1BTtQ {\n  height: inherit;\n  width: inherit;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-around;\n  align-items: center; }\n\n.styles__headerRow___iSePQ {\n  justify-content: space-between; }\n\n.styles__headerLabel___JYFBQ {\n  margin: 10px; }\n", ""]);
 
 // exports
 exports.locals = {
@@ -30437,7 +30443,10 @@ exports.locals = {
 	"formButton": "styles__formButton___sviv4",
 	"puppetCollection": "styles__puppetCollection___1aMdP",
 	"row": "styles__row___AMc4l",
-	"bottomMargin": "styles__bottomMargin___3BJnT"
+	"bottomMargin": "styles__bottomMargin___3BJnT",
+	"blankContainer": "styles__blankContainer___1BTtQ",
+	"headerRow": "styles__headerRow___iSePQ",
+	"headerLabel": "styles__headerLabel___JYFBQ"
 };
 
 /***/ }),
@@ -30497,8 +30506,10 @@ function (_Component) {
       return _react.default.createElement("div", {
         className: _styles.default.profileContents
       }, _react.default.createElement("div", {
-        className: "".concat(_styles.default.row, " ").concat(_styles.default.bottomMargin)
-      }, _react.default.createElement("h1", null, "User Profile:"), _react.default.createElement(_button.default, {
+        className: "".concat(_styles.default.row, " ").concat(_styles.default.headerRow)
+      }, _react.default.createElement("h2", {
+        className: _styles.default.headerLabel
+      }, "User Profile:"), _react.default.createElement(_button.default, {
         onClick: _userService.default.signOut.bind(_userService.default),
         className: _styles.default.formButton
       }, "Sign Out"), _react.default.createElement(_button.default, {
@@ -30656,19 +30667,21 @@ function (_Component) {
         onClick: this.onSaveCurrentPuppet
       }, "Save current puppet"), _react.default.createElement("h3", {
         className: _styles.default.serverCollectionLabel
-      }, "Server Collection:"), this.state.puppets.map(function (puppetModel) {
+      }, "Server Collection:"), _react.default.createElement("div", {
+        className: _styles.default.serverCollectionContainer
+      }, this.state.puppets.map(function (puppetModel) {
         return _react.default.createElement("div", {
           key: puppetModel.getDatabaseId(),
           className: _styles.default.puppetContainer
         }, _react.default.createElement("br", null), _react.default.createElement("p", null, "Name ", puppetModel.getName()), _react.default.createElement("img", {
-          className: _styles.default.checkerBackground,
+          className: _styles.default.puppetThumbnail,
           src: puppetModel.thumbnailUrl
         }), _react.default.createElement("br", null), _react.default.createElement(_button.default, {
           onClick: _this3.onOpenPuppet.bind(_this3, puppetModel)
         }, "Open"), _react.default.createElement(_button.default, {
           onClick: _this3.onDeletePuppet.bind(_this3, puppetModel)
         }, "Delete"));
-      }));
+      })));
     }
   }]);
 
@@ -30974,13 +30987,13 @@ exports = module.exports = __webpack_require__(13)(false);
 
 
 // module
-exports.push([module.i, ".styles__puppetContainer___1SCCU {\n  border-bottom: 1px solid #000; }\n\n.styles__bottomMargin___3BUL6 {\n  border-bottom: 1px solid #000; }\n\n.styles__checkerBackground___WmESI {\n  border: 1px solid black;\n  background-color: #FFF;\n  background-size: 40px 40px;\n  background-position: 0 0, 20px 20px;\n  background-image: linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC), linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC); }\n", ""]);
+exports.push([module.i, ".styles__puppetContainer___1SCCU {\n  border: 1px solid #000;\n  border-radius: 4px;\n  padding: 10px;\n  margin: 10px; }\n\n.styles__serverCollectionContainer___1SHTU {\n  display: flex;\n  flex-direction: row;\n  flex-wrap: wrap;\n  justify-content: space-around; }\n\n.styles__puppetThumbnail___2uLho {\n  background-color: #FFF;\n  background-size: 40px 40px;\n  background-position: 0 0, 20px 20px;\n  background-image: linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC), linear-gradient(45deg, #CCC 25%, transparent 25%, transparent 75%, #CCC 75%, #CCC);\n  border: 1px solid black;\n  max-height: 240px;\n  max-width: 240px; }\n", ""]);
 
 // exports
 exports.locals = {
 	"puppetContainer": "styles__puppetContainer___1SCCU",
-	"bottomMargin": "styles__bottomMargin___3BUL6",
-	"checkerBackground": "styles__checkerBackground___WmESI"
+	"serverCollectionContainer": "styles__serverCollectionContainer___1SHTU",
+	"puppetThumbnail": "styles__puppetThumbnail___2uLho"
 };
 
 /***/ }),
