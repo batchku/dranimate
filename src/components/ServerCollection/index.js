@@ -72,24 +72,26 @@ class ServerCollection extends Component {
         </Button>
 
         <h3 className={styles.serverCollectionLabel}>Server Collection:</h3>
-        {
-          this.state.puppets.map(puppetModel =>
-            <div key={puppetModel.getDatabaseId()} className={styles.puppetContainer}>
-              <br />
-              <p>Name {puppetModel.getName()}</p>
-              <img
-                className={styles.checkerBackground}
-                src={puppetModel.thumbnailUrl} />
-              <br />
-              <Button onClick={this.onOpenPuppet.bind(this, puppetModel)}>
-                Open
-              </Button>
-              <Button onClick={this.onDeletePuppet.bind(this, puppetModel)}>
-                Delete
-              </Button>
-            </div>
-          )
-        }
+        <div className={styles.serverCollectionContainer}>
+          {
+            this.state.puppets.map(puppetModel =>
+              <div key={puppetModel.getDatabaseId()} className={styles.puppetContainer}>
+                <br />
+                <p>Name {puppetModel.getName()}</p>
+                <img
+                  className={styles.puppetThumbnail}
+                  src={puppetModel.thumbnailUrl} />
+                <br />
+                <Button onClick={this.onOpenPuppet.bind(this, puppetModel)}>
+                  Open
+                </Button>
+                <Button onClick={this.onDeletePuppet.bind(this, puppetModel)}>
+                  Delete
+                </Button>
+              </div>
+            )
+          }
+        </div>
       </div>
     );
   }

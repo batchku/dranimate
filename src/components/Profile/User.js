@@ -13,8 +13,8 @@ class User extends Component {
   render() {
     return (
       <div className={ styles.profileContents }>
-        <div className={`${styles.row} ${styles.bottomMargin}`}>
-          <h1>User Profile:</h1>
+        <div className={`${styles.row} ${styles.headerRow}`}>
+          <h2 className={ styles.headerLabel }>User Profile:</h2>
           <Button
             onClick={ userService.signOut.bind(userService) }
             className={ styles.formButton }

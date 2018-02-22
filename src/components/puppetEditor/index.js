@@ -70,7 +70,7 @@ class PuppetEditor extends Component {
 
     loadImage(this.state.imageSrc)
       .then((imageElement) => {
-        const { width, height} = this.state.backgroundRemovalData;
+        const { width, height } = this.state.backgroundRemovalData;
         const originalImageData = getImageDataFromImage(imageElement, width, height);
         return generateMesh(puppetId, imageElement, this.state.backgroundRemovalData, originalImageData, controlPointPositions);
       })

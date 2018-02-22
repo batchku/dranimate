@@ -1,0 +1,14 @@
+
+$box-size: 20px;
+$twice-box-size: $box-size * 2;
+$checker-light: #FFF;
+$checker-dark: #CCC;
+
+// TODO: pass color, size as params
+@mixin checkerBackground {
+  background-color: $checker-light;
+  background-size: $twice-box-size $twice-box-size;
+  background-position: 0 0, $box-size $box-size;
+  background-image: linear-gradient(45deg, $checker-dark 25%, transparent 25%, transparent 75%, $checker-dark 75%, $checker-dark),
+                    linear-gradient(45deg, $checker-dark 25%, transparent 25%, transparent 75%, $checker-dark 75%, $checker-dark);
+}

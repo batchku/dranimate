@@ -17,8 +17,7 @@
   flex-direction: column;
   flex-wrap: wrap;
   background-color: white;
-  padding-left: 40px;
-  padding-right: 40px;
+  padding: 20px 40px;
   border-radius: 4px;
 
   @include sm() {
@@ -59,18 +58,9 @@
   border: 1px solid black;
 }
 
-$box-size: 20px;
-$twice-box-size: $box-size * 2;
-$checker-light: #FFF;
-$checker-dark: #CCC;
-
 .editorCanvasChecker {
+  @include checkerBackground();
   border: 1px solid black;
-  background-color: $checker-light;
-  background-size: $twice-box-size $twice-box-size;
-  background-position: 0 0, $box-size $box-size;
-  background-image: linear-gradient(45deg, $checker-dark 25%, transparent 25%, transparent 75%, $checker-dark 75%, $checker-dark),
-                    linear-gradient(45deg, $checker-dark 25%, transparent 25%, transparent 75%, $checker-dark 75%, $checker-dark);
 }
 
 .editorControls {

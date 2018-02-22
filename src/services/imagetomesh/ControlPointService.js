@@ -124,7 +124,6 @@ const ControlPointService = function () {
   };
 
   this.onTouchStart = event => {
-    event.preventDefault();
     if (event.touches.length > 1) { return; }
     const now = performance.now();
     const lastTouchDelta = now - lastTouchTime;
@@ -143,7 +142,6 @@ const ControlPointService = function () {
   };
 
   this.onTouchEnd = event => {
-    event.preventDefault();
     if (event.touches.length) { return; }
     this.onMouseUp(event);
   };

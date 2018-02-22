@@ -62,7 +62,9 @@ class SignIn extends Component {
       <div
         className={ styles.profileContents }
         onKeyPress={ this.onKeyPress }>
-        <h1>Sign In</h1>
+        <div className={`${styles.row} ${styles.headerRow}`}>
+          <h3 className={ styles.headerLabel }>Sign In</h3>
+        </div>
         <MaterialInput
           type='text'
           label='Email'
@@ -76,18 +78,21 @@ class SignIn extends Component {
           className={ styles.inputField }
         />
         <Button
+          className={ styles.profileButton }
           onClick={ this.onSignIn }
           className={ styles.formButton }
         >
           Sign In With Email
         </Button>
         <Button
+          className={ styles.profileButton }
           onClick={ this.onCreateAccount }
           className={ styles.formButton }
         >
           Create Account
         </Button>
         <Button
+          className={ styles.profileButton }
           onClick={ this.setSignInWithEmail.bind(this, false) }
           className={ styles.formButton }
         >
@@ -141,7 +146,7 @@ class SignIn extends Component {
 
   renderAuthForms() {
     return(
-      <div>
+      <div className={styles.blankContainer}>
         {
           this.state.isSignInWithEmail ?
             this.renderSignInWithEmail() :
@@ -153,7 +158,7 @@ class SignIn extends Component {
 
   render() {
     return (
-      <div>
+      <div className={styles.blankContainer}>
         {
           this.state.errorMessage ?
             this.renderErrorState() :
