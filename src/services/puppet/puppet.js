@@ -146,7 +146,7 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, position)
   }
 }
 
-Puppet.prototype.update = function(elapsedTime) {
+Puppet.prototype.update = function(elapsedTime, targetTimestamp) {
   const dx = this.current.position.x - this.previous.position.x;
   const dy = this.current.position.y - this.previous.position.y;
   const shouldMoveXY = dx !== 0 || dy !== 0;
@@ -193,7 +193,8 @@ Puppet.prototype.update = function(elapsedTime) {
     });
   }
 
-  const recordedFrame = this.puppetRecording.update(performance.now());
+  const recordingTimeStamp = targetTimestamp || performance.now();
+  const recordedFrame = this.puppetRecording.update(recordingTimeStamp);
   if (recordedFrame) {
     const puppetCenter = this.getCenter();
     const absoluteControlPoints = recordedFrame.controlPoints.map((controlPoint) => {

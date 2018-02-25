@@ -32,6 +32,7 @@ class Profile extends Component {
     this.setState({ isAuthenticated });
   };
 
+  // TODO: use global loader on stage
   openLoader = () => this.setState({ loaderIsVisible: true });
 
   closeLoader = () => this.setState({ loaderIsVisible: false });

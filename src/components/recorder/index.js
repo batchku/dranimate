@@ -21,7 +21,16 @@ class Recorder extends Component {
   onGifRecordToggle = () => {
     const gifIsRecording = !this.state.gifIsRecording;
     this.setState({ gifIsRecording });
-    dranimate.setGifIsRecording(gifIsRecording);
+    const gifBuilder = dranimate.setGifIsRecording(gifIsRecording);
+
+    if (!gifBuilder) { return; }
+    this.props.openLoader();
+    gifBuilder.buildGif()
+      .then(gifBlob => {
+        this.props.closeLoader();
+        this.props.gifPreviewAvailable(gifBlob);
+      })
+      .catch(error => console.log('gif error', error));
   };
 
   onPuppetRecordToggle = (event) => {
@@ -55,6 +64,10 @@ class Recorder extends Component {
   }
 }
 
-Recorder.propTypes = {};
+Recorder.propTypes = {
+  openLoader: PropTypes.func.isRequired,
+  closeLoader: PropTypes.func.isRequired,
+  gifPreviewAvailable: PropTypes.func.isRequired
+};
 
 export default Recorder;

@@ -10,17 +10,24 @@ class ServerCollection extends Component {
   constructor() {
     super();
     this.state = {
-      puppets: []
+      puppets: [],
+      gifs: []
     };
   }
 
   componentWillMount() {
     this.getAllPuppets();
+    this.getAllGifs();
   }
 
   getAllPuppets() {
     apiService.getAllPuppetsForUser()
       .then(puppets => this.setState({ puppets }));
+  }
+
+  getAllGifs() {
+    apiService.getAllGifsForUser()
+      .then(gifs => this.setState({ gifs }));
   }
 
   onSaveCurrentPuppet = () => {
@@ -64,6 +71,19 @@ class ServerCollection extends Component {
       });
   };
 
+  onDeleteGif = (gifModel) => {
+    this.props.openLoader();
+    apiService.deleteGif(gifModel)
+      .then(() => {
+        this.props.closeLoader();
+        this.getAllGifs();
+      })
+      .catch(error => {
+        console.log('error', error);
+        this.props.closeLoader();
+      });
+  };
+
   render() {
     return (
       <div className={ this.props.className }>
@@ -71,10 +91,12 @@ class ServerCollection extends Component {
           Save current puppet
         </Button>
 
-        <h3 className={styles.serverCollectionLabel}>Server Collection:</h3>
+        <h3 className={styles.serverCollectionLabel}>
+          Puppet Collection
+        </h3>
         <div className={styles.serverCollectionContainer}>
           {
-            this.state.puppets.map(puppetModel =>
+            this.state.puppets.map((puppetModel) =>
               <div key={puppetModel.getDatabaseId()} className={styles.puppetContainer}>
                 <br />
                 <p>Name {puppetModel.getName()}</p>
@@ -86,6 +108,27 @@ class ServerCollection extends Component {
                   Open
                 </Button>
                 <Button onClick={this.onDeletePuppet.bind(this, puppetModel)}>
+                  Delete
+                </Button>
+              </div>
+            )
+          }
+        </div>
+
+        <h3 className={styles.serverCollectionLabel}>
+          GIF Collection
+        </h3>
+        <div className={styles.serverCollectionContainer}>
+          {
+            this.state.gifs.map((gifModel) =>
+              <div key={gifModel.getDatabaseId()} className={styles.puppetContainer}>
+                <br />
+                <p>Name {gifModel.getName()}</p>
+                <img
+                  className={styles.puppetThumbnail}
+                  src={gifModel.url} />
+                <br />
+                <Button onClick={() => this.onDeleteGif(gifModel)}>
                   Delete
                 </Button>
               </div>

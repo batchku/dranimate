@@ -1,0 +1,43 @@
+@import '~styles/index';
+
+.gifPreviewScrim {
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.gifPreviewLabel {
+  margin: 10px;
+  text-align: center;
+}
+
+.gifPreviewContents {
+  background-color: $color-white;
+  border-radius: 4px;
+}
+
+.gif {
+  max-height: 650px;
+  border: 2px solid $color-grey-dark;
+  border-radius: 4px;
+  margin: 20px;
+  display: block;
+
+  @include sm() {
+    width: 90%;
+  }
+}
+
+.gifPreviewOptions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin: 20px;
+}

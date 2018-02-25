@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Button from 'components/primitives/button';
 import Fab from 'components/primitives/fab';
+import Loader from 'components/loader';
+import GifPreview from 'components/GifPreview';
 import TopBar from 'components/topbar';
 import ParamControl from 'components/paramControl';
 import Recorder from 'components/recorder';
@@ -20,7 +22,9 @@ class Stage extends Component {
       editorIsOpen: false,
       profileIsOpen: false,
       controllerIsOpen: false,
-      selectedPuppet: null
+      selectedPuppet: null,
+      loaderIsVisible: false,
+      gifPreviewBlob: null,
     };
   }
 
@@ -64,6 +68,14 @@ class Stage extends Component {
     puppetEditorStateService.setItem(dranimate.getSelectedPuppet());
     this.setState({ editorIsOpen: true });
   };
+
+  openLoader = () => this.setState({ loaderIsVisible: true });
+
+  closeLoader = () => this.setState({ loaderIsVisible: false });
+
+  gifPreviewAvailable = gifPreviewBlob => this.setState({ gifPreviewBlob });
+
+  closeGifPreview = () => this.setState({ gifPreviewBlob: null });
 
   onFileChange = event => {
     loadDranimateFile(this.filePicker)
@@ -112,7 +124,11 @@ class Stage extends Component {
             onPanSelect={this.onPanSelect}
             onZoomSelect={this.onZoomSelect}
           />
-          <Recorder />
+          <Recorder
+            openLoader={this.openLoader}
+            closeLoader={this.closeLoader}
+            gifPreviewAvailable={this.gifPreviewAvailable}
+          />
           {
             /* <Button onClick={dranimate.onRenderToggle}>
               Render toggle
@@ -137,6 +153,15 @@ class Stage extends Component {
             null
         }
         { this.state.profileIsOpen ? <Profile onClose={this.closeProfile}/> : null }
+        { this.state.gifPreviewBlob ?
+          <GifPreview
+            gifBlob={this.state.gifPreviewBlob}
+            closeGifPreview={this.closeGifPreview}
+            openLoader={this.openLoader}
+            closeLoader={this.closeLoader}
+          /> : null
+        }
+        <Loader isVisible={this.state.loaderIsVisible} />
       </div>
     );
   }

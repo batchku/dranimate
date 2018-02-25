@@ -7,7 +7,7 @@ import {
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
 import DranimateLeapHandler from 'services/dranimate/leapHandler';
 import DranimateTouchHandler from 'services/dranimate/touchHandler';
-import GifRecorder from 'services/util/GifRecorder';
+import { GifRecording, GifBuilder } from 'services/util/GifRecorder';
 import PanHandler from 'services/util/panHandler';
 import { clamp } from 'services/util/math';
 
@@ -31,9 +31,7 @@ const Dranimate = function () {
     let lastUpdateTimestamp = performance.now();
 
     let isInRenderLoop = true;
-    let isRecording = false;
-    let gifIsRecording = false;
-    let gifRecorder;
+    let gifRecording = new GifRecording(performance.now(), false);
 
     const getSelectedPuppet = () => mouseHandler.getSelectedPuppet() || touchHandler.getSelectedPuppet();
 
@@ -158,26 +156,28 @@ const Dranimate = function () {
     this.getSelectedPuppet = () => getSelectedPuppet();
 
     this.setRecording = function(isRec) {
-      isRecording = isRec;
       if (getSelectedPuppet()) {
-        isRecording ?
+        isRec ?
           getSelectedPuppet().startRecording() :
           getSelectedPuppet().stopRecording();
       }
     };
 
     this.setGifIsRecording = function(isRec) {
-      gifIsRecording = isRec;
-      isInRenderLoop = gifIsRecording;
-      if (gifIsRecording) {
-        gifRecorder = new GifRecorder();
+      isInRenderLoop = isRec;
+      if (isRec) {
+        gifRecording = new GifRecording(performance.now(), true);
+        return;
       }
       else {
-        console.log('start exporting gif');
-        render();
-        gifRecorder.stop(renderer.domElement)
-          .then(objectUrl => window.open(objectUrl))
-          .catch(error => console.log('gif error', error));
+        const gifBuilder = new GifBuilder();
+        const { targetTimestamps, gifTimestep } = gifRecording.stop(performance.now(), puppets);
+        targetTimestamps.forEach((targetTimestamp) => {
+          puppets.forEach(puppet => puppet.update(gifTimestep, targetTimestamp));
+          renderer.render(scene, camera);
+          gifBuilder.recordFrame(renderer.domElement, gifTimestep);
+        });
+        return gifBuilder;
       }
     }
 
@@ -231,15 +231,13 @@ const Dranimate = function () {
 
     function update(elapsedTime) {
       leapHandler.update(getSelectedPuppet());
-      puppets.forEach(puppet => puppet.update(elapsedTime, isRecording));
+      puppets.forEach(puppet => puppet.update(elapsedTime));
       panHandler.update(camera);
     }
 
     function render(elapsedTime) {
       renderer.render(scene, camera);
-      if (gifIsRecording) {
-        gifRecorder.offerFrame(renderer.domElement);
-      }
+      gifRecording.setFrame(performance.now());
     }
 
 };
