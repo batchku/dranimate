@@ -51,15 +51,11 @@ npm run deploy;
 ```
 
 ### TODO
-* Firebase integration
-  - View puppets
-  - Load puppet
-  - Save puppet
-  - Authentication
 * Leap motion tuning (make it work like OFX dranimate)
-* Known areas for improvement
-  - GIF recording: make gif from recorded positions instead of realtime gif recording
-  - Puppet editor: make editor area resizable / responsive
-  - Start / Stop master render loop where appropriate: currently the render loop is always on
-  - Put SLIC algorithm in web worker: currently it blocks the main thread, causing the loader to not appear
+* Puppet editor: make editor area resizable / responsive
+* Start / Stop master render loop where appropriate: currently the render loop is always on
+* Put SLIC algorithm in web worker: currently it blocks the main thread, causing the loader to not appear
+* Puppet editing: set name
+* GIF editing: set name
+* GIF sharing
 * Infamous old issues: https://github.com/cmuartfab/dranimate-browser/issues/3
