@@ -4,10 +4,10 @@ const TIME_DELTA = 0.001;
 
 class PuppetRecording {
 
-  constructor(timestamp) {
+  constructor(timestamp, isRecording) {
     const now = (timestamp !== undefined) ? timestamp : performance.now();
     this.hasRecording = false;
-    this.isRecording = true;
+    this.isRecording = isRecording;
     this.controlPointFrames = [];
     this.relativePoints = [];
     this.startTime = now;

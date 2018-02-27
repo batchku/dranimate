@@ -21,14 +21,14 @@ const Puppet = function(puppetData) {
     isBeingDragged: false,
     lastPosition: new Vector2(0, 0)
   };
-  this.name = 'DEFAULT_PUPPET_NAME';
+  this.name = puppetData.name;
+  this.id = puppetData.id;
 
   // RECORDING
-  this.puppetRecording = new PuppetRecording();
+  this.puppetRecording = new PuppetRecording(performance.now(), false);
 
   // GRAPHICS
   this.image = puppetData.image;
-  this.id = puppetData.id;
   this.imageNoBG = puppetData.imageNoBG;
   this.controlPointPositions = puppetData.controlPointPositions; // are these just unedited control points?
   this.backgroundRemovalData = puppetData.backgroundRemovalData;
@@ -72,6 +72,14 @@ Puppet.prototype.incrementPosition = function(x, y) {
   this.selectionState.lastPosition = position;
 }
 
+Puppet.prototype.setName = function(name) {
+  this.name = name;
+}
+
+Puppet.prototype.getName = function() {
+  return this.name;
+}
+
 Puppet.prototype.setScale = function(scale) {
   this.current.scale = scale;
 }
@@ -101,7 +109,7 @@ Puppet.prototype.setSelectionState = function(isBeingDragged, x, y){
 }
 
 Puppet.prototype.startRecording = function () {
-  this.puppetRecording = new PuppetRecording(performance.now());
+  this.puppetRecording = new PuppetRecording(performance.now(), true);
 }
 
 Puppet.prototype.stopRecording = function () {

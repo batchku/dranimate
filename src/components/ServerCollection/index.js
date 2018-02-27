@@ -30,20 +30,20 @@ class ServerCollection extends Component {
       .then(gifs => this.setState({ gifs }));
   }
 
-  onSaveCurrentPuppet = () => {
-    const selectedPuppet = dranimate.getSelectedPuppet();
-    if (!selectedPuppet) { return; }
-    this.props.openLoader();
-    apiService.savePuppet(selectedPuppet)
-      .then(() => {
-        this.props.closeLoader();
-        this.getAllPuppets();
-      })
-      .catch(error => {
-        console.log('error', error);
-        this.props.closeLoader();
-      });
-  };
+  // onSaveCurrentPuppet = () => {
+  //   const selectedPuppet = dranimate.getSelectedPuppet();
+  //   if (!selectedPuppet) { return; }
+  //   this.props.openLoader();
+  //   apiService.savePuppet(selectedPuppet)
+  //     .then(() => {
+  //       this.props.closeLoader();
+  //       this.getAllPuppets();
+  //     })
+  //     .catch(error => {
+  //       console.log('error', error);
+  //       this.props.closeLoader();
+  //     });
+  // };
 
   onOpenPuppet = (puppetModel) => {
     this.props.openLoader();
@@ -87,10 +87,6 @@ class ServerCollection extends Component {
   render() {
     return (
       <div className={ this.props.className }>
-        <Button onClick={ this.onSaveCurrentPuppet }>
-          Save current puppet
-        </Button>
-
         <h3 className={styles.serverCollectionLabel}>
           Puppet Collection
         </h3>

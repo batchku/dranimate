@@ -91,7 +91,7 @@ class ApiService {
       const thumbnailStorageRef = thumbnailSnapshot.metadata.fullPath;
       const thumbnailUrl = thumbnailSnapshot.downloadURL;
       const puppetModel = new PuppetDB()
-        .setName(puppet.name)
+        .setName(puppet.getName())
         .setStorageRef(puppetStorageRef)
         .setThumbnailStorageRef(thumbnailStorageRef)
         .setThumbnailUrl(thumbnailUrl)
@@ -107,10 +107,9 @@ class ApiService {
     })
   }
 
-  saveGif(gifBlob) {
+  saveGif(gifBlob, gifName) {
     const userId = userService.getUserId();
     const gifRef = this.storage.ref().child(`gif-${Math.random()}`);
-    const gifName = 'DEFAULT_GIF_NAME';
 
     return gifRef.put(gifBlob)
       .then((gifSnapshot) => {

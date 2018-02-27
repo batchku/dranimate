@@ -1,14 +1,6 @@
-const uuidSet = new Set();
-
-function generateId() {
-  return (Math.random() * Math.pow(2, 32 - 1) >>> 0) + '';
-}
-
 export default function generateUniqueId() {
-  let id = generateId();
-  while (uuidSet.has(id)) {
-    id = generateId();
-  }
-  uuidSet.add(id);
-  return id;
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
 }

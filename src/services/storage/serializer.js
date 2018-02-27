@@ -22,7 +22,9 @@ function getJsonFromPuppet(puppet) {
       height: puppet.backgroundRemovalData.height,
     },
     imageData: getImageAsDataURL(puppet.image),
-    imageNoBGData: getImageAsDataURL(puppet.imageNoBG)
+    imageNoBGData: getImageAsDataURL(puppet.imageNoBG),
+    id: puppet.id,
+    name: puppet.name
   };
   return JSON.stringify(puppetData);
 }
@@ -33,8 +35,10 @@ function getPuppetJsonFile(puppet) {
 }
 
 function savePuppetToFile(puppet) {
+  const underscoredName = puppet.getName.replace(/ /g, '_');
+  const fileName = `${underscoredName}.json`;
   const puppetJsonFile = getPuppetJsonFile(puppet);
-  FileSaver.saveAs(puppetJsonFile, 'testpuppet.json');
+  FileSaver.saveAs(puppetJsonFile, fileName);
 }
 
 export { getPuppetJsonFile, savePuppetToFile };

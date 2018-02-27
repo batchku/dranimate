@@ -2,15 +2,43 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
 import Slider from 'components/primitives/slider';
+import MaterialInput from 'components/primitives/materialInput';
 import { savePuppetToFile } from 'services/storage/serializer';
+import userService from 'services/api/userService';
+import apiService from 'services/api/apiService';
 import styles from './styles.scss';
 
 class ParamControl extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      defaultScale: 100,
+      defaultRotation: 0,
+    };
   }
 
-  onSaveClick = () => savePuppetToFile(this.props.selectedPuppet);
+  componentWillMount() {
+    const defaultScale = Math.round(this.props.selectedPuppet.getScale() * 100);
+    const defaultRotation = Math.round(this.props.selectedPuppet.getRotation() * 100);
+    this.setState({ defaultScale, defaultRotation });
+  }
+
+  onDownload = () => savePuppetToFile(this.props.selectedPuppet);
+
+  onSaveToServer = () => {
+    if (!this.props.selectedPuppet) { return; }
+    this.props.openLoader();
+    apiService.savePuppet(this.props.selectedPuppet)
+      .then(() => {
+        this.props.closeLoader();
+      })
+      .catch(error => {
+        console.log('error', error);
+        this.props.closeLoader();
+      });
+  };
+
+  onNameChange = name => this.props.selectedPuppet.setName(name);
 
   onScaleChange = eventValue => {
     const value = parseInt(eventValue) / 100;
@@ -22,57 +50,74 @@ class ParamControl extends Component {
     this.props.selectedPuppet.setRotation(value);
   };
 
-  renderPanel() {
+  render() {
     return (
       <div className={this.props.className}>
-        <p>Params:</p>
-        <p>Scale</p>
-        <Slider
-          min={ 1 }
-          max={ 300 }
-          defaultValue={ 100 }
-          onChange={ this.onScaleChange }
+        <div className={styles.paramRow}>
+          <span>Scale</span>
+          <Slider
+            min={ 1 }
+            max={ 300 }
+            defaultValue={ this.state.defaultScale }
+            onChange={ this.onScaleChange }
+            className={ styles.paramSlider }
+          />
+        </div>
+        <div className={styles.paramRow}>
+          <span>Rotate</span>
+          <Slider
+            min={ -628 }
+            max={ 628 }
+            defaultValue={ this.state.defaultRotation }
+            onChange={ this.onRotateChange }
+            className={ styles.paramSlider }
+          />
+        </div>
+        <MaterialInput
+          type='text'
+          label='Puppet Name'
+          onChange={ this.onNameChange }
+          initialValue={ this.props.selectedPuppet.getName() }
+          className={ styles.puppetName }
         />
-        <p>Rotate</p>
-        <Slider
-          min={ -628 }
-          max={ 628 }
-          defaultValue={ this.props.selectedPuppet.getRotation() }
-          onChange={ this.onRotateChange }
-        />
-
-        <p className={styles.actionLabel}>Actions:</p>
         <Button
           className={ styles.actionButton }
           onClick={this.props.onEditSelectedPuppet}
         >
-          Edit puppet
+          Edit Puppet
         </Button>
         <Button
           className={ styles.actionButton }
-          onClick={this.onSaveClick}
+          onClick={this.onDownload}
         >
-          Save puppet
+          Download Puppet
         </Button>
+        {
+          userService.isAuthenticated() ?
+          <Button
+            className={ styles.actionButton }
+            onClick={this.onSaveToServer}
+          >
+            Save Puppet to Server
+          </Button> : null
+        }
         <Button
           className={ styles.actionButton }
           onClick={this.props.onDeleteSelectedPuppet}
         >
-          Delete puppet
+          Remove Puppet
         </Button>
       </div>
     );
   }
-
-  render() {
-    return this.props.selectedPuppet ? this.renderPanel() : null;
-  }
 }
 
 ParamControl.propTypes = {
-  selectedPuppet: PropTypes.object,
+  selectedPuppet: PropTypes.object.isRequired,
   onDeleteSelectedPuppet: PropTypes.func.isRequired,
-  onEditSelectedPuppet: PropTypes.func.isRequired
+  onEditSelectedPuppet: PropTypes.func.isRequired,
+  openLoader: PropTypes.func.isRequired,
+  closeLoader: PropTypes.func.isRequired,
 };
 
 export default ParamControl;

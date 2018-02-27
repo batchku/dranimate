@@ -8,3 +8,19 @@
   width: 100%;
   height: 20px;
 }
+
+.paramRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.paramSlider {
+  flex-grow: 2;
+  margin: 0 10px;
+}
+
+.puppetName {
+  margin: 10px;
+}

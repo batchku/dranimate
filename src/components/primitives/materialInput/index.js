@@ -5,9 +5,22 @@ import styles from './styles.scss';
 class MaterialInput extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      value: '',
+    };
   }
 
-  onChange = event => this.props.onChange(event.target.value);
+  componentWillMount() {
+    this.setState({ value: this.props.initialValue });
+  }
+
+  onChange = event => {
+    event.preventDefault();
+    event.stopPropagation();
+    const value = event.target.value;
+    this.setState({ value })
+    this.props.onChange(value);
+  };
 
   render() {
     return (
@@ -15,7 +28,8 @@ class MaterialInput extends Component {
         <input
           type={ this.props.type || 'text' }
           onChange={ this.onChange }
-          className={styles.materialInput}
+          value={ this.state.value }
+          className={ styles.materialInput }
           required
         />
         <span className={styles.highlight}></span>
@@ -28,10 +42,15 @@ class MaterialInput extends Component {
   }
 }
 
+MaterialInput.defaultProps = {
+  initialValue: ''
+};
+
 MaterialInput.propTypes = {
   label: PropTypes.string.isRequired,
   type: PropTypes.string,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  initialValue: PropTypes.string
 };
 
 export default MaterialInput;

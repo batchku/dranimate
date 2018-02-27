@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import FileSaver from 'file-saver';
 import Button from 'components/primitives/button';
+import MaterialInput from 'components/primitives/materialInput';
 import userService from 'services/api/userService';
 import apiService from 'services/api/apiService';
 import { loadFile } from 'services/util/file';
@@ -12,6 +13,7 @@ class GifPreview extends Component {
     super(props);
     this.state = {
       base64Gif: '',
+      gifName: ''
     };
   }
 
@@ -20,11 +22,15 @@ class GifPreview extends Component {
       .then(base64Gif => this.setState({ base64Gif} ));
   }
 
-  onDownload = () => FileSaver.saveAs(this.props.gifBlob, 'test-gif.gif');
+  onDownload = () => {
+    const gifName = this.state.gifName || 'dranimate';
+    FileSaver.saveAs(this.props.gifBlob, `${gifName}.gif`);
+  };
 
   onSaveToServer = () => {
+    const gifName = this.state.gifName || 'dranimate';
     this.props.openLoader();
-    apiService.saveGif(this.props.gifBlob)
+    apiService.saveGif(this.props.gifBlob, gifName)
       .then(() => this.props.closeLoader())
       .catch(error => {
         console.log('error', error);
@@ -32,13 +38,20 @@ class GifPreview extends Component {
       });
   }
 
+  onNameChange = gifName => {
+    console.log(gifName);
+    this.setState({ gifName });
+  };
+
   render() {
     return (
       <div className={styles.gifPreviewScrim}>
         <div className={styles.gifPreviewContents}>
-          <p className={styles.gifPreviewLabel}>
-            Gif Preview
-          </p>
+          <MaterialInput
+            type='text'
+            label='GIF Name'
+            onChange={this.onNameChange}
+          />
           <img
             src={this.state.base64Gif}
             className={styles.gif}

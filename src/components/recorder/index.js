@@ -11,11 +11,11 @@ class Recorder extends Component {
       puppetIsRecording: false,
       gifIsRecording: false,
     };
-    this.keyListener = window.addEventListener('keydown', this.handleKeyPress.bind(this));
+    this.keyListener = document.addEventListener('keypress', this.handleKeyPress.bind(this));
   }
 
   componentWillUnmount() {
-    window.removeEventListener(this.keyListener);
+    document.removeEventListener(this.keyListener);
   }
 
   onGifRecordToggle = () => {
@@ -41,6 +41,7 @@ class Recorder extends Component {
 
   handleKeyPress = event => {
     if (event.keyCode !== 32) { return; }
+    if (event.target.tagName.toUpperCase() === 'INPUT') { return; }
     this.onPuppetRecordToggle();
   };
 

@@ -123,7 +123,7 @@ class SignIn extends Component {
           onClick={ this.props.onClose }
           className={ styles.formButton }
         >
-          Cancel
+          Close
         </Button>
       </div>
     );

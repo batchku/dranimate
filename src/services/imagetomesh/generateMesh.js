@@ -133,7 +133,7 @@ function generatePuppetGeometry(contourPoints, controlPoints, imageNoBackgroundD
   return { triangles, vertices, controlPointIndices };
 }
 
-function generateMesh(puppetId, image, imageNoBackgroundData, originalImageData, controlPoints) {
+function generateMesh(puppetId, puppetName, image, imageNoBackgroundData, originalImageData, controlPoints) {
   const contourData = findEdgesOfImage(imageNoBackgroundData);
   return extractForeground(originalImageData, imageNoBackgroundData)
     .then((imageNoBG) => {
@@ -141,6 +141,7 @@ function generateMesh(puppetId, image, imageNoBackgroundData, originalImageData,
       const geometry = generatePuppetGeometry(contourPoints, controlPoints, imageNoBackgroundData);
       return Promise.resolve({
         id: puppetId,
+        name: puppetName,
         image,
         vertices: geometry.vertices,
         faces: geometry.triangles,

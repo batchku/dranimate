@@ -114,7 +114,7 @@ class ImageEditor extends Component {
           <div className={styles.editorControlRow}>
 
             <div className={styles.editorControlLabel}>
-              <p>2</p>
+              <p>1</p>
             </div>
             <p>Select Image</p>
 

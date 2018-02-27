@@ -24,6 +24,7 @@ let mostFaces = 0;
 function buildFromOptions(options) {
   const image = options.image;
   const id = options.id || generateUniqueId();
+  const name = options.name || '';
   const verts = options.vertices;
   const faces = options.faces;
   const controlPoints = options.controlPoints;
@@ -114,6 +115,7 @@ function buildFromOptions(options) {
   return {
     image,
     id,
+    name,
     wireframeMaterial,
     texturedMaterial,
     verts,

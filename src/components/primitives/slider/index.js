@@ -16,7 +16,7 @@ class Slider extends Component {
 
   render() {
     return (
-      <div>
+      <div className={this.props.className}>
         <input
           type='range'
           min={ this.props.min }

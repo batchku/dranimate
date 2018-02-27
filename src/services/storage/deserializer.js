@@ -1,5 +1,6 @@
 import requestPuppetCreation from 'services/puppet/PuppetFactory';
 import loadImage from 'services/util/imageLoader';
+import generateUniqueId from 'services/util/uuid';
 
 function loadTextFile(file) {
   return new Promise((resolve, reject) => {
@@ -27,6 +28,8 @@ function buildPuppetFromImagesAndJson(image, imageNoBG, puppetData) {
     puppetData.backgroundRemovalData.height
   );
   const puppetParams = {
+    id: puppetData.id || generateUniqueId(),
+    name: puppetData.name || '',
     vertices: puppetData.verts,
     faces: puppetData.faces,
     controlPoints: puppetData.controlPoints,
@@ -42,10 +45,9 @@ function buildPuppetFromImagesAndJson(image, imageNoBG, puppetData) {
 function loadPuppetFromFile(file) {
   return loadTextFile(file)
     .then(textFile => loadPuppetImageFiles(textFile))
-    .then((result) => {
-      const [image, imageNoBG, puppetData] = result;
-      return buildPuppetFromImagesAndJson(image, imageNoBG, puppetData);
-    });
+    .then(([image, imageNoBG, puppetData]) =>
+      buildPuppetFromImagesAndJson(image, imageNoBG, puppetData)
+    );
 }
 
 export default loadPuppetFromFile;

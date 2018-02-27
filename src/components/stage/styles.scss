@@ -55,4 +55,12 @@
   top: 0;
   padding: 15px;
   border: 1px solid $color-black;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.5);
+  max-width: 320px;
+  
+  @include sm() {
+    max-width: none;
+    width: 100%;
+  }
 }

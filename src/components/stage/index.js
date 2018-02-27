@@ -113,12 +113,17 @@ class Stage extends Component {
         >
           Profile
         </Button>
-        <ParamControl
-          className={styles.paramControl}
-          selectedPuppet={this.state.selectedPuppet}
-          onEditSelectedPuppet={this.onEditSelectedPuppet}
-          onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
-        />
+        {
+          this.state.selectedPuppet ?
+          <ParamControl
+            className={styles.paramControl}
+            selectedPuppet={this.state.selectedPuppet}
+            onEditSelectedPuppet={this.onEditSelectedPuppet}
+            onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
+            openLoader={this.openLoader}
+            closeLoader={this.closeLoader}
+          /> : null
+        }
         <div className={styles.lowerLeft}>
           <ZoomPanner
             onPanSelect={this.onPanSelect}

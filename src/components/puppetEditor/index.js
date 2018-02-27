@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Loader from 'components/loader';
 import ImageEditor from 'components/puppetEditor/ImageEditor';
 import ControlPointEditor from 'components/puppetEditor/ControlPointEditor';
 import Slider from 'components/primitives/slider';
@@ -21,7 +20,6 @@ class PuppetEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loaderIsVisible: false,
       step: STEPS.IMAGE,
       imageSrc: null,
       backgroundRemovalData: null,
@@ -67,12 +65,14 @@ class PuppetEditor extends Component {
     }
     const puppetId = puppetEditorStateService.isPuppet ?
       puppetEditorStateService.getItem().id : generateUniqueId();
+    const puppetName = puppetEditorStateService.isPuppet ?
+      puppetEditorStateService.getItem().getName() : '';
 
     loadImage(this.state.imageSrc)
       .then((imageElement) => {
         const { width, height } = this.state.backgroundRemovalData;
         const originalImageData = getImageDataFromImage(imageElement, width, height);
-        return generateMesh(puppetId, imageElement, this.state.backgroundRemovalData, originalImageData, controlPointPositions);
+        return generateMesh(puppetId, puppetName, imageElement, this.state.backgroundRemovalData, originalImageData, controlPointPositions);
       })
       .then((puppet) => {
         if (puppet) {
@@ -102,7 +102,6 @@ class PuppetEditor extends Component {
                 onSave={this.onSave}
               />
           }
-          <Loader isVisible={this.state.loaderIsVisible} />
         </div>
       </div>
     );

@@ -53,6 +53,7 @@ npm run deploy;
 ### TODO
 * Leap motion tuning (make it work like OFX dranimate)
 * Puppet editor: make editor area resizable / responsive
+* Puppet rotation / scale: make in center of puppet
 * Start / Stop master render loop where appropriate: currently the render loop is always on
 * Put SLIC algorithm in web worker: currently it blocks the main thread, causing the loader to not appear
 * Puppet editing: set name
