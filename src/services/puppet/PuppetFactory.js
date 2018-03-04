@@ -96,6 +96,7 @@ function buildFromOptions(options) {
       new MeshBasicMaterial({ color: 0xFFAB40 })
     );
     sphere.position.z = 10;
+    sphere.visible = false;
     return sphere;
   });
 

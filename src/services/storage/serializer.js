@@ -35,7 +35,7 @@ function getPuppetJsonFile(puppet) {
 }
 
 function savePuppetToFile(puppet) {
-  const underscoredName = puppet.getName.replace(/ /g, '_');
+  const underscoredName = puppet.getName().replace(/ /g, '_');
   const fileName = `${underscoredName}.json`;
   const puppetJsonFile = getPuppetJsonFile(puppet);
   FileSaver.saveAs(puppetJsonFile, fileName);

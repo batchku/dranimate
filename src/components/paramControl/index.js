@@ -23,6 +23,14 @@ class ParamControl extends Component {
     this.setState({ defaultScale, defaultRotation });
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.selectedPuppet) { return; }
+    if (nextProps.selectedPuppet.getId() === this.props.selectedPuppet.getId()) { return; }
+    const defaultScale = Math.round(nextProps.selectedPuppet.getScale() * 100);
+    const defaultRotation = Math.round(nextProps.selectedPuppet.getRotation() * 100);
+    this.setState({ defaultScale, defaultRotation });
+  }
+
   onDownload = () => savePuppetToFile(this.props.selectedPuppet);
 
   onSaveToServer = () => {

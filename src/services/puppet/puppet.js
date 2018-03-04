@@ -80,6 +80,10 @@ Puppet.prototype.getName = function() {
   return this.name;
 }
 
+Puppet.prototype.getId = function() {
+  return this.id;
+}
+
 Puppet.prototype.setScale = function(scale) {
   this.current.scale = scale;
 }

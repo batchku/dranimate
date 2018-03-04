@@ -14,6 +14,12 @@ class MaterialInput extends Component {
     this.setState({ value: this.props.initialValue });
   }
 
+  componentWillReceiveProps(newProps) {
+    if (newProps.initialValue !== this.props.initialValue) {
+      this.setState({ value: newProps.initialValue });
+    }
+  }
+
   onChange = event => {
     event.preventDefault();
     event.stopPropagation();
