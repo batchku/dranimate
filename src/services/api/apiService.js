@@ -125,6 +125,10 @@ class ApiService {
       });
   }
 
+  getGifBlob(gifUrl) {
+    return getBlobFromUrl(gifUrl);
+  }
+
 }
 
 const apiService = new ApiService();

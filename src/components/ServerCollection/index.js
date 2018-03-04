@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
+import RemoteGifPreview from 'components/GifPreview/RemoteGifPreview';
 import apiService from 'services/api/apiService';
 import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
@@ -11,7 +12,8 @@ class ServerCollection extends Component {
     super();
     this.state = {
       puppets: [],
-      gifs: []
+      gifs: [],
+      selectedGif: null,
     };
   }
 
@@ -84,6 +86,19 @@ class ServerCollection extends Component {
       });
   };
 
+  onOpenGif = (gifModel) => {
+    this.setState({
+      selectedGif: {
+        src: gifModel.url,
+        name: gifModel.name
+      }
+    });
+  };
+
+  onCloseGif = () => {
+    this.setState({ selectedGif: null });
+  };
+
   render() {
     return (
       <div className={ this.props.className }>
@@ -101,7 +116,7 @@ class ServerCollection extends Component {
                   src={puppetModel.thumbnailUrl} />
                 <br />
                 <Button onClick={this.onOpenPuppet.bind(this, puppetModel)}>
-                  Open
+                  Add to scene
                 </Button>
                 <Button onClick={this.onDeletePuppet.bind(this, puppetModel)}>
                   Delete
@@ -124,6 +139,9 @@ class ServerCollection extends Component {
                   className={styles.puppetThumbnail}
                   src={gifModel.url} />
                 <br />
+                <Button onClick={() => this.onOpenGif(gifModel)}>
+                  Open
+                </Button>
                 <Button onClick={() => this.onDeleteGif(gifModel)}>
                   Delete
                 </Button>
@@ -131,6 +149,15 @@ class ServerCollection extends Component {
             )
           }
         </div>
+        {
+          this.state.selectedGif ?
+            <RemoteGifPreview
+              src={ this.state.selectedGif.src }
+              gifName={ this.state.selectedGif.name }
+              closeGifPreview={ this.onCloseGif }
+            >
+            </RemoteGifPreview> : null
+        }
       </div>
     );
   }

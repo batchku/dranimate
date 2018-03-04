@@ -147,6 +147,7 @@ class Stage extends Component {
         <input
           type='file'
           ref={input => this.filePicker = input}
+          value=''
           onChange={this.onFileChange}
           className={styles.hiddenFilePicker}
         />
