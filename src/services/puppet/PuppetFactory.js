@@ -52,6 +52,8 @@ function buildFromOptions(options) {
     map: imageTexture,
     transparent: true
   });
+  texturedMaterial.depthWrite = false;
+  texturedMaterial.renderOrder = 1;
 
   const vertsFlatArray = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
   const facesFlatArray = faces.map(face => face);

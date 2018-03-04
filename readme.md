@@ -58,7 +58,4 @@ npm run deploy;
 * Put SLIC algorithm in web worker: currently it blocks the main thread, causing the loader to not appear
 * GIF editing: set name
 * GIF sharing
-* Puppet layering
-  - click needs to target puppet on top
-  - implement layering actions (move forward, backward, etc.)
 * Infamous old issues: https://github.com/cmuartfab/dranimate-browser/issues/3

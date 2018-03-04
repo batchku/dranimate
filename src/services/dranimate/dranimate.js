@@ -1,5 +1,6 @@
 import {
   GridHelper,
+  Group,
   OrthographicCamera,
   Scene,
   WebGLRenderer
@@ -105,6 +106,22 @@ const Dranimate = function () {
       }
       puppets.push(p);
       scene.add(p.group);
+    }
+
+    this.movePuppet = function (puppet, val) {
+      const currentIndex = puppets.findIndex(p => p === puppet);
+      if (currentIndex === undefined) { return; }
+      const targetIndex = currentIndex + val;
+      if (targetIndex < 0 || targetIndex >= puppets.length) { return; }
+
+      puppets.splice(currentIndex, 1);
+      puppets.splice(targetIndex, 0, puppet);
+      scene.children.forEach((obj) => {
+        if (obj.type !== 'Group') { return; }
+        const puppetIndex = puppets.findIndex(puppet => puppet.group === obj);
+        const renderIndex = puppetIndex + 1;
+        obj.children.forEach(child => child.renderOrder = renderIndex);
+      });
     }
 
     this.zoomIn = function () {

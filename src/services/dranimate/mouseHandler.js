@@ -49,7 +49,14 @@ export default class DranimateMouseHandler {
     }
 
     // the notion of a selected puppet is only relative to mouse / touch, not leap motion
-    this.selectedPuppet = puppets.find(puppet => puppet.pointInsideMesh(this.mouseRelative.x, this.mouseRelative.y));
+    this.selectedPuppet = null;
+    for (let i = puppets.length - 1; i >= 0; i--) {
+      if (puppets[i].pointInsideMesh(this.mouseRelative.x, this.mouseRelative.y)) {
+        this.selectedPuppet = puppets[i];
+        break;
+      }
+    }
+
     if (this.selectedPuppet) {
       this.selectedPuppet.setSelectionState(true, this.mouseRelative.x, this.mouseRelative.y);
     }

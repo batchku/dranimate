@@ -47,7 +47,13 @@ export default class DranimateTouchHandler {
     if (event.touches.length > 1) {
       return;
     }
-    this.selectedPuppet = puppets.find(puppet => puppet.pointInsideMesh(relativePosition.x, relativePosition.y));
+    this.selectedPuppet = null;
+    for (let i = puppets.length - 1; i >= 0; i--) {
+      if (puppets[i].pointInsideMesh(relativePosition.x, relativePosition.y)) {
+        this.selectedPuppet = puppets[i];
+        break;
+      }
+    }
     if (this.selectedPuppet) {
       this.selectedPuppet.setSelectionState(true, relativePosition.x, relativePosition.y);
     }

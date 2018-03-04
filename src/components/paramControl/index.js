@@ -6,6 +6,7 @@ import MaterialInput from 'components/primitives/materialInput';
 import { savePuppetToFile } from 'services/storage/serializer';
 import userService from 'services/api/userService';
 import apiService from 'services/api/apiService';
+import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
 
 class ParamControl extends Component {
@@ -57,6 +58,10 @@ class ParamControl extends Component {
     const value = parseFloat(eventValue) / 100;
     this.props.selectedPuppet.setRotation(value);
   };
+
+  onMoveUp = () => dranimate.movePuppet(this.props.selectedPuppet, 1);
+
+  onMoveBack = () => dranimate.movePuppet(this.props.selectedPuppet, -1);
 
   render() {
     return (
@@ -115,6 +120,20 @@ class ParamControl extends Component {
         >
           Remove Puppet
         </Button>
+        <div className={ styles.buttonRow }>
+          <Button
+            className={ styles.actionButton }
+            onClick={ this.onMoveUp }
+          >
+            Move Up
+          </Button>
+          <Button
+            className={ styles.actionButton }
+            onClick={ this.onMoveBack }
+          >
+            Move Back
+          </Button>
+        </div>
       </div>
     );
   }
