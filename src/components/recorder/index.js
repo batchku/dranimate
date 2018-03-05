@@ -24,7 +24,7 @@ class Recorder extends Component {
     const gifBuilder = dranimate.setGifIsRecording(gifIsRecording);
 
     if (!gifBuilder) { return; }
-    this.props.openLoader();
+    this.props.openLoader('Saving GIF');
     gifBuilder.buildGif()
       .then(gifBlob => {
         this.props.closeLoader();

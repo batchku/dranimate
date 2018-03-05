@@ -33,14 +33,14 @@ class SignIn extends Component {
   });
 
   onSignIn = () => {
-    this.props.openLoader();
+    this.props.openLoader('Signing In');
     userService.signIn(this.state.email, this.state.password)
       .then(() => this.props.closeLoader())
       .catch((error) => this.setErrorMessage(error.message));
   };
 
   onCreateAccount = () => {
-    this.props.openLoader();
+    this.props.openLoader('Creating Account');
     userService.createAccount(this.state.email, this.state.password)
       .then(() => this.props.closeLoader())
       .catch((error) => this.setErrorMessage(error.message));

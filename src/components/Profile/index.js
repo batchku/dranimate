@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Loader from 'components/loader';
 import Button from 'components/primitives/button';
 import MaterialInput from 'components/primitives/materialInput';
 import SignIn from 'components/Profile/SignIn';
@@ -32,11 +31,6 @@ class Profile extends Component {
     this.setState({ isAuthenticated });
   };
 
-  // TODO: use global loader on stage
-  openLoader = () => this.setState({ loaderIsVisible: true });
-
-  closeLoader = () => this.setState({ loaderIsVisible: false });
-
   render() {
     return (
       <div
@@ -48,23 +42,24 @@ class Profile extends Component {
           this.state.isAuthenticated ?
             <User
               onClose={ this.props.onClose }
-              openLoader={ this.openLoader }
-              closeLoader={ this.closeLoader }
+              openLoader={ this.props.openLoader }
+              closeLoader={ this.props.closeLoader }
               /> :
             <SignIn
               onClose={ this.props.onClose }
-              openLoader={ this.openLoader }
-              closeLoader={ this.closeLoader }
+              openLoader={ this.props.openLoader }
+              closeLoader={ this.props.closeLoader }
             />
         }
-        <Loader isVisible={this.state.loaderIsVisible} />
       </div>
     );
   }
 }
 
 Profile.propTypes = {
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  openLoader: PropTypes.func.isRequired,
+  closeLoader: PropTypes.func.isRequired
 };
 
 export default Profile;

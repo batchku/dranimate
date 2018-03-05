@@ -29,7 +29,7 @@ class GifPreview extends Component {
 
   onSaveToServer = () => {
     const gifName = this.state.gifName || 'dranimate';
-    this.props.openLoader();
+    this.props.openLoader('Saving GIF');
     apiService.saveGif(this.props.gifBlob, gifName)
       .then(() => this.props.closeLoader())
       .catch(error => {

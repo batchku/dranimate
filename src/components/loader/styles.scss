@@ -1,6 +1,6 @@
 @import '~styles/index';
 
-$loader-dot-size: 25px;
+$loader-dot-size: 20px;
 $loader-dot-buffer: $loader-dot-size + 10;
 $animation-unit: 0.16s;
 
@@ -16,12 +16,20 @@ $animation-unit: 0.16s;
   align-items: center;
 }
 
-.test {
+.loaderContainer {
   background-color: $color-grey-dark;
-  width: 150px;
-  height: 45px;
-  border-radius: 4px;
-  padding-top: 15px;
+  min-width: 150px;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.loaderText {
+  color: $color-white;
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 .loaderDots,

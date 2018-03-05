@@ -36,7 +36,7 @@ class ParamControl extends Component {
 
   onSaveToServer = () => {
     if (!this.props.selectedPuppet) { return; }
-    this.props.openLoader();
+    this.props.openLoader('Saving Puppet');
     apiService.savePuppet(this.props.selectedPuppet)
       .then(() => {
         this.props.closeLoader();

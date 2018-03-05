@@ -24,6 +24,7 @@ class Stage extends Component {
       controllerIsOpen: false,
       selectedPuppet: null,
       loaderIsVisible: false,
+      loaderMessage: '',
       gifPreviewBlob: null,
     };
   }
@@ -69,9 +70,15 @@ class Stage extends Component {
     this.setState({ editorIsOpen: true });
   };
 
-  openLoader = () => this.setState({ loaderIsVisible: true });
+  openLoader = message => this.setState({
+    loaderIsVisible: true,
+    loaderMessage: message
+  });
 
-  closeLoader = () => this.setState({ loaderIsVisible: false });
+  closeLoader = () => this.setState({
+    loaderIsVisible: false,
+    loaderMessage: ''
+  });
 
   gifPreviewAvailable = gifPreviewBlob => this.setState({ gifPreviewBlob });
 
@@ -158,7 +165,13 @@ class Stage extends Component {
             /> :
             null
         }
-        { this.state.profileIsOpen ? <Profile onClose={this.closeProfile}/> : null }
+        { this.state.profileIsOpen ?
+          <Profile
+            onClose={this.closeProfile}
+            openLoader={this.openLoader}
+            closeLoader={this.closeLoader}
+          /> : null
+        }
         { this.state.gifPreviewBlob ?
           <GifPreview
             gifBlob={this.state.gifPreviewBlob}
@@ -167,7 +180,10 @@ class Stage extends Component {
             closeLoader={this.closeLoader}
           /> : null
         }
-        <Loader isVisible={this.state.loaderIsVisible} />
+        <Loader
+          isVisible={this.state.loaderIsVisible}
+          message={this.state.loaderMessage}
+        />
       </div>
     );
   }

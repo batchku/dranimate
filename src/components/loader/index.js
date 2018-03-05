@@ -10,10 +10,14 @@ class Loader extends Component {
   showLoader() {
     return (
       <div className={styles.scrim}>
-        <div className={styles.test}>
-          <div>
-            <div className={styles.loaderDots} />
-          </div>
+        <div className={styles.loaderContainer}>
+          {
+            this.props.message ?
+              <p className={styles.loaderText}>
+                {this.props.message}
+              </p> : null
+          }
+          <div className={styles.loaderDots} />
         </div>
       </div>
     );
@@ -27,8 +31,13 @@ class Loader extends Component {
   }
 }
 
+Loader.defaultProps = {
+  message: ''
+};
+
 Loader.propTypes = {
-  isVisible: PropTypes.bool.isRequired
+  isVisible: PropTypes.bool.isRequired,
+  message: PropTypes.string
 };
 
 export default Loader;

@@ -48,7 +48,7 @@ class ServerCollection extends Component {
   // };
 
   onOpenPuppet = (puppetModel) => {
-    this.props.openLoader();
+    this.props.openLoader('Opening Puppet');
     apiService.openPuppet(puppetModel)
       .then(puppet => {
         dranimate.addPuppet(puppet);
@@ -61,7 +61,7 @@ class ServerCollection extends Component {
   };
 
   onDeletePuppet = (puppetModel) => {
-    this.props.openLoader();
+    this.props.openLoader('Deleting Puppet');
     apiService.deletePuppet(puppetModel)
       .then(() => {
         this.props.closeLoader();
@@ -74,7 +74,7 @@ class ServerCollection extends Component {
   };
 
   onDeleteGif = (gifModel) => {
-    this.props.openLoader();
+    this.props.openLoader('Deleting GIF');
     apiService.deleteGif(gifModel)
       .then(() => {
         this.props.closeLoader();
