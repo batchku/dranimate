@@ -8,7 +8,7 @@ const Puppet = function(puppetData) {
   // INITIAL VALUES
   this.current = {
     position: new Vector2(0, 0),
-    center: puppetData.halfSize.clone(),
+    center: puppetData.center.clone(),
     rotation: 0,
     scale: 1,
   };
@@ -43,7 +43,6 @@ const Puppet = function(puppetData) {
   this.boundingBox = puppetData.boundingBox;
   this.controlPointSpheres = puppetData.controlPointSpheres;
   this.group = puppetData.group;
-  this.centerSphere = puppetData.centerSphere;
   this.undeformedVertices = this.verts;
   this.needsUpdate = true;
 
@@ -58,6 +57,8 @@ const Puppet = function(puppetData) {
     var cpi = this.controlPoints[i];
     ARAP.setControlPointPosition(this.arapMeshID, cpi, this.verts[cpi][0], this.verts[cpi][1]);
   }
+
+  this.incrementPosition(-puppetData.halfSize.x, -puppetData.halfSize.y);
 };
 
 Puppet.prototype.incrementPosition = function(x, y) {
@@ -246,10 +247,6 @@ Puppet.prototype.update = function(elapsedTime, targetTimestamp) {
       controlPointSphere.position.x = vertex.x;
       controlPointSphere.position.y = vertex.y;
     });
-
-    // FOR TESTING THE CENTER OF THE PUPPET:
-    // this.centerSphere.position.x = this.current.center.x;
-    // this.centerSphere.position.y = this.current.center.y;
 
     // UPDATE MISC THREEJS
     this.threeMesh.geometry.dynamic = true;

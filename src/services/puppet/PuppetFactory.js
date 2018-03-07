@@ -82,7 +82,6 @@ function buildFromOptions(options) {
   console.log("TODO: expand mesh")
 
   const threeMesh = new Mesh(geometry, texturedMaterial);
-
   const boundingBox = new BoxHelper(threeMesh, new Color(0xFF9900));
   boundingBox.visible = false;
 
@@ -90,7 +89,14 @@ function buildFromOptions(options) {
   box3.setFromObject(boundingBox);
   const size = box3.getSize(new Vector3());
   const halfSize = new Vector2(size.x, size.y).multiplyScalar(0.5);
-  geometry.translate(-halfSize.x, -halfSize.y, 0);
+  const vertexSum = geometry.vertices.reduce((sum, vertex) => ({
+    x: sum.x + vertex.x,
+    y: sum.y + vertex.y
+  }), {x: 0, y: 0});
+  const center = new Vector2(
+    vertexSum.x / geometry.vertices.length,
+    vertexSum.y / geometry.vertices.length
+  );
 
   const controlPointSpheres = controlPoints.map(() => {
     const sphere = new Mesh(
@@ -103,11 +109,13 @@ function buildFromOptions(options) {
   });
 
   // FOR TESTING THE CENTER OF THE PUPPET:
-  const centerSphere = new Mesh(
-    new SphereGeometry(15, 32, 32),
-    new MeshBasicMaterial({ color: 0x3300FF })
-  );
-  centerSphere.position.z = 20;
+  // const centerSphere = new Mesh(
+  //   new SphereGeometry(15, 32, 32),
+  //   new MeshBasicMaterial({ color: 0x3300FF })
+  // );
+  // centerSphere.position.z = 20;
+  // centerSphere.position.x = center.x;
+  // centerSphere.position.y = center.y;
 
   const group = new Group();
   group.add(threeMesh);
@@ -131,7 +139,7 @@ function buildFromOptions(options) {
     controlPointSpheres,
     group,
     halfSize,
-    centerSphere
+    center,
   };
 }
 
