@@ -26,7 +26,8 @@ const Puppet = function(puppetData) {
   this.id = puppetData.id;
 
   // RECORDING
-  this.puppetRecording = new PuppetRecording(performance.now(), false);
+  // this.puppetRecording = new PuppetRecording(performance.now(), false);
+  this.puppetRecordings = [];
 
   // GRAPHICS
   this.image = puppetData.image;
@@ -103,11 +104,13 @@ Puppet.prototype.getRotation = function() {
 }
 
 Puppet.prototype.hasRecording = function() {
-  return this.puppetRecording.hasRecording;
+  // return this.puppetRecording.hasRecording;
+  return this.puppetRecordings.length && this.puppetRecordings.some(recording => recording.hasRecording);
 }
 
 Puppet.prototype.clearRecording = function() {
-  this.puppetRecording = new PuppetRecording(performance.now(), false);
+  // this.puppetRecording = new PuppetRecording(performance.now(), false);
+  this.puppetRecordings = [];
   this.updateControlPointColors();
 }
 
@@ -124,19 +127,31 @@ Puppet.prototype.setSelectionState = function(isBeingDragged, x, y){
 }
 
 Puppet.prototype.startRecording = function () {
-  this.puppetRecording = new PuppetRecording(performance.now(), true);
+  // this.puppetRecording = new PuppetRecording(performance.now(), true);
+  this.puppetRecordings.push(
+    new PuppetRecording(performance.now(), true)
+  );
 }
 
 Puppet.prototype.stopRecording = function () {
-  this.puppetRecording.stop(performance.now());
+  // this.puppetRecording.stop(performance.now());
+  const lastRecording = this.puppetRecordings[this.puppetRecordings.length - 1];
+  lastRecording.stop(performance.now());
   this.updateControlPointColors();
 }
 
 Puppet.prototype.updateControlPointColors = function () {
   // HOT CONTROL POINTS ARE RED, COLD CONTROL POINTS ARE BLUE
+
+  const activeIndices = this.puppetRecordings.reduce((allIndices, recording) => {
+    // allIndices.add(this.puppetRecording.indices);
+    recording.indices.forEach(index => allIndices.add(index));
+    return allIndices;
+  }, new Set());
+
   this.controlPoints.forEach((controlPoint, index) => {
     const controlPointSphere = this.controlPointSpheres[index];
-    const color = this.puppetRecording.indices.has(index) ? 0xEE1111 : 0x1144FF;
+    const color = activeIndices.has(index) ? 0xEE1111 : 0x1144FF;
     controlPointSphere.material.color.setHex(color);
   });
 
@@ -148,7 +163,8 @@ Puppet.prototype.setControlPointPositions = function(controlPoints) {
   controlPoints.forEach(controlPoint => {
     ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.position.x, controlPoint.position.y)
   });
-  if (this.puppetRecording.isRecording) {
+  const lastRecording = this.puppetRecordings[this.puppetRecordings.length - 1];
+  if (lastRecording && lastRecording.isRecording) {
     const puppetCenter = this.getCenter();
     const normalizedControlPoints = controlPoints.map((controlPoint) => {
       const position = controlPoint.position.clone()
@@ -159,7 +175,7 @@ Puppet.prototype.setControlPointPositions = function(controlPoints) {
         position
       };
     });
-    this.puppetRecording.setFrame(normalizedControlPoints, performance.now());
+    lastRecording.setFrame(normalizedControlPoints, performance.now());
   }
 }
 
@@ -167,7 +183,8 @@ Puppet.prototype.setControlPointPositions = function(controlPoints) {
 Puppet.prototype.setControlPointPosition = function(controlPointIndex, position) {
   this.needsUpdate = true;
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], position.x, position.y);
-  if (this.puppetRecording.isRecording) {
+  const lastRecording = this.puppetRecordings[this.puppetRecordings.length - 1];
+  if (lastRecording && lastRecording.isRecording) {
     const puppetCenter = this.getCenter();
     const point = position
       .rotateAround(puppetCenter, -this.getRotation())
@@ -176,7 +193,7 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, position)
       cpi: controlPointIndex,
       position: point,
     }];
-    this.puppetRecording.setFrame(frame, performance.now());
+    lastRecording.setFrame(frame, performance.now());
   }
 }
 
@@ -228,20 +245,26 @@ Puppet.prototype.update = function(elapsedTime, targetTimestamp) {
   }
 
   const recordingTimeStamp = targetTimestamp || performance.now();
-  const recordedFrame = this.puppetRecording.update(recordingTimeStamp);
-  if (recordedFrame) {
-    const puppetCenter = this.getCenter();
-    const absoluteControlPoints = recordedFrame.controlPoints.map((controlPoint) => {
-      const point = controlPoint.position.clone()
-        .add(puppetCenter)
-        .rotateAround(puppetCenter, this.getRotation());
-      return {
-        cpi: controlPoint.cpi,
-        position: point
-      };
-    });
-    this.setControlPointPositions(absoluteControlPoints);
-  }
+
+  this.puppetRecordings.forEach(recording => {
+    const recordedFrame = recording.update(recordingTimeStamp);
+    if (recordedFrame) {
+      const puppetCenter = this.getCenter();
+      const absoluteControlPoints = recordedFrame.controlPoints.map((controlPoint) => {
+        const point = controlPoint.position.clone()
+          .add(puppetCenter)
+          .rotateAround(puppetCenter, this.getRotation());
+        return {
+          cpi: controlPoint.cpi,
+          position: point
+        };
+      });
+      // console.log('recordedFrame', absoluteControlPoints);
+      this.setControlPointPositions(absoluteControlPoints);
+    }
+  });
+  // console.log('------')
+
 
   // DEFORM PUPPET WITH ARAP
   if(this.needsUpdate) {

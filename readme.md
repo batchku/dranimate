@@ -55,6 +55,7 @@ npm run deploy;
 * Puppet editor: make editor area resizable / responsive
 * Put SLIC algorithm in web worker: currently it blocks the main thread, causing the loader to not appear
 * GIF sharing
+* When saving GIF to server, generate smaller sizes
 * Hot / Cold control points
   - disallow dragging hot control point
   - allow multiple loops per puppet
