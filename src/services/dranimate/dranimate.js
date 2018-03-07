@@ -165,8 +165,8 @@ const Dranimate = function () {
       if (!puppet) {
         return;
       }
-      puppet.cleanup();
       scene.remove(puppet.group);
+      puppet.cleanup();
       puppets.splice(index, 1);
     }
 

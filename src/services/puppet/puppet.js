@@ -2,6 +2,7 @@ import { Vector2 } from 'three';
 import ARAP from 'services/arap/arap';
 import { PuppetRecording } from 'services/puppet/puppetRecording';
 import { pointIsInsideTriangle } from 'services/util/math';
+import { clearObject } from 'services/util/threeUtil';
 
 const Puppet = function(puppetData) {
 
@@ -263,7 +264,7 @@ Puppet.prototype.getCenter = function() {
 };
 
 Puppet.prototype.cleanup = function () {
-  console.error("Warning: Puppet.cleanup() not yet implemented! You are wasting memory! >:(")
+  clearObject(this.group);
 }
 
 Puppet.prototype.setSelectionGUIVisible = function (visible) {
