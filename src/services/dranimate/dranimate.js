@@ -227,6 +227,9 @@ const Dranimate = function () {
       camera.bottom = height;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      if (!isInRenderLoop) {
+        animate();
+      }
     }
 
     function animate() {

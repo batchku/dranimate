@@ -102,6 +102,15 @@ Puppet.prototype.getRotation = function() {
   return this.current.rotation;
 }
 
+Puppet.prototype.hasRecording = function() {
+  return this.puppetRecording.hasRecording;
+}
+
+Puppet.prototype.clearRecording = function() {
+  this.puppetRecording = new PuppetRecording(performance.now(), false);
+  this.updateControlPointColors();
+}
+
 Puppet.prototype.setRenderWireframe = function(shouldRender) {
   this.threeMesh.material = shouldRender ? this.wireframeMaterial : this.texturedMaterial;
 }
@@ -120,11 +129,14 @@ Puppet.prototype.startRecording = function () {
 
 Puppet.prototype.stopRecording = function () {
   this.puppetRecording.stop(performance.now());
+  this.updateControlPointColors();
+}
 
+Puppet.prototype.updateControlPointColors = function () {
   // HOT CONTROL POINTS ARE RED, COLD CONTROL POINTS ARE BLUE
   this.controlPoints.forEach((controlPoint, index) => {
     const controlPointSphere = this.controlPointSpheres[index];
-    const color = this.puppetRecording.indices.has(index) ? 0xFF0000 : 0x00AB40;
+    const color = this.puppetRecording.indices.has(index) ? 0xEE1111 : 0x1144FF;
     controlPointSphere.material.color.setHex(color);
   });
 

@@ -76,6 +76,7 @@ class Stage extends Component {
     if (!dranimate.hasPuppet()) {
       dranimate.stopRenderLoop();
     }
+    this.setState({ selectedPuppet: null });
   };
 
   onEditSelectedPuppet = () => {

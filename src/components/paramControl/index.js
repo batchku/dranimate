@@ -134,6 +134,12 @@ class ParamControl extends Component {
             Move Back
           </Button>
         </div>
+        <Button
+          className={ styles.actionButton }
+          onClick={() => this.props.selectedPuppet.clearRecording() }
+        >
+          Clear Recording
+        </Button>
       </div>
     );
   }

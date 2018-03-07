@@ -101,7 +101,7 @@ function buildFromOptions(options) {
   const controlPointSpheres = controlPoints.map(() => {
     const sphere = new Mesh(
       new SphereGeometry(15, 32, 32),
-      new MeshBasicMaterial({ color: 0x00AB40 })
+      new MeshBasicMaterial({ color: 0x1144FF })
     );
     sphere.position.z = 10;
     sphere.visible = false;
