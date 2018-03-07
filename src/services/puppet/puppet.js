@@ -59,7 +59,7 @@ const Puppet = function(puppetData) {
     ARAP.setControlPointPosition(this.arapMeshID, cpi, this.verts[cpi][0], this.verts[cpi][1]);
   }
 
-  this.incrementPosition(-puppetData.halfSize.x, -puppetData.halfSize.y);
+  this.incrementPosition(-puppetData.center.x, -puppetData.center.y);
 };
 
 Puppet.prototype.incrementPosition = function(x, y) {
@@ -120,6 +120,14 @@ Puppet.prototype.startRecording = function () {
 
 Puppet.prototype.stopRecording = function () {
   this.puppetRecording.stop(performance.now());
+
+  // HOT CONTROL POINTS ARE RED, COLD CONTROL POINTS ARE BLUE
+  this.controlPoints.forEach((controlPoint, index) => {
+    const controlPointSphere = this.controlPointSpheres[index];
+    const color = this.puppetRecording.indices.has(index) ? 0xFF0000 : 0x00AB40;
+    controlPointSphere.material.color.setHex(color);
+  });
+
 }
 
 // Set one to many control points (leap motion, touch)

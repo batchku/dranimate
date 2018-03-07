@@ -13,10 +13,9 @@ class PuppetRecording {
     this.startTime = now;
     this.stopTime = now;
     this.duration = 0;
-    this.activeIndex = -1;
-    // this.allIndices = new Set();
     this.id = Math.random();
     this.lastServedIndex;
+    this.indices = new Set();
   }
 
   stop(timestamp) {
@@ -33,6 +32,10 @@ class PuppetRecording {
       index,
       relativeTime: frame.relativeTime
     }));
+    this.indices = this.controlPointFrames.reduce((indices, frame) => {
+      frame.controlPoints.forEach(controlPoint => indices.add(controlPoint.cpi));
+      return indices;
+    }, new Set());
   }
 
   setFrame(controlPoints, timestamp) {

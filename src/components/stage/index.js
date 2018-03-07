@@ -50,11 +50,20 @@ class Stage extends Component {
     this.setState({ selectedPuppet });
   };
 
-  closeEditor = () => this.setState({ editorIsOpen: false });
+  closeEditor = () => {
+    this.setState({ editorIsOpen: false });
+    dranimate.startRenderLoop();
+  };
 
-  closeProfile = () => this.setState({ profileIsOpen: false });
+  closeProfile = () => {
+    this.setState({ profileIsOpen: false });
+    dranimate.startRenderLoop();
+  };
 
-  openController = controllerIsOpen => this.setState({ controllerIsOpen });
+  openController = controllerIsOpen => {
+    this.setState({ controllerIsOpen });
+    controllerIsOpen ? dranimate.stopRenderLoop() : dranimate.startRenderLoop();
+  };
 
   onFabClick = () => this.filePicker.click();
 
@@ -62,27 +71,45 @@ class Stage extends Component {
 
   onPanSelect = isPanSelected => dranimate.setPanEnabled(isPanSelected);
 
-  onDeleteSelectedPuppet = () => dranimate.deleteSelectedPuppet();
+  onDeleteSelectedPuppet = () => {
+    dranimate.deleteSelectedPuppet();
+    if (!dranimate.hasPuppet()) {
+      dranimate.stopRenderLoop();
+    }
+  };
 
   onEditSelectedPuppet = () => {
     console.log('setItem?', dranimate.getSelectedPuppet())
     puppetEditorStateService.setItem(dranimate.getSelectedPuppet());
     this.setState({ editorIsOpen: true });
+    dranimate.stopRenderLoop();
   };
 
-  openLoader = message => this.setState({
-    loaderIsVisible: true,
-    loaderMessage: message
-  });
+  openLoader = message => {
+    this.setState({
+      loaderIsVisible: true,
+      loaderMessage: message
+    });
+    dranimate.stopRenderLoop();
+  };
 
-  closeLoader = () => this.setState({
-    loaderIsVisible: false,
-    loaderMessage: ''
-  });
+  closeLoader = () => {
+    this.setState({
+      loaderIsVisible: false,
+      loaderMessage: ''
+    });
+    dranimate.startRenderLoop();
+  };
 
-  gifPreviewAvailable = gifPreviewBlob => this.setState({ gifPreviewBlob });
+  gifPreviewAvailable = gifPreviewBlob => {
+    this.setState({ gifPreviewBlob });
+    dranimate.stopRenderLoop();
+  };
 
-  closeGifPreview = () => this.setState({ gifPreviewBlob: null });
+  closeGifPreview = () => {
+    this.setState({ gifPreviewBlob: null });
+    dranimate.startRenderLoop();
+  };
 
   onFileChange = event => {
     loadDranimateFile(this.filePicker)
@@ -90,6 +117,7 @@ class Stage extends Component {
         const isPuppet = !!result.id;
         if (isPuppet) {
           dranimate.addPuppet(result);
+          dranimate.startRenderLoop();
         }
         else {
           puppetEditorStateService.setItem(result);
@@ -99,7 +127,10 @@ class Stage extends Component {
       .catch(error => console.log('error', error));
   }
 
-  onProfileClick = () => this.setState({ profileIsOpen: true });
+  onProfileClick = () => {
+    this.setState({ profileIsOpen: true });
+    dranimate.stopRenderLoop();
+  };
 
   render() {
     return (
@@ -141,11 +172,6 @@ class Stage extends Component {
             closeLoader={this.closeLoader}
             gifPreviewAvailable={this.gifPreviewAvailable}
           />
-          {
-            /* <Button onClick={dranimate.onRenderToggle}>
-              Render toggle
-            </Button> */
-           }
         </div>
         <Fab
           className={styles.fab}

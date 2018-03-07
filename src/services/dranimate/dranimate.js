@@ -5,12 +5,17 @@ import {
   Scene,
   WebGLRenderer
 } from 'three';
+import Stats from 'stats.js';
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
 import DranimateLeapHandler from 'services/dranimate/leapHandler';
 import DranimateTouchHandler from 'services/dranimate/touchHandler';
 import { GifRecording, GifBuilder } from 'services/util/GifRecorder';
 import PanHandler from 'services/util/panHandler';
 import { clamp } from 'services/util/math';
+
+// const stats = new Stats();
+// stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+// document.body.appendChild( stats.dom );
 
 const ZOOM = {
   MIN: 0.1,
@@ -30,8 +35,9 @@ const Dranimate = function () {
     let touchHandler;
 
     let lastUpdateTimestamp = performance.now();
+    let animationRequest;
 
-    let isInRenderLoop = true;
+    let isInRenderLoop = false;
     let gifRecording = new GifRecording(performance.now(), false);
 
     const getSelectedPuppet = () => mouseHandler.getSelectedPuppet() || touchHandler.getSelectedPuppet();
@@ -89,15 +95,7 @@ const Dranimate = function () {
 
     this.onTouchEnd = event => touchHandler.onTouchEnd(event, puppets, zoom);
 
-    // this.createNewPuppet = function (vertices, faces, controlPoints, image, imageNoBG) {
-    //
-    //     /* Create the new Puppet */
-    //
-    //     var puppet = new Puppet(image, imageNoBG);
-    //     puppet.generateMesh(vertices, faces, controlPoints, scene);
-    //     puppets.push(puppet);
-    //
-    // }
+    this.hasPuppet = () => puppets.length > 0;
 
     this.addPuppet = function (p) {
       const matchingIndex = puppets.findIndex(puppet => puppet.id === p.id);
@@ -181,12 +179,12 @@ const Dranimate = function () {
     };
 
     this.setGifIsRecording = function(isRec) {
-      isInRenderLoop = isRec;
       if (isRec) {
         gifRecording = new GifRecording(performance.now(), true);
         return;
       }
       else {
+        this.stopRenderLoop();
         const gifBuilder = new GifBuilder();
         const { targetTimestamps, gifTimestep } = gifRecording.stop(performance.now(), puppets);
         targetTimestamps.forEach((targetTimestamp) => {
@@ -198,21 +196,17 @@ const Dranimate = function () {
       }
     }
 
-    this.onRenderToggle = () => {
-      isInRenderLoop = !isInRenderLoop;
-      if (isInRenderLoop) {
-        animate();
-      }
+    this.startRenderLoop = () => {
+      if (isInRenderLoop) { return; }
+      isInRenderLoop = true;
+      animate();
     };
 
-    // this.startRenderLoop = () => {
-    //   isInRenderLoop = true;
-    //   this.animate();
-    // };
-    //
-    // this.stopRenderLoop = () => {
-    //   isInRenderLoop = false;
-    // };
+    this.stopRenderLoop = () => {
+      isInRenderLoop = false;
+      cancelAnimationFrame(animationRequest);
+      setTimeout(() => animate());
+    };
 
 /*****************************
     Dom events
@@ -238,11 +232,12 @@ const Dranimate = function () {
     function animate() {
       const now = performance.now();
       const elapsedTime = now - lastUpdateTimestamp;
+      // stats.begin();
       lastUpdateTimestamp = now;
       update(elapsedTime);
       render(elapsedTime);
       if (isInRenderLoop) {
-        requestAnimationFrame(animate);
+        animationRequest = requestAnimationFrame(animate);
       }
     }
 
@@ -255,6 +250,7 @@ const Dranimate = function () {
     function render(elapsedTime) {
       renderer.render(scene, camera);
       gifRecording.setFrame(performance.now());
+      // stats.end();
     }
 
 };

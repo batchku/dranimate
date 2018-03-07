@@ -38,10 +38,7 @@ class GifPreview extends Component {
       });
   }
 
-  onNameChange = gifName => {
-    console.log(gifName);
-    this.setState({ gifName });
-  };
+  onNameChange = gifName => this.setState({ gifName });
 
   render() {
     return (

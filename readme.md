@@ -53,7 +53,7 @@ npm run deploy;
 ### TODO
 * Leap motion tuning (make it work like OFX dranimate)
 * Puppet editor: make editor area resizable / responsive
-* Start / Stop master render loop where appropriate: currently the render loop is always on
 * Put SLIC algorithm in web worker: currently it blocks the main thread, causing the loader to not appear
 * GIF sharing
+* Hot / Cold control points (CP is in recorded loop or not)
 * Infamous old issues: https://github.com/cmuartfab/dranimate-browser/issues/3

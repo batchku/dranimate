@@ -10,4 +10,5 @@ import PropTypes from 'prop-types';
 import 'react';
 import ReactDOM from 'react-dom';
 import 'react-router-dom';
+import 'stats.js';
 import 'three';
