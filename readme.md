@@ -55,8 +55,10 @@ npm run deploy;
 * Puppet editor: make editor area resizable / responsive
 * Put SLIC algorithm in web worker: currently it blocks the main thread, causing the loader to not appear
 * GIF sharing
+* Define finite stage area
+* Background images
 * When saving GIF to server, generate smaller sizes
 * Hot / Cold control points
   - disallow dragging hot control point
   - allow multiple loops per puppet
-* Infamous old issues: https://github.com/cmuartfab/dranimate-browser/issues/3
+* Infamous old issue: https://github.com/cmuartfab/dranimate-browser/issues/3
