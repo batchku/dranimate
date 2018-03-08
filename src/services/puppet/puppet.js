@@ -167,6 +167,7 @@ Puppet.prototype.setControlPointPosition = function(controlPointIndex, position)
   this.needsUpdate = true;
   ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], position.x, position.y);
 
+  // NOTE: there still might be some unforseen problems with over recording
   if (this.recording.isRecording()) {
     const puppetCenter = this.getCenter();
     const point = position
@@ -241,7 +242,11 @@ Puppet.prototype.update = function(elapsedTime, targetTimestamp) {
         position: point
       };
     });
-    this.setControlPointPositions(absoluteControlPoints);
+    // calling this.setControlPointPositions here will over record, look into simplifying this
+    this.needsUpdate = true;
+    absoluteControlPoints.forEach(controlPoint => {
+      ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.position.x, controlPoint.position.y)
+    });
   });
 
   // DEFORM PUPPET WITH ARAP

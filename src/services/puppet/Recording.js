@@ -6,7 +6,7 @@ export default class Recording {
     this.recordings = [];
   }
 
-  clearRecordings() {
+  clear() {
     this.recordings = [];
   }
 

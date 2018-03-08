@@ -58,7 +58,5 @@ npm run deploy;
 * Define finite stage area
 * Background images
 * When saving GIF to server, generate smaller sizes
-* Hot / Cold control points
-  - disallow dragging hot control point
-  - allow multiple loops per puppet
+* Hot / Cold control points: disallow dragging hot control point
 * Infamous old issue: https://github.com/cmuartfab/dranimate-browser/issues/3
