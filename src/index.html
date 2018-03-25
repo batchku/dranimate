@@ -8,8 +8,59 @@
     <link rel="manifest" href="manifest.json">
     <title>Dranimate</title>
     <script src="arap/deform2d.js"></script>
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .app-loader {
+        text-align: center;
+      }
+      .app-loader__logo {
+        margin: 180px auto 0 auto;
+        color: white;
+        text-stroke: 1px #979797;
+        -webkit-text-stroke: 1px #979797;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 48px;
+        font-weight: bold;
+      }
+      .app-loader__spinner {
+        width: 30px;
+        height: 30px;
+        margin: 10px;
+        display: inline-block;
+        border-radius: 100%;
+        border: 2px solid #979797;
+        animation: app-loader__spinner--animate 1.8s infinite ease-out;
+        opacity: 0;
+      }
+      .app-loader__spinner-1 { animation-delay: 0.3s; }
+      .app-loader__spinner-2 { animation-delay: 0.6s; }
+      @keyframes app-loader__spinner--animate {
+        0% {
+          transform: scale(0);
+          opacity: 1;
+        }
+        75% {
+          transform: scale(1.0);
+          opacity: 0;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="app-loader">
+        <p class="app-loader__logo">DRANIMATE</p>
+        <div>
+          <div class="app-loader__spinner"></div>
+          <div class="app-loader__spinner app-loader__spinner-1"></div>
+          <div class="app-loader__spinner app-loader__spinner-2"></div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
