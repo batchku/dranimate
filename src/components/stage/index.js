@@ -9,10 +9,17 @@ import Recorder from 'components/recorder';
 import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
-import { loadDranimateFile } from 'services/util/file';
+import Slider from 'components/primitives/slider';
+import { loadDranimateFile, loadImageFile } from 'services/util/file';
 import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
 import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
+
+const FILE_PICKER_STATE = {
+  DRANIMATE: 'DRANIMATE',
+  BACKGROUND: 'BACKGROUND'
+};
+let filePickerState = FILE_PICKER_STATE.DRANIMATE;
 
 class Stage extends Component {
 
@@ -26,6 +33,8 @@ class Stage extends Component {
       loaderIsVisible: false,
       loaderMessage: '',
       gifPreviewBlob: null,
+      backgroundColor: '#66FF66',
+      hadBackgroundImage: false,
     };
   }
 
@@ -36,8 +45,7 @@ class Stage extends Component {
       event => dranimate.onTouchMove(event),
       { passive: false }
     );
-
-    dranimate.setup(this.dranimateStageContainer);
+    dranimate.setup(this.dranimateStageContainer, styles.dranimateCanvasBackground);
   };
 
   // componentDidUpdate = (prevProps, prevState) => {
@@ -65,7 +73,10 @@ class Stage extends Component {
     controllerIsOpen ? dranimate.stopRenderLoop() : dranimate.startRenderLoop();
   };
 
-  onFabClick = () => this.filePicker.click();
+  onFabClick = () => {
+    filePickerState = FILE_PICKER_STATE.DRANIMATE;
+    this.filePicker.click();
+  };
 
   onZoomSelect = isZoomIn => isZoomIn ? dranimate.zoomIn() : dranimate.zoomOut();
 
@@ -113,6 +124,18 @@ class Stage extends Component {
   };
 
   onFileChange = event => {
+    if (filePickerState === FILE_PICKER_STATE.DRANIMATE) {
+      this.loadDranimateFile();
+      return;
+    }
+    if (filePickerState === FILE_PICKER_STATE.BACKGROUND) {
+      this.loadBackgroundFile();
+      return;
+    }
+    console.log('error: no file picker state');
+  }
+
+  loadDranimateFile = () => {
     loadDranimateFile(this.filePicker)
       .then((result) => {
         const isPuppet = !!result.id;
@@ -125,8 +148,38 @@ class Stage extends Component {
           this.setState({ editorIsOpen: true });
         }
       })
-      .catch(error => console.log('error', error));
-  }
+      .catch(error => console.log('error', error)); // TODO: show error modal
+  };
+
+  loadBackgroundFile = () => {
+    loadImageFile(this.filePicker)
+      .then(imageDataUrl => {
+        dranimate.setBackgroundImage(imageDataUrl);
+        this.setState({ hasBackgroundImage: true });
+      })
+      .catch(error => console.log('error', error)); // TODO: show error modal
+  };
+
+  onBackgroundImage = event => {
+    filePickerState = FILE_PICKER_STATE.BACKGROUND;
+    this.filePicker.click();
+  };
+
+  onBackgroundColorChange = event => {
+    const backgroundColor = event.target.value;
+    dranimate.setBackgroundColor(backgroundColor);
+    this.setState({ backgroundColor });
+  };
+
+  clearBackground = () => {
+    dranimate.clearBackground();
+    this.setState({ hasBackgroundImage: false });
+  };
+
+  onBackgroundImageSizeChange = value => {
+    const normalizedValue = value / 100;
+    dranimate.setBackgroundImageSize(normalizedValue);
+  };
 
   onProfileClick = () => {
     this.setState({ profileIsOpen: true });
@@ -152,6 +205,27 @@ class Stage extends Component {
         >
           Profile
         </Button>
+        <div className={styles.backgroundButtons}>
+          <Button onClick={this.onBackgroundImage}>
+            Background Image
+          </Button>
+          {
+            this.state.hasBackgroundImage ?
+              <Slider
+                min={ 0 }
+                max={ 500 }
+                defaultValue={ 100 }
+                onChange={ this.onBackgroundImageSizeChange }
+                className={ styles.backgroundSlider }
+              /> : null
+          }
+          <Button onClick={() => this.colorPicker.click()}>
+            Background Color
+          </Button>
+          <Button onClick={this.clearBackground}>
+            Clear background
+          </Button>
+        </div>
         {
           this.state.selectedPuppet ?
           <ParamControl
@@ -184,6 +258,12 @@ class Stage extends Component {
           value=''
           onChange={this.onFileChange}
           className={styles.hiddenFilePicker}
+        />
+        <input
+          type='color'
+          ref={element => this.colorPicker = element}
+          value={this.state.backgroundColor}
+          onChange={this.onBackgroundColorChange}
         />
         {
           this.state.editorIsOpen ?

@@ -1,9 +1,14 @@
 import {
-  GridHelper,
   Group,
   OrthographicCamera,
   Scene,
-  WebGLRenderer
+  WebGLRenderer,
+  PlaneGeometry,
+  MeshBasicMaterial,
+  Mesh,
+  BackSide,
+  Vector3,
+  Color,
 } from 'three';
 import Stats from 'stats.js';
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
@@ -12,16 +17,19 @@ import DranimateTouchHandler from 'services/dranimate/touchHandler';
 import { GifRecording, GifBuilder } from 'services/util/GifRecorder';
 import PanHandler from 'services/util/panHandler';
 import { clamp } from 'services/util/math';
+import { loadTexture } from 'services/util/threeUtil';
+import loadImage from 'services/util/imageLoader';
 
 // const stats = new Stats();
 // stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 // document.body.appendChild( stats.dom );
 
 const ZOOM = {
-  MIN: 0.1,
-  MAX: 3
+  MIN: 0.5,
+  MAX: 1.5
 };
 const CAMERA_DEPTH = 100;
+const OUTLINE_Z_INDEX = 5;
 
 const Dranimate = function () {
     let container;
@@ -40,13 +48,17 @@ const Dranimate = function () {
     let isInRenderLoop = false;
     let gifRecording = new GifRecording(performance.now(), false);
 
+    let backgroundColorMesh;
+    let backgroundImageMesh;
+    let backgroundWidthHeightRatio = 1;
+
     const getSelectedPuppet = () => mouseHandler.getSelectedPuppet() || touchHandler.getSelectedPuppet();
 
 /*****************************
     API
 *****************************/
 
-    this.setup = function (canvasContainer) {
+    this.setup = function (canvasContainer, cssClass) {
       /* Initialize THREE canvas and scene */
       const halfWidth = window.innerWidth / 2;
       const halfHeight = window.innerHeight / 2;
@@ -54,22 +66,72 @@ const Dranimate = function () {
       // puppet.z = 0, controlPoint.z = 10
       camera = new OrthographicCamera(-halfWidth, halfWidth, -halfHeight, halfHeight, CAMERA_DEPTH - 10, CAMERA_DEPTH + 1);
       scene = new Scene();
-      renderer = new WebGLRenderer({ antialias: true });
+      renderer = new WebGLRenderer({ antialias: true, alpha: true });
       renderer.setPixelRatio(window.devicePixelRatio);
-      // renderer.setSize(width, height);
-      renderer.setClearColor(0xFFFFFF, 1);
+      renderer.setClearColor(0xFFFFFF, 0);
       canvasContainer.appendChild(renderer.domElement);
       camera.position.x = 0;
       camera.position.y = 0;
       camera.position.z = CAMERA_DEPTH;
 
+      // TODO: make this a texture instead!!!
+      renderer.domElement.classList.add(cssClass)
+
       mouseHandler = new DranimateMouseHandler(renderer.domElement, panHandler);
       touchHandler = new DranimateTouchHandler(renderer.domElement, panHandler);
       leapHandler = new DranimateLeapHandler(renderer.domElement, panHandler, puppets);
 
-      const gridHelper = new GridHelper(1000, 20);
-      gridHelper.geometry.rotateX(Math.PI / 2);
-      scene.add(gridHelper);
+      const renderAreaSize = 1000;
+      const scaleMultiplier = 2000;
+      const halfSize = renderAreaSize / 2;
+      const halfScale = scaleMultiplier / 2;
+
+      const backgroundGeometry = new PlaneGeometry(renderAreaSize, renderAreaSize);
+      const backgroundColorMaterial = new MeshBasicMaterial({color: 0xFFFFFF, side: BackSide});
+      backgroundColorMesh = new Mesh(backgroundGeometry.clone(), backgroundColorMaterial);
+      backgroundColorMesh.visible = false;
+      scene.add(backgroundColorMesh);
+
+      const backgroundImageMaterial = new MeshBasicMaterial({side: BackSide, transparent: true});
+      backgroundImageMesh = new Mesh(backgroundGeometry.clone(), backgroundImageMaterial);
+      backgroundImageMesh.visible = false;
+      backgroundImageMesh.scale.y = -1;
+      scene.add(backgroundImageMesh);
+
+      const outlineSize = 10;
+      const geometry = new PlaneGeometry(1, 1);
+      const material = new MeshBasicMaterial({color: 0x666666, side: BackSide});
+
+      const topPlane = new Mesh(geometry.clone(), material);
+      const rightPlane = new Mesh(geometry.clone(), material);
+      const bottomPlane = new Mesh(geometry.clone(), material);
+      const leftPlane = new Mesh(geometry.clone(), material);
+
+      topPlane.scale.x = renderAreaSize * scaleMultiplier;
+      topPlane.scale.y = renderAreaSize * 2;
+      rightPlane.scale.x = renderAreaSize * 2;
+      rightPlane.scale.y = renderAreaSize * scaleMultiplier;
+      bottomPlane.scale.x = renderAreaSize * scaleMultiplier;
+      bottomPlane.scale.y = renderAreaSize * 2;
+      leftPlane.scale.x = renderAreaSize * 2;
+      leftPlane.scale.y = renderAreaSize * scaleMultiplier;
+
+      const topPosition = new Vector3()
+        .add(new Vector3(0, -renderAreaSize * 1.5, OUTLINE_Z_INDEX));
+      const rightPosition = new Vector3()
+        .add(new Vector3(renderAreaSize * 1.5, 0, OUTLINE_Z_INDEX));
+      const bottomPosition = new Vector3()
+        .add(new Vector3(0, renderAreaSize * 1.5, OUTLINE_Z_INDEX));
+      const leftPosition = new Vector3()
+        .add(new Vector3(-renderAreaSize * 1.5, 0, OUTLINE_Z_INDEX));
+      topPlane.position.add(topPosition);
+      rightPlane.position.add(rightPosition);
+      bottomPlane.position.add(bottomPosition);
+      leftPlane.position.add(leftPosition);
+      scene.add(topPlane);
+      scene.add(rightPlane);
+      scene.add(bottomPlane);
+      scene.add(leftPlane);
 
       refreshCamera();
       animate();
@@ -97,6 +159,62 @@ const Dranimate = function () {
 
     this.hasPuppet = () => puppets.length > 0;
 
+    this.setBackgroundColor = hexString => {
+      const color = new Color(hexString);
+      backgroundColorMesh.material.color = color;
+      if (!backgroundColorMesh.visible) {
+        backgroundColorMesh.visible = true;
+      }
+      if (!isInRenderLoop) {
+        animate();
+      }
+    };
+
+    this.setBackgroundImage = imageSource => {
+      Promise.all([
+        loadImage(imageSource),
+        loadTexture(imageSource)
+      ])
+      .then(([image, texture]) => {
+        const { width, height } = image;
+        backgroundWidthHeightRatio = width / height;
+        backgroundImageMesh.material.map && backgroundImageMesh.material.map.dispose();
+        backgroundImageMesh.material.map = texture;
+        backgroundImageMesh.scale.x = backgroundWidthHeightRatio;
+        // if (width > height) {
+        //   backgroundImageMesh.scale.y = -height / width;
+        // }
+        // else if (width < height) {
+        //   backgroundImageMesh.scale.x = width / height;
+        // }
+        if (!backgroundImageMesh.visible) {
+          backgroundImageMesh.visible = true;
+        }
+        if (!isInRenderLoop) {
+          animate();
+        }
+      })
+      .catch(error => console.log(error)); // TODO: error modal
+    };
+
+    this.setBackgroundImageSize = sizeMultiplier => {
+      backgroundImageMesh.scale.x = backgroundWidthHeightRatio * sizeMultiplier;
+      backgroundImageMesh.scale.y = -sizeMultiplier;
+      if (!isInRenderLoop) {
+        animate();
+      }
+    };
+
+    this.clearBackground = () => {
+      backgroundColorMesh.visible = false;
+      backgroundImageMesh.visible = false;
+      backgroundImageMesh.material.map && backgroundImageMesh.material.map.dispose();
+      // TODO: clear and dispose texture
+      if (!isInRenderLoop) {
+        animate();
+      }
+    };
+
     this.addPuppet = function (p) {
       const matchingIndex = puppets.findIndex(puppet => puppet.id === p.id);
       if(matchingIndex > -1) {
@@ -123,23 +241,19 @@ const Dranimate = function () {
     }
 
     this.zoomIn = function () {
-        zoom += 0.1;
-        zoom = clamp(zoom, ZOOM.MIN, ZOOM.MAX);
-        //panPosition.x -= (0.1)*window.innerWidth/2;
-        //panPosition.y -= (0.1)*window.innerHeight/2;
-
-        refreshCamera();
-        camera.updateProjectionMatrix();
+      if (zoom >= ZOOM.MAX) { return; }
+      zoom += 0.1;
+      //panPosition.x -= (0.1)*window.innerWidth/2;
+      //panPosition.y -= (0.1)*window.innerHeight/2;
+      refreshCamera();
     }
 
     this.zoomOut = function () {
-        zoom -= 0.1;
-        zoom = clamp(zoom, ZOOM.MIN, ZOOM.MAX);
-        //panPosition.x += (0.1)*window.innerWidth/2;
-        //panPosition.y += (0.1)*window.innerHeight/2;
-
-        refreshCamera();
-        camera.updateProjectionMatrix();
+      if (zoom <= ZOOM.MIN) { return; }
+      zoom -= 0.1;
+      //panPosition.x += (0.1)*window.innerWidth/2;
+      //panPosition.y += (0.1)*window.innerHeight/2;
+      refreshCamera();
     }
 
     this.setPanEnabled = function (isEnabled) {

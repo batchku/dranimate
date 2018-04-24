@@ -1,4 +1,14 @@
-import { Mesh } from 'three';
+import { Mesh, TextureLoader } from 'three';
+
+function loadTexture(imageSource) {
+  return new Promise((resolve, reject) => {
+    return new TextureLoader().load(imageSource,
+      texture => resolve(texture),
+      () => {},
+      error => reject(error)
+    );
+  });
+}
 
 function clearObject(threeObj) {
   threeObj.children.forEach(child => {
@@ -26,4 +36,4 @@ function cleanMeshMemory(obj) {
   }
 }
 
-export {clearObject, cleanMeshMemory};
+export {clearObject, cleanMeshMemory, loadTexture};

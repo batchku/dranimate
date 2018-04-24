@@ -14,8 +14,19 @@ function loadFile(file) {
   });
 }
 
+function loadImageFile(element) {
+  const file = element.files && element.files[0];
+  if (!file) {
+    return Promise.reject(error);
+  }
+  if (!mimeTypeMap.image.includes(file.type)) {
+    return Promise.reject('Unsupported file type');
+  }
+  return loadFile(file);
+}
+
 function loadDranimateFile(element) {
-  const file = element.files && element.files[0]
+  const file = element.files && element.files[0];
   if (!file) {
     return Promise.reject(error);
   }
@@ -34,4 +45,4 @@ function loadDranimateFile(element) {
   return loadPuppetFromFile(file);
 }
 
-export { loadFile, loadDranimateFile };
+export { loadFile, loadDranimateFile, loadImageFile };
