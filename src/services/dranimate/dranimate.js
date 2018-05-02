@@ -81,7 +81,7 @@ const Dranimate = function () {
       touchHandler = new DranimateTouchHandler(renderer.domElement, panHandler);
       leapHandler = new DranimateLeapHandler(renderer.domElement, panHandler, puppets);
 
-      const renderAreaSize = 1000;
+      const renderAreaSize = window.innerWidth;
       const scaleMultiplier = 2000;
       const halfSize = renderAreaSize / 2;
       const halfScale = scaleMultiplier / 2;

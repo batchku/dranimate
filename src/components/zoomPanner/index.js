@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
 import styles from './styles.scss';
+import Icon from 'components/Icon/Icon.jsx';
+import {
+  ICONS
+} from '../../../constants.js';
 
 class ZoomPanner extends Component {
   constructor(props) {
@@ -19,18 +23,20 @@ class ZoomPanner extends Component {
 
   renderPanButton() {
     return (
-      <Button
-        className={this.state.panIsSelected ? styles.panActive : styles.pan}
-        onClick={this.onPanClick}
-      >
-        Pan
-      </Button>
+<div className={styles.iconRightBar}>
+      <span className={this.state.panIsSelected ? styles.logoFacebookSelected : styles.logoFacebook}
+      onClick={this.onPanClick}>
+      	  <a ></a>
+      </span>
+</div>
     );
   }
 
+
+
   render() {
     return (
-      <div className={this.props.className}>
+      <div className={styles.zoomPanner}>
         { this.props.onPanSelect ? this.renderPanButton() : null }
         <Button
           className={ styles.zoomButton }
@@ -44,6 +50,7 @@ class ZoomPanner extends Component {
         >
           Zoom Out
         </Button>
+        <Icon icon="icon_pan" />
       </div>
     );
   }

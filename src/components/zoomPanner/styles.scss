@@ -1,17 +1,69 @@
 @import '~styles/index';
-
-.pan {
-  background-color: $color-primary;
-  color: $color-black;
-  margin: 5px;
+.zoomPanner{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 96px;
+  right: $ui-canvas-margin;
+  width: 48px;
 }
+
+
 
 .panActive {
   background-color: $color-action;
   color: $color-white;
-  margin: 5px;
+  margin-bottom: 12px;
 }
 
-.zoomButton {
-  margin: 5px;
+.iconBar {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 48px;
+  height: 54px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.iconTitle{
+  font-family: 'Raleway', sans-serif;
+  color: hsla(0, 0%, 100%, .6);
+  font-size: 8px;
+  line-height: 11px;
+  text-align: center;
+}
+.iconRightBar{
+flex: 1;
+}
+
+.logoFacebook  {
+  display: block;
+  height: 32px;
+  background-image: url('../../../resources/static/imgs/pan.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 50%;
+    margin-bottom: 12px;
+}
+
+.logoFacebookSelected {
+  display: block;
+  height: 32px;
+  background-image: url('../../../resources/static/imgs/pan.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 50%;
+    margin-bottom: 12px;
+}
+
+.logoFacebook a:hover {
+  background-image: url('../../../resources/static/imgs/pan.png');
 }

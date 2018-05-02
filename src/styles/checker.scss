@@ -1,8 +1,8 @@
 
-$box-size: 20px;
+$box-size: 8px;
 $twice-box-size: $box-size * 2;
-$checker-light: #FFF;
-$checker-dark: #CCC;
+$checker-light: #363636;
+$checker-dark: #191919;
 
 // TODO: pass color, size as params
 @mixin checkerBackground {

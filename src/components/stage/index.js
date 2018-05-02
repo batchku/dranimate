@@ -205,6 +205,11 @@ class Stage extends Component {
         >
           Profile
         </Button>
+
+        <ZoomPanner
+          onPanSelect={this.onPanSelect}
+          onZoomSelect={this.onZoomSelect}
+        />
         <div className={styles.backgroundButtons}>
           <Button onClick={this.onBackgroundImage}>
             Background Image
@@ -238,10 +243,6 @@ class Stage extends Component {
           /> : null
         }
         <div className={styles.lowerLeft}>
-          <ZoomPanner
-            onPanSelect={this.onPanSelect}
-            onZoomSelect={this.onZoomSelect}
-          />
           <Recorder
             openLoader={this.openLoader}
             closeLoader={this.closeLoader}

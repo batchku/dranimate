@@ -6,27 +6,38 @@
   flex-wrap: nowrap;
   justify-content: space-around;
   align-items: center;
-
-  width: 100%;
+left: $ui-canvas-margin;
+  width: auto;
 }
 
+.logo{
+cursor: pointer;
+  top: 0%;
+}
+.image {
+  display: block;
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 auto;
+  -ms-flex: 0 auto;
+  flex: 0 auto;
+}
 .topbarItem {
   padding: 10px;
 }
 
-.aboutContainer {
-  cursor: pointer;
-}
-.aboutContainer:hover .aboutInfo{
-  display: inline-block;
+.topRight{
+  padding: 10px;
 }
 
-.aboutLabel {}
+
+.logo:hover .aboutInfo{
+  display: inline-block;
+}
 
 .aboutInfo {
   display: none;
   position: absolute;
-  border: 1px solid $color-black;
+  border: 1px solid $color-white;
   border-radius: 4px;
   width: 160px;
 }

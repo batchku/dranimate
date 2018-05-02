@@ -7,13 +7,12 @@ class TopBar extends Component {
   render() {
     return (
       <div className={this.props.className}>
-        <div className={styles.topbar}>
-          <div className={`${styles.topbarItem} ${styles.aboutContainer}`}>
-            <p className={styles.aboutLabel}>Dranimate</p>
-            <p className={styles.aboutInfo}>About</p>
+
+          <div className={styles.logo}>
+<img src={require('../../../resources/static/imgs/logo.png')} width="159.8" height="22.1"/>
+<p className={styles.aboutInfo}>About</p>
           </div>
-        </div>
-      </div>  
+      </div>
     );
   }
 }

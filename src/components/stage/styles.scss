@@ -21,28 +21,35 @@
 .topBar {
   position: absolute;
   top: 0;
-  width: 100%;
+  width: 1000px;
+  display: flex;
+  justify-content: space-between;
+  align-items:flex-end;
+  padding-top: 24px;
+  // width: 100%;
+  left: $ui-canvas-margin;
 }
 
 .profileButton {
   position: absolute;
   top: 0;
-  right: 0;
-  margin: 10px;
+  right: $ui-canvas-margin;
+  margin-top: $top-margin;
 }
+
+
 
 .fab {
   position: absolute;
-  right: 0;
+  right: $ui-canvas-margin;
   bottom: 0;
-  padding: 15px;
+  padding-bottom: 24px;
 }
 
 .backgroundButtons {
   position: absolute;
-  right: 0;
+  right: $ui-canvas-margin;
   top: 35%;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -58,9 +65,9 @@
 
 .lowerLeft {
   position: absolute;
-  left: 0;
+  left: $ui-canvas-margin;
   bottom: 0;
-  padding: 15px;
+  margin-bottom: $top-margin;
   border: 1px solid $color-black;
   display: flex;
   flex-direction: row;
