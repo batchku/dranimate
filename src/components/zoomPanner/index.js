@@ -2,10 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
 import styles from './styles.scss';
-import Icon from 'components/Icon/Icon.jsx';
-import {
-  ICONS
-} from '../../../constants.js';
+import IconPan from '../../../resources/static/imgs/icon_pan.svg'
+import IconZoomIn from '../../../resources/static/imgs/icon_zoomin.svg'
+import IconZoomOut from '../../../resources/static/imgs/icon_zoomout.svg'
+
+// import Icon from 'components/Icon/Icon.jsx';
+// import {
+  // ICONS
+// } from '../../../constants.js';
 
 class ZoomPanner extends Component {
   constructor(props) {
@@ -21,13 +25,20 @@ class ZoomPanner extends Component {
     this.setState({ panIsSelected });
   }
 
+  onIconClick = () => {
+    const IconIsSelected = !this.state.IconIsSelected;
+    this.props.onIconSelect(IconIsSelected);
+    this.setState({ IconIsSelected });
+  }
+
+
+
   renderPanButton() {
     return (
 <div className={styles.iconRightBar}>
-      <span className={this.state.panIsSelected ? styles.logoFacebookSelected : styles.logoFacebook}
-      onClick={this.onPanClick}>
-      	  <a ></a>
-      </span>
+      <IconPan className={this.state.panIsSelected ? styles.iconSelected : styles.icon}
+      onClick={this.onPanClick}/>
+      <p>Pan</p>
 </div>
     );
   }
@@ -38,19 +49,20 @@ class ZoomPanner extends Component {
     return (
       <div className={styles.zoomPanner}>
         { this.props.onPanSelect ? this.renderPanButton() : null }
-        <Button
-          className={ styles.zoomButton }
-          onClick={() => this.props.onZoomSelect(true)}
-        >
-          Zoom In
-        </Button>
-        <Button
-          className={ styles.zoomButton }
+<div className={styles.iconRightBar}>
+        <IconZoomIn
+        className={ styles.icon }
+        onClick={() => this.props.onZoomSelect(true)}
+        />
+          <p>Zoom In</p>
+</div>
+        <div className={styles.iconRightBar}>
+        <IconZoomOut
+          className={ styles.icon }
           onClick={() => this.props.onZoomSelect(false)}
-        >
-          Zoom Out
-        </Button>
-        <Icon icon="icon_pan" />
+        />
+          <p>Zoom Out</p>
+</div>
       </div>
     );
   }

@@ -8,10 +8,12 @@ class TopBar extends Component {
     return (
       <div className={this.props.className}>
 
-          <div className={styles.logo}>
-<img src={require('../../../resources/static/imgs/logo.png')} width="159.8" height="22.1"/>
-<p className={styles.aboutInfo}>About</p>
-          </div>
+      <div className={styles.logo}>
+      <img src={require('../../../resources/static/imgs/logo.png')} width="159.8" height="22.1"/>
+      {/* }<p className={styles.aboutInfo}>About</p> */}
+
+
+      </div>
       </div>
     );
   }

@@ -64,11 +64,11 @@ const webpackConfig = {
   loader: 'url-loader'
 },
 {
-        test: /\.svg$/,
-        loader: 'svg-inline-loader'
-    }
+test: /\.svg$/,
+loader: 'babel-loader!svg-react-loader'
+}
     ]
-  }
+  },
 };
 
 const defaultConfig = {

@@ -95,10 +95,13 @@ class PuppetEditor extends Component {
                 onNext={this.onImageEditorNext}
               /> :
               <ControlPointEditor
+              onHandSelect={this.onHandSelect}
+
                 imageSrc={this.state.imageSrc}
                 backgroundRemovalData={this.state.backgroundRemovalData}
                 controlPointPositions={this.state.controlPointPositions}
                 onClose={this.onControlPointEditorBack}
+                onCancel={this.onClose}
                 onSave={this.onSave}
               />
           }

@@ -14,6 +14,11 @@ import { loadDranimateFile, loadImageFile } from 'services/util/file';
 import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
 import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
+import IconMoveFront from '../../../resources/static/imgs/icon_movetofront.svg';
+import IconMoveBack from '../../../resources/static/imgs/icon_movetoback.svg';
+import IconEditPuppet from '../../../resources/static/imgs/icon_editpuppet.svg';
+import IconSavePuppet from '../../../resources/static/imgs/icon_save.svg';
+import IconDeletePuppet from '../../../resources/static/imgs/icon_delete.svg';
 
 const FILE_PICKER_STATE = {
   DRANIMATE: 'DRANIMATE',
@@ -199,11 +204,63 @@ class Stage extends Component {
           ref={input => this.dranimateStageContainer = input}
         />
         <TopBar className={styles.topBar}/>
+        <div className={styles.parentElement}>
+        {
+          this.state.selectedPuppet ?
+          <ParamControl
+            className={styles.paramControl}
+            selectedPuppet={this.state.selectedPuppet}
+            onEditSelectedPuppet={this.onEditSelectedPuppet}
+            onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
+            openLoader={this.openLoader}
+            closeLoader={this.closeLoader}
+          /> : null
+        }
+
+        <div className={this.state.selectedPuppet ? styles.modifyBarHide : styles.paramControl }>
+          <div className={styles.singleIconTopBar}>
+                  <IconMoveFront
+                  className={ styles.icon }
+
+                  />
+                    <p>Bring Front</p>
+          </div>
+          <div className={styles.singleIconTopBar}>
+                  <IconMoveBack
+                  className={ styles.icon }
+
+                  />
+                    <p>Send Back</p>
+          </div>
+          <div className={styles.singleIconTopBar}>
+                  <IconEditPuppet
+                  className={ styles.icon }
+
+                  />
+                    <p>Edit</p>
+          </div>
+          <div className={styles.singleIconTopBar}>
+                  <IconSavePuppet
+                  className={ styles.icon }
+
+                  />
+                    <p>Save</p>
+          </div>
+          <div className={styles.singleIconTopBar}>
+                  <IconDeletePuppet
+                  className={ styles.icon }
+
+                  />
+                    <p>Delete</p>
+          </div>
+          </div>
+</div>
         <Button
           className={styles.profileButton}
           onClick={this.onProfileClick}
+          title="User Profile"
         >
-          Profile
+          <img src={require('../../../resources/static/imgs/user-profile.png')} width="48px" height="48px"/>
         </Button>
 
         <ZoomPanner
@@ -231,17 +288,9 @@ class Stage extends Component {
             Clear background
           </Button>
         </div>
-        {
-          this.state.selectedPuppet ?
-          <ParamControl
-            className={styles.paramControl}
-            selectedPuppet={this.state.selectedPuppet}
-            onEditSelectedPuppet={this.onEditSelectedPuppet}
-            onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
-            openLoader={this.openLoader}
-            closeLoader={this.closeLoader}
-          /> : null
-        }
+
+
+
         <div className={styles.lowerLeft}>
           <Recorder
             openLoader={this.openLoader}

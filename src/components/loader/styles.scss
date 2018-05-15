@@ -17,9 +17,9 @@ $animation-unit: 0.16s;
 }
 
 .loaderContainer {
-  background-color: $color-grey-dark;
+  background-color: $color-white;
   min-width: 150px;
-  border-radius: 8px;
+  border-radius: 20px;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -27,7 +27,8 @@ $animation-unit: 0.16s;
 }
 
 .loaderText {
-  color: $color-white;
+  color: $color-grey-darkest;
+  font-weight: 500;
   text-align: center;
   margin-bottom: 15px;
 }
@@ -43,7 +44,7 @@ $animation-unit: 0.16s;
 }
 
 .loaderDots {
-  color: $color-white;
+  color: $color-action;
   margin: -$loader-dot-size auto $loader-dot-size auto;
   transform: translateZ(0);
   animation-delay: -$animation-unit;

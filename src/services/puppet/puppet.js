@@ -135,7 +135,7 @@ Puppet.prototype.updateControlPointColors = function () {
   const activeIndices = this.recording.getActiveIndices();
   this.controlPoints.forEach((controlPoint, index) => {
     const controlPointSphere = this.controlPointSpheres[index];
-    const color = activeIndices.has(index) ? 0xEE1111 : 0x1144FF;
+    const color = activeIndices.has(index) ? 0x4A74E2 : 0x1144FF;
     controlPointSphere.material.color.setHex(color);
   });
 }

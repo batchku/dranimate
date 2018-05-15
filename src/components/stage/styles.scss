@@ -25,16 +25,111 @@
   display: flex;
   justify-content: space-between;
   align-items:flex-end;
-  padding-top: 24px;
+  padding-top: 40px;
   // width: 100%;
   left: $ui-canvas-margin;
+  @include sm() {
+    left: 0;
+    width: 100%;
+    margin-left:16px;
+  }
+}
+
+.parentElement{
+  position: absolute;
+
+  width:100%;
+  top:0;
+}
+
+
+.modifyBarHide {
+  visibility: hidden;
+
+}
+
+.singleIconTopBar {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 56px;
+  height: 64px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+@include sm() {
+  width: 56px;
+height: 48px;
+}
+}
+
+.singleIconTopBar  p{
+  // display:none;
+  // opacity:100;
+  font-family: 'Raleway', sans-serif;
+  color: #3C404C;
+  font-size: 10px;
+  line-height: 10px;
+  text-align: center;
+  padding-top: 4px;
+  -webkit-transition: opacity 0.5s; /* Safari */
+  transition: opacity .5s;
+  -webkit-touch-callout: none; /* iOS Safari */
+   -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+      -moz-user-select: none; /* Firefox */
+       -ms-user-select: none; /* Internet Explorer/Edge */
+           user-select: none; /* Non-prefixed version, currently
+                                 supported by Chrome and Opera */
+  @include sm() {
+    display:none;
+  }
+}
+
+.singleIconTopBar:hover {
+    cursor: not-allowed;
+   p{
+    // opacity:1;
+  }
+
+}
+
+
+
+.icon path {
+  fill: #545968;
+}
+
+.iconSelected path {
+  fill: #545968;
 }
 
 .profileButton {
   position: absolute;
   top: 0;
   right: $ui-canvas-margin;
+  margin-right: -8px;
   margin-top: $top-margin;
+  background-color: transparent;
+  @include sm() {
+    right:16px;
+  }
+}
+
+.profileIcon {
+  width: 48px;
+  height: 48px;
 }
 
 
@@ -44,9 +139,13 @@
   right: $ui-canvas-margin;
   bottom: 0;
   padding-bottom: 24px;
+  @include sm() {
+    right:16px;
+  }
 }
 
 .backgroundButtons {
+  visibility: hidden;
   position: absolute;
   right: $ui-canvas-margin;
   top: 35%;
@@ -68,23 +167,55 @@
   left: $ui-canvas-margin;
   bottom: 0;
   margin-bottom: $top-margin;
-  border: 1px solid $color-black;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  @include sm() {
+    left:0;
+    margin-left:16px;
+  }
 }
 
+
 .paramControl {
-  position: absolute;
-  left: 0;
-  top: 0;
-  padding: 15px;
-  border: 1px solid $color-black;
-  border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.5);
-  max-width: 320px;
+margin:auto;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 280px;
+  height: 70px;
+margin-top: 16px;
+  padding-right: 24px;
+  padding-left: 24px;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  border-radius: 50px;
+  background-color: #151515;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .5);
   @include sm() {
-    max-width: none;
-    width: 100%;
-  }
+    width: 64px;
+        height: 240px;
+        padding-left: 8px;
+        padding-right: 0px;
+        margin: calc(50vh - 144px) 0;
+        padding-top: 24px;
+        padding-bottom: 24px;
+        float: right;
+        border-radius: 50px 0 0 50px;
+    }
+
+
+
+
+
 }

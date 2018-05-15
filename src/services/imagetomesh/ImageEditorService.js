@@ -264,9 +264,9 @@ const ImageEditorService = function () {
       if(selectedLabel[0] === slic.result.data[i] &&
        selectedLabel[1] === slic.result.data[i+1] &&
        selectedLabel[2] === slic.result.data[i+2]) {
-        highlightData.data[i]     = 255;
-        highlightData.data[i + 1] = 0;
-        highlightData.data[i + 2] = 0;
+        highlightData.data[i]     = 74;
+        highlightData.data[i + 1] = 116;
+        highlightData.data[i + 2] = 226;
         highlightData.data[i + 3] = 255;
       } else {
         highlightData.data[i]     = 255;

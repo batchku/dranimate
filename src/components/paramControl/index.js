@@ -8,7 +8,11 @@ import userService from 'services/api/userService';
 import apiService from 'services/api/apiService';
 import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
-
+import IconMoveFront from '../../../resources/static/imgs/icon_movetofront.svg';
+import IconMoveBack from '../../../resources/static/imgs/icon_movetoback.svg';
+import IconEditPuppet from '../../../resources/static/imgs/icon_editpuppet.svg';
+import IconSavePuppet from '../../../resources/static/imgs/icon_save.svg';
+import IconDeletePuppet from '../../../resources/static/imgs/icon_delete.svg';
 class ParamControl extends Component {
   constructor(props) {
     super(props);
@@ -65,7 +69,58 @@ class ParamControl extends Component {
 
   render() {
     return (
+
+
+
       <div className={this.props.className}>
+
+
+        <div className={styles.singleIconTopBar}>
+                <IconMoveFront
+                className={ styles.icon }
+                onClick={ this.onMoveUp }
+                />
+                  <p>Bring Front</p>
+        </div>
+        <div className={styles.singleIconTopBar}>
+                <IconMoveBack
+                className={ styles.icon }
+                onClick={ this.onMoveBack }
+                />
+                  <p>Send Back</p>
+        </div>
+        <div className={styles.singleIconTopBar}>
+                <IconEditPuppet
+                className={ styles.icon }
+                onClick={this.props.onEditSelectedPuppet}
+                />
+                  <p>Edit</p>
+        </div>
+
+        {/*
+          {
+          userService.isAuthenticated() ?
+          */}
+          <div className={styles.singleIconTopBar}>
+                  <IconSavePuppet
+                  className={ styles.icon }
+                  onClick={this.onSaveToServer}
+                  />
+                    <p>Save</p>
+          </div>   {/*: null
+        }
+*/}
+        <div className={styles.singleIconTopBar}>
+                <IconDeletePuppet
+                className={ styles.icon }
+              onClick={this.props.onDeleteSelectedPuppet}
+                />
+                  <p>Delete</p>
+        </div>
+
+
+
+  {/*
         <div className={styles.paramRow}>
           <span>Scale</span>
           <Slider
@@ -93,6 +148,7 @@ class ParamControl extends Component {
           initialValue={ this.props.selectedPuppet.getName() }
           className={ styles.puppetName }
         />
+
         <Button
           className={ styles.actionButton }
           onClick={this.props.onEditSelectedPuppet}
@@ -105,41 +161,39 @@ class ParamControl extends Component {
         >
           Download Puppet
         </Button>
-        {
-          userService.isAuthenticated() ?
-          <Button
-            className={ styles.actionButton }
-            onClick={this.onSaveToServer}
-          >
-            Save Puppet to Server
-          </Button> : null
-        }
+
+
         <Button
           className={ styles.actionButton }
           onClick={this.props.onDeleteSelectedPuppet}
         >
           Remove Puppet
         </Button>
+
         <div className={ styles.buttonRow }>
           <Button
             className={ styles.actionButton }
-            onClick={ this.onMoveUp }
+
           >
             Move Up
           </Button>
           <Button
             className={ styles.actionButton }
-            onClick={ this.onMoveBack }
+
           >
             Move Back
           </Button>
+
         </div>
+
         <Button
           className={ styles.actionButton }
           onClick={() => this.props.selectedPuppet.clearRecording() }
         >
           Clear Recording
         </Button>
+
+  */}
       </div>
     );
   }

@@ -7,6 +7,16 @@ import Slider from 'components/primitives/slider';
 import ZoomPanner from 'components/zoomPanner';
 import ImageEditorService from 'services/imageToMesh/imageEditorService';
 import styles from './styles.scss';
+import Iconcancel from '../../../resources/static/imgs/icon_cancel.svg';
+import IconPan from '../../../resources/static/imgs/icon_pan.svg';
+import IconZoomin from '../../../resources/static/imgs/icon_zoomin.svg';
+import IconZoomout from '../../../resources/static/imgs/icon_zoomout.svg';
+import IconPen from '../../../resources/static/imgs/icon_pen.svg';
+import IconEraser from '../../../resources/static/imgs/icon_eraser.svg';
+import IconUndo from '../../../resources/static/imgs/icon_undo.svg';
+import IconRedo from '../../../resources/static/imgs/icon_redo.svg';
+import Iconnext from '../../../resources/static/imgs/icon_next.svg';
+
 
 
 class ImageEditor extends Component {
@@ -15,7 +25,7 @@ class ImageEditor extends Component {
     this.state = {
       eraseDraw: true,
       selector: 'SELECT',
-      threshold: 30,
+      threshold: 20,
       loaderIsVisible: false,
       step: 0
     };
@@ -27,7 +37,7 @@ class ImageEditor extends Component {
 
   componentDidMount() {
     this.canvasElement.width = 400;
-    this.canvasElement.height = 300;
+    this.canvasElement.height = 400;
 
     this.imageEditorService.init(this.canvasElement, this.props.imageSrc, this.props.backgroundRemovalData)
       .then(() => this.runSlic())
@@ -55,97 +65,126 @@ class ImageEditor extends Component {
   onZoomSelect = isZoomIn => isZoomIn ?
     this.imageEditorService.zoomIn() : this.imageEditorService.zoomOut();
 
-  onCanvasSelectType = event => {
-    const selector = event.target.checked ? 'SELECT' : 'DESELECT';
-    this.imageEditorService.setSelectState(selector);
-    this.setState({ selector });
-  }
-
   onEraseDrawChange = eraseDraw => {
     const selector = eraseDraw ? 'SELECT' : 'DESELECT';
     this.setState({ eraseDraw });
     this.imageEditorService.setSelectState(selector);
   };
 
+  setEraseMode = () => {
+    this.setState({eraseDraw:false});
+    this.imageEditorService.setSelectState('DESELECT');
+  }
+
+  setDrawMode = () => {
+    this.setState({eraseDraw:true});
+    this.imageEditorService.setSelectState('SELECT');
+  }
+
   onNext = () => {
     const imageForegroundSelection = this.imageEditorService.getImageForegroundSelection();
     this.props.onNext(imageForegroundSelection);
   };
 
+
   render() {
     return (
       <div>
-
-        <div className={styles.editorNav}>
-          <Button
-            onClick={this.props.onCancel}
-            className={ styles.navButton }
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={this.onNext}
-            className={ styles.navButton }
-          >
-            Next
-          </Button>
+        <div className={styles.stepsControl}>
+            <Button
+              onClick={this.onNext}
+              className={ styles.nextButton}>
+              <Iconnext/>
+            </Button>
         </div>
 
-        <div>
-          <canvas
-            className={styles.editorCanvas}
-            ref={input => this.canvasElement = input}
-            onMouseMove={this.imageEditorService.onMouseMove}
-            onMouseDown={this.imageEditorService.onMouseDown}
-            onContextMenu={this.imageEditorService.onContextMenu}
-            onMouseUp={this.imageEditorService.onMouseUp}
-            onMouseOut={this.imageEditorService.onMouseOut}
-            onMouseOver={this.imageEditorService.onMouseOver}
-            onTouchStart={this.imageEditorService.onTouchStart}
-            onTouchEnd={this.imageEditorService.onTouchEnd}
-            onDoubleClick={this.imageEditorService.onDoubleClick}
-          />
-          <ZoomPanner
-            onZoomSelect={this.onZoomSelect}
-            />
-        </div>
+        <div className={styles.editorWindow}>
 
-        <div className={styles.editorControlParam}>
-          <div className={styles.editorControlRow}>
-
-            <div className={styles.editorControlLabel}>
-              <p>1</p>
+          <div className={styles.editorNav}>
+              <div className={styles.editorNavLeft}>
+                  <Button
+                    onClick={this.props.onCancel}
+                    className={ styles.cancelButton}>
+                  <Iconcancel/>
+                  </Button>
+              </div>
+              <h2 className={styles.floatingtitleA}>
+              Select Figure
+              </h2>
+              <div className={styles.editorNavRight}>
+              </div>
+            {/* <Button
+          onClick={this.onNext}
+              className={ styles.navButton }
+           >
+              Next
+           </Button> */}
+          </div>
+            <div className={styles.imageEditorZoomPanner}>
+              <ZoomPanner onZoomSelect={this.onZoomSelect}/>
             </div>
-            <p>Select Image</p>
-
+            <canvas
+              className={styles.editorCanvas}
+              ref={input => this.canvasElement = input}
+              onMouseMove={this.imageEditorService.onMouseMove}
+              onMouseDown={this.imageEditorService.onMouseDown}
+              onContextMenu={this.imageEditorService.onContextMenu}
+              onMouseUp={this.imageEditorService.onMouseUp}
+              onMouseOut={this.imageEditorService.onMouseOut}
+              onMouseOver={this.imageEditorService.onMouseOver}
+              onTouchStart={this.imageEditorService.onTouchStart}
+              onTouchEnd={this.imageEditorService.onTouchEnd}
+              onDoubleClick={this.imageEditorService.onDoubleClick}
+            />
+            <div className={styles.editorControlbar}>
             <div className={`${styles.editorControlRow} ${styles.rowSpaceAround}`}>
 
-              <div>
-                <Checkbox
-                  defaultChecked={ this.state.eraseDraw }
-                  onChange={ this.onEraseDrawChange }
-                />
-                <p className={styles.drawEraseLabel}>
-                  { this.state.eraseDraw ? 'Draw' : 'Erase'}
-                </p>
+              <div className={styles.editorControlLIcons}>
+                  <Button className={styles.undoButton}
+                    onClick={this.setDrawMode}
+                  ><IconUndo/></Button>
+
+
+                  <Button className={styles.redoButton}
+                    onClick={this.setEraseMode}
+                  ><IconRedo/></Button>
+
               </div>
 
-              <div>
-                <label htmlFor='thresholdSlider'>Selection Threshold</label>
-                <Slider
-                  min={ 20 }
-                  max={ 75 }
-                  defaultValue={ this.state.threshold }
-                  onChange={ this.updateThresholdUi }
-                  onChangeEnd={ this.runSlic }
-                />
-                <span>{this.state.threshold}</span>
-              </div>
+                <div className={styles.editorControlthreshlod}>
+                  <Slider
+                    min={ 20 }
+                    max={ 75 }
+                    defaultValue={ this.state.threshold }
+                    onChange={ this.updateThresholdUi }
+                    onChangeEnd={ this.runSlic }
+                  />
+                  <div className={styles.editorControlthreshlodNumb}>
+                    <span>{this.state.threshold}</span>
+                  </div>
+                </div>
+
+                <div className={styles.editorControlRIcons}>
+                    <Button className={this.state.eraseDraw ? styles.drawButtonSelected : styles.drawButton}
+                      onClick={this.setDrawMode}
+                    ><IconPen/></Button>
+
+
+                    <Button className={this.state.eraseDraw ? styles.eraserButton : styles.eraserButtonSelected}
+                      onClick={this.setEraseMode}
+                    ><IconEraser/></Button>
+                </div>
+
+                <div className={styles.editorControlParam}>
+
+        </div>
+
+
+
 
             </div>
           </div>
-        </div>
-
+</div>
       </div>
     );
   }

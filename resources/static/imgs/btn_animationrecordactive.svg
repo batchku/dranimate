@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>record</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="02---Animate-b---record-mode" transform="translate(-120.000000, -932.000000)">
+            <g id="bottom" transform="translate(0.000000, 904.000000)">
+                <g id="Record-Buttons" transform="translate(120.000000, 28.000000)">
+                    <g id="record">
+                        <circle id="Record" fill-opacity="0.3" fill="#F3F5FA" cx="32" cy="32" r="32"></circle>
+                        <circle id="Oval-2" fill="#F3F5FA" cx="32" cy="32" r="20"></circle>
+                        <rect id="Rectangle-7" fill="#D0390F" x="24" y="24" width="16" height="16"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

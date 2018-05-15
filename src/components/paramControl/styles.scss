@@ -1,4 +1,4 @@
-
+@import '~styles/index';
 .actionLabel {
   margin-top: 10px;
 }
@@ -28,4 +28,66 @@
 .buttonRow {
   display: flex;
   flex-direction: row;
+}
+
+
+
+
+.singleIconTopBar {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 56px;
+  height: 64px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+
+  @include sm() {
+    width: 56px;
+  height: 48px;
+  }
+}
+
+.singleIconTopBar  p{
+  // display:none;
+// opacity:0;
+  font-family: 'Raleway', sans-serif;
+  color: hsla(0, 0%, 100%, .6);
+  font-size: 10px;
+  line-height: 10px;
+  text-align: center;
+  padding-top: 4px;
+  -webkit-transition: opacity 0.5s; /* Safari */
+  transition: opacity .5s;
+  @include sm() {
+    display:none;
+  }
+
+}
+
+.singleIconTopBar:hover {
+  cursor:pointer;
+   p{
+    // opacity:1;
+  }
+}
+
+.icon path {
+  fill: #FFFFFF;
+}
+
+.icon:hover path {
+  fill: #4A74E2;
 }

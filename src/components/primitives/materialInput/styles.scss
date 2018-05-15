@@ -11,12 +11,13 @@
   width: 100%;
   border: none;
   background: none;
-  border-bottom: 1px solid $color-grey-dark;
+  border-bottom: 1px solid $color-grey-medium;
   position: absolute;
   bottom: 0;
-  color: $color-grey-dark;
+  color: $color-grey-darkest;
   outline: none;
   box-shadow: none;
+  font-weight: 200;
   &:focus {
     outline: none;
   }

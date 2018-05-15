@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="27px" viewBox="0 0 20 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>Pen</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01---Input---1b" transform="translate(-804.000000, -767.000000)" fill="#4A74E2">
+            <g id="Panel" transform="translate(360.000000, 212.000000)">
+                <g id="Actions" transform="translate(60.000000, 516.000000)">
+                    <g id="icns" transform="translate(134.000000, 29.000000)">
+                        <path d="M258.967,10.512 L250.248,22.963 C250.101,23.174 250.031,23.416 250.032,23.656 C250.011,23.77 250,23.888 250,24.009 L250,34.009 C250,35.113 250.896,36.009 252,36.009 L268,36.009 C269.104,36.009 270,35.113 270,34.009 L270,24.009 C270,23.845 269.98,23.686 269.943,23.533 C269.928,23.459 269.905,23.386 269.877,23.314 C269.771,23.032 269.604,22.777 269.39,22.571 L260.974,10.552 C260.922,10.479 260.864,10.412 260.801,10.354 C260.751,10.305 260.697,10.259 260.638,10.217 C260.428,10.07 260.189,10 259.951,10 C259.572,10 259.2,10.179 258.967,10.512 Z M259.957,13.282 L266.067,22.009 L253.846,22.009 L259.957,13.282 Z M252.4,33.609 L267.601,33.609 L267.601,24.41 L252.4,24.41 L252.4,33.609 Z" id="Pen"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

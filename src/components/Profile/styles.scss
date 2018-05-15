@@ -18,10 +18,12 @@
   flex-direction: column;
   justify-content: center;
   background-color: $color-white;
-  border-radius: 4px;
+  border-radius: 20px;
   min-width: 290px;
   max-width: 75%;
   max-height: 80%;
+  padding:16px;
+ box-shadow: 0 2px 35px 0 rgba(0, 0, 0, 0.7);
 
   @include sm() {
     min-width: none;
@@ -36,9 +38,15 @@
 }
 
 .formButton {
-  margin: 10px 0;
-  height: 30px;
-  margin: 10px;
+  margin: 10px 24px;
+      color: #D8D8D8;
+      background-color: #212121;
+      height: 40px;
+      /* width: 140px; */
+      /* margin-right: 16px; */
+      border-radius: 20px;
+      box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.3);
+
 }
 
 .puppetCollection {

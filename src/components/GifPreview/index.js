@@ -54,16 +54,16 @@ class GifPreview extends Component {
             className={styles.gif}
           />
           <div className={styles.gifPreviewOptions}>
-            <Button onClick={this.onDownload}>
+            <Button className={styles.gifButtons} onClick={this.onDownload}>
               Download
             </Button>
             {
               userService.isAuthenticated() ?
-                <Button onClick={this.onSaveToServer}>
+                <Button className={styles.gifButtons} onClick={this.onSaveToServer}>
                   Save to Server
                 </Button> : null
             }
-            <Button onClick={this.props.closeGifPreview}>
+            <Button className={styles.gifButtons} onClick={this.props.closeGifPreview}>
               Close
             </Button>
           </div>

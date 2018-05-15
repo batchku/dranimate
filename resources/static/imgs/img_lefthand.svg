@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="308px" height="308px" viewBox="0 0 308 308" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>left</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="300" height="300" rx="150"></rect>
+        <filter x="-2.3%" y="-1.7%" width="104.7%" height="104.7%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01---Input---2c" transform="translate(-828.000000, -628.000000)">
+            <g id="Panel" transform="translate(360.000000, 212.000000)">
+                <g id="Hands">
+                    <g id="left" transform="translate(620.000000, 570.000000) scale(-1, 1) translate(-620.000000, -570.000000) translate(470.000000, 420.000000)">
+                        <g id="bar" transform="translate(150.000000, 150.000000) rotate(90.000000) translate(-150.000000, -150.000000) ">
+                            <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                            <use fill-opacity="0.5" fill="#141414" fill-rule="evenodd" xlink:href="#path-1"></use>
+                        </g>
+                        <g id="H" transform="translate(140.997266, 132.161049) rotate(20.000000) translate(-140.997266, -132.161049) translate(60.997266, 32.161049)" fill="#F3F5FA" fill-rule="nonzero">
+                            <path d="M158.971138,109.405392 C157.689678,161.72938 137.136655,210.371765 74.2855755,196.820066 C35.0117739,188.34827 23.1464024,143.942076 2.4803337,108.147172 C-4.16220921,96.6409917 13.6452354,86.8036671 19.7643415,98.1660745 L39.1267292,131.721354 C41.7460373,136.241579 48.6458213,134.322305 48.6530652,129.161345 L48.664161,20.6154215 C48.664161,6.53003974 68.5794187,5.64613084 68.5794187,21.2344141 L68.5794187,75.2663476 C68.5768563,81.841061 78.562639,82.0573462 78.7959908,75.4463681 C78.7959908,55.0499118 78.8168886,34.6521742 78.8168886,14.2557138 C78.8168886,-0.134259094 98.7308691,-0.130419529 98.7308691,14.2557138 L98.7308691,89.5573479 C98.7308691,95.9383663 108.377775,96.5797954 108.942545,89.855598 C108.948033,71.8672904 108.95853,47.4921605 108.95853,32.1904714 C108.95853,17.8005046 128.872576,17.8043527 128.872576,32.1904714 L128.872576,88.9644528 C128.879895,89.1592713 128.883605,89.3569024 128.883605,89.5573479 L128.883605,104.06805 C128.883605,110.490218 138.654069,111.098884 139.104974,104.237039 C139.110104,88.6859441 139.121872,75.8039936 139.121872,59.6026906 C139.121872,45.2127238 159.035918,45.2165719 159.035918,59.6026906 L159.035918,109.405383 L158.971138,109.405383 Z" id="hand"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

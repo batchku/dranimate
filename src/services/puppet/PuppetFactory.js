@@ -32,7 +32,7 @@ function buildFromOptions(options) {
 
   /* Generate wireframe material */
   const wireframeMaterial = new MeshBasicMaterial({
-    color: 0xFF0000,
+    color: 0xFFFFFF,
     wireframe: true,
     wireframeLinewidth: 1
   });
@@ -82,7 +82,7 @@ function buildFromOptions(options) {
   console.log("TODO: expand mesh")
 
   const threeMesh = new Mesh(geometry, texturedMaterial);
-  const boundingBox = new BoxHelper(threeMesh, new Color(0xFF9900));
+  const boundingBox = new BoxHelper(threeMesh, new Color(0xFFFFFF));
   boundingBox.visible = false;
 
   const box3 = new Box3();
@@ -101,7 +101,7 @@ function buildFromOptions(options) {
   const controlPointSpheres = controlPoints.map(() => {
     const sphere = new Mesh(
       new SphereGeometry(15, 32, 32),
-      new MeshBasicMaterial({ color: 0x1144FF })
+      new MeshBasicMaterial({ color: 0x4A74E2 })
     );
     sphere.position.z = 10;
     sphere.visible = false;

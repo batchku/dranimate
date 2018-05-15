@@ -1,26 +1,26 @@
 @import '~styles/index';
 
-$diameter: 40px;
-$bar-width: $diameter - 10;
-$bar-height: 4px;
+$diameter: 64px;
+$bar-width: $diameter - 38;
+$bar-height: 3px;
 $bar-border-radius: $bar-height / 2;
 $center-position: $diameter / 2 - $bar-height / 2;
 $bar-margin: ($diameter - $bar-width) / 2;
-$shadow-inactive: 2px 2px 4px $color-grey-default;
-$shadow-active: 3px 4px 4px $color-grey-default;
+$shadow-inactive: 0 4px 8px 0 rgba(0,0,0,0.50);
+$shadow-active: 0 8px 16px 0 rgba(0,0,0,0.50);
 
 .fab {
 	width: $diameter;
 	height: $diameter;
   border-radius: 50%;
-  background-color: $color-grey-light;
+  background-color: $color-action;
   position: relative;
   box-shadow: $shadow-inactive;
   -webkit-box-shadow: $shadow-inactive;
-  transition: box-shadow 0.15s ease-out, transform 0.15s ease-out, -webkit-box-shadow 0.15s ease-out;
+  transition: box-shadow 0.15s ease-out, transform 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-out;
 }
 .fab:hover {
-  transform: translate(0px, -2px);
+  transform: scale(1.05);
   box-shadow: $shadow-active;
   -webkit-box-shadow: $shadow-active;
 }
@@ -31,7 +31,7 @@ $shadow-active: 3px 4px 4px $color-grey-default;
   height: $bar-height;
   width: $bar-width;
   border-radius: $bar-border-radius;
-  background-color: $color-action;
+  background-color: $color-white;
   left: $bar-margin;
   top: $center-position;
 }

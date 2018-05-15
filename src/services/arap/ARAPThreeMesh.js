@@ -52,7 +52,7 @@ var ARAPThreeMesh = function (verts, faces, controlPoints, material, width, heig
 
 	/* Setup new ARAP mesh */
 
-	this.arapMeshID = ARAP.createNewARAPMesh(this.vertsFlatArray, 
+	this.arapMeshID = ARAP.createNewARAPMesh(this.vertsFlatArray,
 											 this.facesFlatArray);
 
 	/* Add control points */
@@ -69,14 +69,14 @@ var ARAPThreeMesh = function (verts, faces, controlPoints, material, width, heig
 
 	this.threeMesh = new THREE.Mesh(geometry, material);
 
-	this.boundingBox = new THREE.BoundingBoxHelper(this.threeMesh, new THREE.Color(0xFF9900));
+	this.boundingBox = new THREE.BoundingBoxHelper(this.threeMesh, new THREE.Color(0xFFFFFF));
 	this.boundingBox.visible = false;
 
 	this.controlPointSpheres = [];
 	for(var i = 0; i < this.controlPoints.length; i++) {
-		var sphere = new THREE.Mesh( 
-			new THREE.SphereGeometry( 5, 32, 32 ), 
-			new THREE.MeshBasicMaterial( {color: 0xffff00} ) 
+		var sphere = new THREE.Mesh(
+			new THREE.SphereGeometry( 5, 24, 24 ),
+			new THREE.MeshBasicMaterial( {color: 0xffffff} )
 		);
 		sphere.position.z = 10;
 		this.controlPointSpheres.push(sphere);
@@ -102,7 +102,7 @@ ARAPThreeMesh.prototype.setControlPointPosition = function(controlPointIndex, x,
 ARAPThreeMesh.prototype.update = function() {
 
 	if(this.needsUpdate) {
-	
+
 		/* update ARAP deformer */
 		ARAP.updateMeshDeformation(this.arapMeshID);
 

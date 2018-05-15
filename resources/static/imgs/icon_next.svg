@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="24px" viewBox="0 0 14 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>next</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Screens" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01---Input---1b" transform="translate(-1169.000000, -500.000000)" fill="#4A74E2" fill-rule="nonzero">
+            <g id="Arrows" transform="translate(225.000000, 470.000000)">
+                <g id="next-icn" transform="translate(906.000000, 0.000000)">
+                    <path d="M41.5901767,42.0006999 L51.0494152,32.5414615 C51.631802,31.9590746 51.6326408,31.0168559 51.0520154,30.4362304 C50.4673419,29.8515569 49.5288459,29.8567691 48.9467844,30.4388306 L38.4388306,40.9467843 C38.1443287,41.2412863 37.9994598,41.6213806 38.0000015,42.0012811 C38.0014028,42.3821246 38.1463497,42.7621347 38.4362304,43.0520154 C38.4373861,43.0531708 41.9409041,46.5566887 48.9467844,53.5625693 C49.5291712,54.1449562 50.4713899,54.145795 51.0520154,53.5651695 C51.6366889,52.980496 51.6314767,52.042 51.0494152,51.4599384 L41.5901767,42.0006999 Z" id="next" transform="translate(44.744123, 42.000000) scale(-1, 1) translate(-44.744123, -42.000000) "></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -8,6 +8,9 @@
   align-items: center;
 left: $ui-canvas-margin;
   width: auto;
+  @include sm() {
+    left:16px;
+  }
 }
 
 .logo{
@@ -21,6 +24,8 @@ cursor: pointer;
   -ms-flex: 0 auto;
   flex: 0 auto;
 }
+
+
 .topbarItem {
   padding: 10px;
 }

@@ -4,6 +4,8 @@ import Button from 'components/primitives/button';
 import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
 
+
+
 class Recorder extends Component {
   constructor(props) {
     super(props);
@@ -47,19 +49,20 @@ class Recorder extends Component {
 
   render() {
     return (
-      <div className={this.props.className}>
-        <Button
-          className={ this.state.puppetIsRecording ? styles.recorder : styles.recorderActive }
+
+
+
+      <div className={styles.buttonsRecord}>
+        <div
+          className={this.state.puppetIsRecording ? styles.recorder : styles.recorderActive }
           onClick={this.onPuppetRecordToggle}
         >
-          { this.state.isRecording ? 'Puppet Stop' : 'Puppet Start' }
-        </Button>
-      <Button
-        className={ this.state.gifIsRecording ? styles.recorder : styles.recorderActive }
+        </div>
+      <div
+        className={this.state.gifIsRecording ? styles.gifrecorder : styles.gifrecorderActive }
         onClick={this.onGifRecordToggle}
       >
-        { this.state.isRecording ? 'GIF Stop' : 'GIF Start' }
-      </Button>
+      </div>
       </div>
     );
   }

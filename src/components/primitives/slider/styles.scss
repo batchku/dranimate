@@ -3,16 +3,18 @@
 // https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/
 
 $track-color: $color-grey-dark;
-$thumb-color: $color-pink-dark;
+$thumb-color: $color-black;
 
 $thumb-radius: 12px;
-$thumb-height: 24px;
-$thumb-width: 24px;
-$thumb-border-width: 2px;
-$thumb-border-color: $color-pink-light;
+$thumb-height: 18px;
+$thumb-width: 18px;
+$thumb-border-width: 3px;
+$thumb-border-color: $color-white;
 
 $track-width: 100%;
-$track-height: 2px;
+$track-height: 3px;
+
+
 
 $track-radius: 5px;
 $contrast: 5%;

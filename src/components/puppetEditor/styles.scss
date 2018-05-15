@@ -6,36 +6,184 @@
   left: 0;
   top: 0;
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.25);
+  background-color: rgba(0, 0, 0, 0.80);
   display: flex;
   justify-content: space-around;
   align-items: center;
 }
 
-.puppetEditor {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  background-color: white;
-  padding: 20px 40px;
-  border-radius: 4px;
+.nextButton {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, .7);
+  position: absolute;
+  padding: 2px 0 0 4px;
+  right:-15vw;
+  z-index: 10;
+  margin-top: calc(25vh + 42px);
+}
 
-  @include sm() {
-    width: 100%;
-    height: 100%;
-  }
+.backButton {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, .7);
+  position: absolute;
+  padding: 2px 4px 0 0;
+  left: -15vw;
+  z-index: 10;
+  margin-top: calc(25vh + 42px);
+}
+
+.puppetEditor {
+  // display: flex;
+  // flex-direction: column;
+  // flex-wrap: wrap;
+  background-image: url('../../../resources/static/imgs/bg_grid_black.png');
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+  width:50vw;
+  max-width: 720px;
+  min-height: 400px;
+  position: relative;
+  // @include sm() {
+  //   width: 100%;
+  //   height: 100%;
+  // }
+}
+
+.editorWindow {
+  position: absolute;
+  top:0;
+  width:50vw;
+  max-width: 720px;
+  min-height: 400px;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.imageEditorZoomPanner {
+  position: absolute;
+  z-index: 2;
+  top: 0px;
+  right: 16px;
+}
+.editorCanvas {
+  position: absolute;
+  top:48px;
+  left: 0;
+  width: 400px;
+  height: auto;
+}
+
+.editorControlbar {
+  position: absolute;
+  bottom: 0;
+  z-index: 2;
+  height: 60px;
+  width: 100%;
 }
 
 .editorControlRow {
-  height: 90px;
+  margin: auto;
+  width:80%;
+  max-width:450px;
+  height: 100%;
+  border-radius: 60px 60px 0 0;
+  background-color: rgba(0, 0, 0, .8);
   display: flex;
   flex-direction: row;
-  align-items: center;
+  // align-items: center;
+  color:#fff;
+  overflow: hidden;
+  position: relative;
 }
 
 .rowSpaceAround {
   width: 100%;
   justify-content: space-around;
+}
+
+.editorControlLIcons {
+  position: absolute;
+  left:11%;
+  z-index: 3;
+  margin-top: 15px;
+  display:flex;
+}
+
+.editorControlRIcons {
+  position: absolute;
+  right:12%;
+  z-index: 3;
+  margin-top: 16px;
+  display:flex;
+}
+
+.drawButton,
+.eraserButton,
+.undoButton,
+.redoButton {
+  display: flex;
+  max-height: 24px;
+  width: auto;
+  flex:1;
+
+& path {
+  fill: #555;
+}
+& :hover path {
+  fill: $color-action;
+}
+}
+
+.drawButtonSelected,
+.eraserButtonSelected,
+.undoButtonSelected,
+.redoButtonSelected {
+  display: flex;
+  max-height: 24px;
+  width: auto;
+  flex:1;
+
+& path {
+  fill: $color-action;
+}
+& :hover path {
+  fill: $color-action;
+}
+}
+
+
+.eraserButton {
+  margin-top:2px;
+  margin-left: 12px;
+}
+
+.eraserButtonSelected {
+  margin-top:2px;
+  margin-left: 12px;
+}
+
+.undoButton {
+  margin-right: 8px;
+}
+
+.editorControlthreshlod {
+  margin: 18px auto auto auto;
+}
+
+.editorControlthreshlodNumb {
+  opacity: 0;
+}
+
+.editorControlthreshlod:hover .editorControlthreshlodNumb {
+  opacity: 1;
 }
 
 .editorControlParam {
@@ -54,10 +202,6 @@
 }
 
 
-.editorCanvas {
-  border: 1px solid black;
-}
-
 .editorCanvasChecker {
   @include checkerBackground();
   border: 1px solid black;
@@ -72,16 +216,56 @@
 
 
 .editorNav {
-  margin: 10px 0;
+  // margin: 10px 0;
+  background-color: #fff;
   font-size: $header-font-size;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  max-height: 64px;
+  min-height:48px;
+  height: 6vh;
+  border-radius: 20px 20px 0 0;
+}
+
+.floatingtitleA,
+.floatingtitleB {
+  font-size: $header-font-size;
+  font-family: $font-family-header;
+  font-weight: $font-weight-header;
+  text-align: center;
+  margin-top: 14px;
+  color:#434343;
+  margin:auto;
+}
+
+.editorNavLeft {
+  width: 20%;
+  float: left;
+}
+
+.editorNavRight {
+  width: 20%;
+  float: right;
+}
+
+.cancelButton {
+  width: auto;
+  margin-top: 10px;
+  margin-left: 30px;
+  height: 20%;
+}
+
+#Trash-icn {
+  height: 50%;
 }
 
 .navButton {
-  height: 20px;
-  min-width: 80px;
+  position: absolute;
+  top: 15px ;
+  right: 24px ;
+  font-family: $font-family;
+  font-size: $base-font-size;
 }
 
 .save {
@@ -90,7 +274,202 @@
   justify-content: flex-end;
 }
 
-.drawEraseLabel {
-  min-width: 50px;
-  margin-top: 10px;
+// .drawEraseLabel {
+//   min-width: 50px;
+//   margin-top: 10px;
+// }
+
+.editorControlRowHands {
+  z-index: 3;
+  position: absolute;
+  bottom: 0;
+  margin: auto;
+  height: 120px;
+  width: 100%;
+  border-radius: 20px;
+  // background-color: #fcf;
+  // display: flex;
+  // flex-direction: row;
+  overflow: hidden;
+}
+
+.ECLeftHand {
+  // background-image: url('../../../resources/static/imgs/img_lefthand.png');
+  position: absolute;
+  transform: scale(.33);
+  left: -100px;
+  bottom:-100px;
+  opacity: .6;
+  transition: .3s ease-in-out;
+}
+
+.ECRightHand {
+  // background-image: url('../../../resources/static/imgs/img_lefthand.png');
+  position: absolute;
+  transform: scale(.33);
+  right: -100px;
+  bottom:-100px;
+  opacity: .6;
+  transition: .3s ease-in-out;
+}
+
+.ECLeftHand:hover,
+.ECRightHand:hover {
+  opacity:1;
+}
+
+.ECLeftHandActive {
+  position: absolute;
+  opacity: .6;
+  transition: .3s ease-in-out;
+  transform: scale(.86);
+  opacity: 1;
+  left:-70px;
+  bottom: -130px;
+}
+
+.ECRightHandActive {
+  position: absolute;
+  opacity: .6;
+  transition: .3s ease-in-out;
+  transform: scale(.86);
+  opacity: 1;
+  right:-70px;
+  bottom: -130px;
+}
+
+.dotLeftThumb,
+.dotLeftIndexfinger,
+.dotLeftMiddlefinger,
+.dotLeftRingfinger,
+.dotLeftPinky,
+.dotRightThumb,
+.dotRightIndexfinger,
+.dotRightMiddlefinger,
+.dotRightRingfinger,
+.dotRightPinky {
+  z-index: 4;
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  background-color: #fff;
+  border-radius: 50%;
+  border: 4px solid #4A74E2;
+}
+
+.LTdotDefault,
+.LIdotDefault,
+.LMdotDefault,
+.LRdotDefault,
+.LPdotDefault,
+.RTdotDefault,
+.RIdotDefault,
+.RMdotDefault,
+.RRdotDefault,
+.RPdotDefault {
+  opacity: 0;
+  z-index: 5;
+}
+
+.LTdotActive,
+.LIdotActive,
+.LMdotActive,
+.LRdotActive,
+.LPdotActive,
+.RTdotActive,
+.RIdotActive,
+.RMdotActive,
+.RRdotActive,
+.RPdotActive {
+  opacity: 1;
+  z-index: 5;
+}
+
+.dotLeftThumb {
+  left:69.5%;
+  top: 33.8%;
+}
+
+.dotLeftIndexfinger {
+  left:46.5%;
+  top: 13.4%;
+}
+
+.dotLeftMiddlefinger {
+  left:36.5%;
+  top: 14%;
+}
+
+.dotLeftRingfinger {
+  left:28.6%;
+  top: 23.4%;
+}
+
+.dotLeftPinky {
+  left:22.8%;
+  top: 34.6%;
+}
+
+.dotRightThumb {
+  right:69%;
+  top: 33.8%;
+}
+
+.dotRightIndexfinger {
+  right:46.5%;
+  top: 13.4%;
+}
+
+.dotRightMiddlefinger {
+  right:36.5%;
+  top: 14%;
+}
+
+.dotRightRingfinger {
+  right:28.6%;
+  top: 23.4%;
+}
+
+.dotRightPinky {
+  right:22.8%;
+  top: 34.6%;
+}
+
+.tutorialbg {
+  z-index: 5;
+  width: 100%;
+  position: absolute;
+  bottom: 20px;
+}
+
+.tutorialchoosehand {
+  position: relative;
+  z-index: 6;
+  width: 80%;
+  max-width: 300px;
+  box-sizing: border-box;
+  color: #fff;
+  background-color: #4A74E2;
+  margin: auto;
+  padding: 12px 30px;
+  border-radius: 100px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, .7);
+}
+
+.tutorialchoosehandClosed {
+  position: relative;
+  opacity: 0;
+  width: 80%;
+  max-width: 300px;
+  margin: auto;
+}
+
+.tutorialchoosehandcontent {
+  width: 92%;
+}
+
+.tcloseButton {
+  position: absolute;
+  top: 40%;
+  right: 20px;
 }

@@ -2,10 +2,14 @@
 .zoomPanner{
   position: absolute;
   display: flex;
+  align-items: center;
   flex-direction: column;
   top: 96px;
   right: $ui-canvas-margin;
   width: 48px;
+  @include sm() {
+    visibility: hidden;
+  }
 }
 
 
@@ -33,37 +37,53 @@
   -ms-flex-align: center;
   align-items: center;
 }
-.iconTitle{
+
+.iconRightBar{
+  -webkit-filter: drop-shadow( 0px 0px 8px #222);
+    filter: drop-shadow( 0px 0px 8px #222);
+padding-bottom: 8px;
+display: -webkit-box;
+display: -webkit-flex;
+display: -ms-flexbox;
+display: flex;
+-webkit-box-orient: vertical;
+-webkit-box-direction: normal;
+-webkit-flex-direction: column;
+-ms-flex-direction: column;
+flex-direction: column;
+-webkit-box-align: center;
+-webkit-align-items: center;
+-ms-flex-align: center;
+align-items: center;
+
+}
+
+.iconRightBar p{
+  // display:none;
+  opacity:0;
   font-family: 'Raleway', sans-serif;
   color: hsla(0, 0%, 100%, .6);
-  font-size: 8px;
-  line-height: 11px;
+  font-size: 10px;
+  line-height: 10px;
   text-align: center;
-}
-.iconRightBar{
-flex: 1;
-}
-
-.logoFacebook  {
-  display: block;
-  height: 32px;
-  background-image: url('../../../resources/static/imgs/pan.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 50%;
-    margin-bottom: 12px;
+  padding-top: 4px;
+  -webkit-transition: opacity 0.5s; /* Safari */
+  transition: opacity .5s;
+  -webkit-filter: drop-shadow( 0px 0px 8px #222);
+    filter: drop-shadow( 0px 0px 8px #222);
 }
 
-.logoFacebookSelected {
-  display: block;
-  height: 32px;
-  background-image: url('../../../resources/static/imgs/pan.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 50%;
-    margin-bottom: 12px;
+.iconRightBar:hover {
+  cursor:pointer;
+   p{
+    opacity:1;
+  }
 }
 
-.logoFacebook a:hover {
-  background-image: url('../../../resources/static/imgs/pan.png');
+.icon path {
+  fill: white;
+}
+
+.iconSelected path {
+  fill: #4a74e2;
 }

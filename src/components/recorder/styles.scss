@@ -1,13 +1,42 @@
 @import '~styles/index';
 
 .recorder {
-  background-color: $color-action;
-  color: $color-white;
-  min-width: 90px;
+  flex:1;
+width:64px;
+height: 64px;
+padding-right: 16px;
+content: url('../../../resources/static/imgs/btn_animationrecordactive.png');
 }
 
 .recorderActive {
-  background-color: $color-primary;
-  color: $color-black;
-  min-width: 90px;
+  flex:1;
+  width:64px;
+  height: 64px;
+  padding-right: 16px;
+  content: url('../../../resources/static/imgs/btn_animationrecord.png');
+
+}
+
+
+.gifrecorder {
+  flex:1;
+width:64px;
+height: 64px;
+padding-right: 16px;
+content: url('../../../resources/static/imgs/btn_animationrecordactive.png');
+}
+
+.gifrecorderActive {
+  flex:1;
+  width:64px;
+  height: 64px;
+  padding-right: 16px;
+  content: url('../../../resources/static/imgs/btn_gifrecord.png');
+
+}
+
+
+.buttonsRecord{
+  display:flex;
+  flex-direction: row;
 }
