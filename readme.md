@@ -1,29 +1,30 @@
 # Dranimate
 
 ### Requirements
-- install [homebrew](https://brew.sh/):
-- install node.js: `brew install node` or `brew upgrade node`
-  - It is probably best to have node version >= 8 and npm version >= 5
-  - `node -v; npm -v`
+- NodeJS 8
+- NPM 6
+- Firebase CLI 7
 
 ### Setup
-- user Terminal to navigate to the folder where you wish to install this app
-- clone this repo
-```
-git clone git@github.com:cmuartfab/dranimate-browser.git
-```
-
-- install node dependencies with
+1. Inside project install all 3rd party libraries:
 ```
 npm install
 ```
-
-- run local server
+2. Run local dev server
 ```
 npm run dev
 ```
+3. Open following URL in Chrome: `localhost:5000`
 
-- open Chrome and point it to `localhost:5000`
+### Deploy to Firebase
+1. Build application:
+```
+npm run build
+```
+2. Deploy to firebase:
+```
+firebase deploy
+```
 
 ### Other commands
 - Run tests
@@ -37,17 +38,6 @@ npm run lint
 - Build to dist (for hosting on a web server)
 ```
 npm run build
-```
-- Deploy to gh-pages (this deploys your current project)
-```
-npm run deploy
-```
-- Deploy origin/master to gh-pages
-```
-git clone --depth 1 --branch master git@github.com:cmuartfab/dranimate-browser.git;
-cd dranimate-browser;
-npm install;
-npm run deploy;
 ```
 
 ### TODO

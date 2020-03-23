@@ -4,7 +4,7 @@ import ImageEditor from 'components/puppetEditor/ImageEditor';
 import ControlPointEditor from 'components/puppetEditor/ControlPointEditor';
 import Slider from 'components/primitives/slider';
 import dranimate from 'services/dranimate/dranimate';
-import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
+import puppetEditorStateService from './../../services/imagetomesh/PuppetEditorStateService';
 import generateUniqueId from 'services/util/uuid';
 import { generateMesh } from 'services/imagetomesh/generateMesh';
 import { getImageDataFromImage } from 'services/imagetomesh/ImageUtil';

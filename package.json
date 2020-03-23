@@ -1,5 +1,5 @@
 {
-  "name": "Dranimate",
+  "name": "dranimate",
   "version": "0.0.2",
   "description": "Dranimate web app",
   "scripts": {
@@ -8,17 +8,14 @@
     "build:copy:arap": "mkdir dist/arap; cp src/arap/deform2d.js dist/arap/deform2d.js",
     "build:webpack": "webpack --colors --progress --display-error-details",
     "clean": "rm -rf dist",
-    "deploy": "npm run build && git-directory-deploy --directory dist --branch gh-pages",
     "dev": "webpack-dev-server --inline --colors --progress --content-base src",
     "lint": "eslint src",
     "test": "jest"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0-beta.40",
-    "@babel/preset-env": "^7.0.0-beta.40",
-    "@babel/preset-react": "^7.0.0-beta.40",
-    "@babel/preset-stage-3": "^7.0.0-beta.40",
-    "babel-core": "^7.0.0-bridge.0",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.1",
     "babel-jest": "^22.2.2",
     "babel-loader": "^8.0.0-beta.0",
     "babel-plugin-module-resolver": "^3.0.0",
@@ -59,13 +56,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cmuartfab/dranimate-browser.git"
+    "url": "https://dev.azure.com/batchku/_git/Dranimate"
   },
   "bugs": {
-    "url": "https://github.com/cmuartfab/dranimate-browser/issues"
+    "url": "https://dev.azure.com/batchku/Dranimate/_workitems"
   },
-  "homepage": "https://github.com/cmuartfab/dranimate-browser#readme",
+  "homepage": "https://dev.azure.com/batchku/_git/Dranimate?path=%2Freadme.md&_a=preview",
   "license": "ISC",
-  "main": "index.js",
+  "main": "src/_entrypoints/main.js",
   "author": ""
 }

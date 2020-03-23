@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
-import ControlPointService from 'services/imageToMesh/ControlPointService';
+import ControlPointService from './../../services/imagetomesh/ControlPointService';
 import styles from './styles.scss';
 
 class ControlPointEditor extends Component {

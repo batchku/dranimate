@@ -5,9 +5,8 @@ import Checkbox from 'components/primitives/checkbox';
 import Loader from 'components/loader';
 import Slider from 'components/primitives/slider';
 import ZoomPanner from 'components/zoomPanner';
-import ImageEditorService from 'services/imageToMesh/imageEditorService';
+import ImageEditorService from './../../services/imagetomesh/ImageEditorService';
 import styles from './styles.scss';
-
 
 class ImageEditor extends Component {
   constructor(props) {

@@ -11,7 +11,7 @@ import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
 import Slider from 'components/primitives/slider';
 import { loadDranimateFile, loadImageFile } from 'services/util/file';
-import puppetEditorStateService from 'services/imageToMesh/PuppetEditorStateService';
+import puppetEditorStateService from './../../services/imagetomesh/PuppetEditorStateService';
 import dranimate from 'services/dranimate/dranimate';
 import styles from './styles.scss';
 
