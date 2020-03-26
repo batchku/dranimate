@@ -187,7 +187,7 @@ class Stage extends Component {
 	render() {
 		return (
 			<div className={styles.stage}>
-				<video style={{display: '', position: 'fixed'}} id="video" width={'auto'} height={'auto'} playsInline></video>
+				<video style={{display: 'none', position: 'fixed'}} id="video" width={'auto'} height={'auto'} playsInline></video>
 				<div
 					className={styles.dranimateCanvas}
 					onMouseDown={this.onMouseDown}
