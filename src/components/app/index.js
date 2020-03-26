@@ -1,22 +1,21 @@
 import React, { Component } from 'react';
 import {
-  BrowserRouter as Router,
-  Route,
+	BrowserRouter as Router,
+	Route,
 } from 'react-router-dom';
-import PuppetEditor from 'components/puppetEditor';
+
 import Stage from 'components/stage';
-import baseStyles from 'styles/baseStyles.scss';
+
+import 'styles/baseStyles.scss';
 
 class App extends Component {
-  render() {
-    return (
-      <Router>
-        <div>
-          <Route component={Stage} />
-        </div>
-      </Router>
-    );
-  }
+	render() {
+		return (
+			<Router>
+				<Route component={Stage} />
+			</Router>
+		);
+	}
 }
 
 export default App;

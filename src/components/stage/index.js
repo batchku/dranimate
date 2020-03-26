@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import Button from 'components/primitives/button';
 import Fab from 'components/primitives/fab';
 import Loader from 'components/loader';
@@ -10,290 +11,288 @@ import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
 import Slider from 'components/primitives/slider';
+
 import { loadDranimateFile, loadImageFile } from 'services/util/file';
-import puppetEditorStateService from './../../services/imagetomesh/PuppetEditorStateService';
+import puppetEditorStateService from 'services/imagetomesh/PuppetEditorStateService';
 import dranimate from 'services/dranimate/dranimate';
+
 import styles from './styles.scss';
 
 const FILE_PICKER_STATE = {
-  DRANIMATE: 'DRANIMATE',
-  BACKGROUND: 'BACKGROUND'
+	DRANIMATE: 'DRANIMATE',
+	BACKGROUND: 'BACKGROUND'
 };
 let filePickerState = FILE_PICKER_STATE.DRANIMATE;
 
 class Stage extends Component {
+	constructor() {
+		super();
+		this.state = {
+			editorIsOpen: false,
+			profileIsOpen: false,
+			controllerIsOpen: false,
+			selectedPuppet: null,
+			loaderIsVisible: false,
+			loaderMessage: '',
+			gifPreviewBlob: null,
+			backgroundColor: '#66FF66',
+			hadBackgroundImage: false,
+		};
+	}
 
-  constructor() {
-    super();
-    this.state = {
-      editorIsOpen: false,
-      profileIsOpen: false,
-      controllerIsOpen: false,
-      selectedPuppet: null,
-      loaderIsVisible: false,
-      loaderMessage: '',
-      gifPreviewBlob: null,
-      backgroundColor: '#66FF66',
-      hadBackgroundImage: false,
-    };
-  }
+	componentDidMount = () => {
+		// passive touch event listeners seem to be needed, which react does not support
+		this.dranimateStageContainer.addEventListener(
+			'touchmove',
+			event => dranimate.onTouchMove(event),
+			{ passive: false }
+		);
+		dranimate.setup(this.dranimateStageContainer, styles.dranimateCanvasBackground);
+	};
 
-  componentDidMount = () => {
-    // passive touch event listeners seem to be needed, which react does not support
-    this.dranimateStageContainer.addEventListener(
-      'touchmove',
-      event => dranimate.onTouchMove(event),
-      { passive: false }
-    );
-    dranimate.setup(this.dranimateStageContainer, styles.dranimateCanvasBackground);
-  };
+	onMouseDown = event => {
+		dranimate.onMouseDown(event);
+		const selectedPuppet = dranimate.getSelectedPuppet();
+		this.setState({ selectedPuppet });
+	};
 
-  // componentDidUpdate = (prevProps, prevState) => {
-  //   console.log('this.state', this.state);
-  // }
+	closeEditor = () => {
+		this.setState({ editorIsOpen: false });
+		dranimate.startRenderLoop();
+	};
 
-  onMouseDown = event => {
-    dranimate.onMouseDown(event);
-    const selectedPuppet = dranimate.getSelectedPuppet();
-    this.setState({ selectedPuppet });
-  };
+	closeProfile = () => {
+		this.setState({ profileIsOpen: false });
+		dranimate.startRenderLoop();
+	};
 
-  closeEditor = () => {
-    this.setState({ editorIsOpen: false });
-    dranimate.startRenderLoop();
-  };
+	openController = controllerIsOpen => {
+		this.setState({ controllerIsOpen });
+		controllerIsOpen ? dranimate.stopRenderLoop() : dranimate.startRenderLoop();
+	};
 
-  closeProfile = () => {
-    this.setState({ profileIsOpen: false });
-    dranimate.startRenderLoop();
-  };
+	onFabClick = () => {
+		filePickerState = FILE_PICKER_STATE.DRANIMATE;
+		this.filePicker.click();
+	};
 
-  openController = controllerIsOpen => {
-    this.setState({ controllerIsOpen });
-    controllerIsOpen ? dranimate.stopRenderLoop() : dranimate.startRenderLoop();
-  };
+	onZoomSelect = isZoomIn => isZoomIn ? dranimate.zoomIn() : dranimate.zoomOut();
 
-  onFabClick = () => {
-    filePickerState = FILE_PICKER_STATE.DRANIMATE;
-    this.filePicker.click();
-  };
+	onPanSelect = isPanSelected => dranimate.setPanEnabled(isPanSelected);
 
-  onZoomSelect = isZoomIn => isZoomIn ? dranimate.zoomIn() : dranimate.zoomOut();
+	onDeleteSelectedPuppet = () => {
+		dranimate.deleteSelectedPuppet();
+		if (!dranimate.hasPuppet()) {
+			dranimate.stopRenderLoop();
+		}
+		this.setState({ selectedPuppet: null });
+	};
 
-  onPanSelect = isPanSelected => dranimate.setPanEnabled(isPanSelected);
+	onEditSelectedPuppet = () => {
+		console.log('setItem?', dranimate.getSelectedPuppet())
+		puppetEditorStateService.setItem(dranimate.getSelectedPuppet());
+		this.setState({ editorIsOpen: true });
+		dranimate.stopRenderLoop();
+	};
 
-  onDeleteSelectedPuppet = () => {
-    dranimate.deleteSelectedPuppet();
-    if (!dranimate.hasPuppet()) {
-      dranimate.stopRenderLoop();
-    }
-    this.setState({ selectedPuppet: null });
-  };
+	openLoader = message => {
+		this.setState({
+			loaderIsVisible: true,
+			loaderMessage: message
+		});
+		dranimate.stopRenderLoop();
+	};
 
-  onEditSelectedPuppet = () => {
-    console.log('setItem?', dranimate.getSelectedPuppet())
-    puppetEditorStateService.setItem(dranimate.getSelectedPuppet());
-    this.setState({ editorIsOpen: true });
-    dranimate.stopRenderLoop();
-  };
+	closeLoader = () => {
+		this.setState({
+			loaderIsVisible: false,
+			loaderMessage: ''
+		});
+		dranimate.startRenderLoop();
+	};
 
-  openLoader = message => {
-    this.setState({
-      loaderIsVisible: true,
-      loaderMessage: message
-    });
-    dranimate.stopRenderLoop();
-  };
+	gifPreviewAvailable = gifPreviewBlob => {
+		this.setState({ gifPreviewBlob });
+		dranimate.stopRenderLoop();
+	};
 
-  closeLoader = () => {
-    this.setState({
-      loaderIsVisible: false,
-      loaderMessage: ''
-    });
-    dranimate.startRenderLoop();
-  };
+	closeGifPreview = () => {
+		this.setState({ gifPreviewBlob: null });
+		dranimate.startRenderLoop();
+	};
 
-  gifPreviewAvailable = gifPreviewBlob => {
-    this.setState({ gifPreviewBlob });
-    dranimate.stopRenderLoop();
-  };
+	onFileChange = event => {
+		if (filePickerState === FILE_PICKER_STATE.DRANIMATE) {
+			this.loadDranimateFile();
+			return;
+		}
+		if (filePickerState === FILE_PICKER_STATE.BACKGROUND) {
+			this.loadBackgroundFile();
+			return;
+		}
+		console.log('error: no file picker state');
+	}
 
-  closeGifPreview = () => {
-    this.setState({ gifPreviewBlob: null });
-    dranimate.startRenderLoop();
-  };
+	loadDranimateFile = () => {
+		loadDranimateFile(this.filePicker)
+			.then((result) => {
+				const isPuppet = !!result.id;
+				if (isPuppet) {
+					dranimate.addPuppet(result);
+					dranimate.startRenderLoop();
+				}
+				else {
+					puppetEditorStateService.setItem(result);
+					this.setState({ editorIsOpen: true });
+				}
+			})
+			.catch(error => console.log('error', error)); // TODO: show error modal
+	};
 
-  onFileChange = event => {
-    if (filePickerState === FILE_PICKER_STATE.DRANIMATE) {
-      this.loadDranimateFile();
-      return;
-    }
-    if (filePickerState === FILE_PICKER_STATE.BACKGROUND) {
-      this.loadBackgroundFile();
-      return;
-    }
-    console.log('error: no file picker state');
-  }
+	loadBackgroundFile = () => {
+		loadImageFile(this.filePicker)
+			.then(imageDataUrl => {
+				dranimate.setBackgroundImage(imageDataUrl);
+				this.setState({ hasBackgroundImage: true });
+			})
+			.catch(error => console.log('error', error)); // TODO: show error modal
+	};
 
-  loadDranimateFile = () => {
-    loadDranimateFile(this.filePicker)
-      .then((result) => {
-        const isPuppet = !!result.id;
-        if (isPuppet) {
-          dranimate.addPuppet(result);
-          dranimate.startRenderLoop();
-        }
-        else {
-          puppetEditorStateService.setItem(result);
-          this.setState({ editorIsOpen: true });
-        }
-      })
-      .catch(error => console.log('error', error)); // TODO: show error modal
-  };
+	onBackgroundImage = event => {
+		filePickerState = FILE_PICKER_STATE.BACKGROUND;
+		this.filePicker.click();
+	};
 
-  loadBackgroundFile = () => {
-    loadImageFile(this.filePicker)
-      .then(imageDataUrl => {
-        dranimate.setBackgroundImage(imageDataUrl);
-        this.setState({ hasBackgroundImage: true });
-      })
-      .catch(error => console.log('error', error)); // TODO: show error modal
-  };
+	onBackgroundColorChange = event => {
+		const backgroundColor = event.target.value;
+		dranimate.setBackgroundColor(backgroundColor);
+		this.setState({ backgroundColor });
+	};
 
-  onBackgroundImage = event => {
-    filePickerState = FILE_PICKER_STATE.BACKGROUND;
-    this.filePicker.click();
-  };
+	clearBackground = () => {
+		dranimate.clearBackground();
+		this.setState({ hasBackgroundImage: false });
+	};
 
-  onBackgroundColorChange = event => {
-    const backgroundColor = event.target.value;
-    dranimate.setBackgroundColor(backgroundColor);
-    this.setState({ backgroundColor });
-  };
+	onBackgroundImageSizeChange = value => {
+		const normalizedValue = value / 100;
+		dranimate.setBackgroundImageSize(normalizedValue);
+	};
 
-  clearBackground = () => {
-    dranimate.clearBackground();
-    this.setState({ hasBackgroundImage: false });
-  };
+	onProfileClick = () => {
+		this.setState({ profileIsOpen: true });
+		dranimate.stopRenderLoop();
+	};
 
-  onBackgroundImageSizeChange = value => {
-    const normalizedValue = value / 100;
-    dranimate.setBackgroundImageSize(normalizedValue);
-  };
-
-  onProfileClick = () => {
-    this.setState({ profileIsOpen: true });
-    dranimate.stopRenderLoop();
-  };
-
-  render() {
-    return (
-      <div className={styles.stage}>
-        <div
-          className={styles.dranimateCanvas}
-          onMouseDown={this.onMouseDown}
-          onMouseMove={dranimate.onMouseMove}
-          onMouseUp={dranimate.onMouseUp}
-          onTouchStart={dranimate.onTouchStart}
-          onTouchEnd={dranimate.onTouchEnd}
-          ref={input => this.dranimateStageContainer = input}
-        />
-        <TopBar className={styles.topBar}/>
-        <Button
-          className={styles.profileButton}
-          onClick={this.onProfileClick}
-        >
-          Profile
-        </Button>
-        <div className={styles.backgroundButtons}>
-          <Button onClick={this.onBackgroundImage}>
-            Background Image
-          </Button>
-          {
-            this.state.hasBackgroundImage ?
-              <Slider
-                min={ 0 }
-                max={ 500 }
-                defaultValue={ 100 }
-                onChange={ this.onBackgroundImageSizeChange }
-                className={ styles.backgroundSlider }
-              /> : null
-          }
-          <Button onClick={() => this.colorPicker.click()}>
-            Background Color
-          </Button>
-          <Button onClick={this.clearBackground}>
-            Clear background
-          </Button>
-        </div>
-        {
-          this.state.selectedPuppet ?
-          <ParamControl
-            className={styles.paramControl}
-            selectedPuppet={this.state.selectedPuppet}
-            onEditSelectedPuppet={this.onEditSelectedPuppet}
-            onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
-            openLoader={this.openLoader}
-            closeLoader={this.closeLoader}
-          /> : null
-        }
-        <div className={styles.lowerLeft}>
-          <ZoomPanner
-            onPanSelect={this.onPanSelect}
-            onZoomSelect={this.onZoomSelect}
-          />
-          <Recorder
-            openLoader={this.openLoader}
-            closeLoader={this.closeLoader}
-            gifPreviewAvailable={this.gifPreviewAvailable}
-          />
-        </div>
-        <Fab
-          className={styles.fab}
-          onClick={this.onFabClick}
-        />
-        <input
-          type='file'
-          ref={input => this.filePicker = input}
-          value=''
-          onChange={this.onFileChange}
-          className={styles.hiddenFilePicker}
-        />
-        <input
-          type='color'
-          ref={element => this.colorPicker = element}
-          value={this.state.backgroundColor}
-          onChange={this.onBackgroundColorChange}
-        />
-        {
-          this.state.editorIsOpen ?
-            <PuppetEditor
-              onClose={this.closeEditor}
-            /> :
-            null
-        }
-        { this.state.profileIsOpen ?
-          <Profile
-            onClose={this.closeProfile}
-            openLoader={this.openLoader}
-            closeLoader={this.closeLoader}
-          /> : null
-        }
-        { this.state.gifPreviewBlob ?
-          <GifPreview
-            gifBlob={this.state.gifPreviewBlob}
-            closeGifPreview={this.closeGifPreview}
-            openLoader={this.openLoader}
-            closeLoader={this.closeLoader}
-          /> : null
-        }
-        <Loader
-          isVisible={this.state.loaderIsVisible}
-          message={this.state.loaderMessage}
-        />
-      </div>
-    );
-  }
+	render() {
+		return (
+			<div className={styles.stage}>
+				<video style={{display: '', position: 'fixed'}} id="video" width={'auto'} height={'auto'} playsInline></video>
+				<div
+					className={styles.dranimateCanvas}
+					onMouseDown={this.onMouseDown}
+					onMouseMove={dranimate.onMouseMove}
+					onMouseUp={dranimate.onMouseUp}
+					onTouchStart={dranimate.onTouchStart}
+					onTouchEnd={dranimate.onTouchEnd}
+					ref={input => this.dranimateStageContainer = input}
+				/>
+				<TopBar className={styles.topBar}/>
+				<Button
+					className={styles.profileButton}
+					onClick={this.onProfileClick}
+				>
+					Profile
+				</Button>
+				<div className={styles.backgroundButtons}>
+					<Button onClick={this.onBackgroundImage}>
+						Background Image
+					</Button>
+					{
+						this.state.hasBackgroundImage ?
+							<Slider
+								min={ 0 }
+								max={ 500 }
+								defaultValue={ 100 }
+								onChange={ this.onBackgroundImageSizeChange }
+								className={ styles.backgroundSlider }
+							/> : null
+					}
+					<Button onClick={() => this.colorPicker.click()}>
+						Background Color
+					</Button>
+					<Button onClick={this.clearBackground}>
+						Clear background
+					</Button>
+				</div>
+				{
+					this.state.selectedPuppet ?
+					<ParamControl
+						className={styles.paramControl}
+						selectedPuppet={this.state.selectedPuppet}
+						onEditSelectedPuppet={this.onEditSelectedPuppet}
+						onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
+						openLoader={this.openLoader}
+						closeLoader={this.closeLoader}
+					/> : null
+				}
+				<div className={styles.lowerLeft}>
+					<ZoomPanner
+						onPanSelect={this.onPanSelect}
+						onZoomSelect={this.onZoomSelect}
+					/>
+					<Recorder
+						openLoader={this.openLoader}
+						closeLoader={this.closeLoader}
+						gifPreviewAvailable={this.gifPreviewAvailable}
+					/>
+				</div>
+				<Fab
+					className={styles.fab}
+					onClick={this.onFabClick}
+				/>
+				<input
+					type='file'
+					ref={input => this.filePicker = input}
+					value=''
+					onChange={this.onFileChange}
+					className={styles.hiddenFilePicker}
+				/>
+				<input
+					type='color'
+					ref={element => this.colorPicker = element}
+					value={this.state.backgroundColor}
+					onChange={this.onBackgroundColorChange}
+				/>
+				{
+					this.state.editorIsOpen ?
+						<PuppetEditor
+							onClose={this.closeEditor}
+						/> :
+						null
+				}
+				{ this.state.profileIsOpen ?
+					<Profile
+						onClose={this.closeProfile}
+						openLoader={this.openLoader}
+						closeLoader={this.closeLoader}
+					/> : null
+				}
+				{ this.state.gifPreviewBlob ?
+					<GifPreview
+						gifBlob={this.state.gifPreviewBlob}
+						closeGifPreview={this.closeGifPreview}
+						openLoader={this.openLoader}
+						closeLoader={this.closeLoader}
+					/> : null
+				}
+				<Loader
+					isVisible={this.state.loaderIsVisible}
+					message={this.state.loaderMessage}
+				/>
+			</div>
+		);
+	}
 }
 
 export default Stage;

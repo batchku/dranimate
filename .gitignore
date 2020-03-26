@@ -9,3 +9,6 @@ package-lock.json
 
 # Ignore Firebase cache
 .firebase
+
+# Ignore VS Code config files
+.vscode
