@@ -54,7 +54,7 @@ class Dranimate {
 			'palmBase-1',
 		];
 
-		window.addEventListener('resize', $event => refreshCamera(), false );
+		window.addEventListener('resize', $event => this.refreshCamera(), false );
 	}
 
 	getSelectedPuppet = () => {
@@ -74,7 +74,7 @@ class Dranimate {
 	createJointMesh = (name) => {
 		var geometry = new THREE.BoxBufferGeometry(10, 10, 10);
 		var material = new THREE.MeshBasicMaterial({
-			color: 0x00ff00,
+			color: 0x000000,
 			depthTest: false,
 			depthWrite: false,
 		});
@@ -90,7 +90,7 @@ class Dranimate {
 	updatePalmMeshPosition = () => {
 		const handParts = ['thumb', 'indexFinger', 'middleFinger', 'ringFinger', 'pinky', 'palmBase'];
 
-		handParts.forEach((partName) => {
+		handParts.forEach((partName, partIndex) => {
 			const partPositionData = this.handTrackingService.palmPositionData[partName];
 
 			partPositionData.forEach((partData, index) => {
@@ -100,6 +100,16 @@ class Dranimate {
 					partData[2]
 				);
 			});
+
+			const selectedPuppet = this.getSelectedPuppet();
+			if (selectedPuppet) {
+				selectedPuppet.incrementPosition(this['middleFinger-1'].position.x, this['middleFinger-1'].position.y);
+
+				if (!this[`${partName}-4`]) {
+					return;
+				}
+				selectedPuppet.setControlPointPosition(partIndex, new THREE.Vector2(this[`${partName}-4`].position.x, this[`${partName}-4`].position.y))
+			}
 		});
 	}
 
