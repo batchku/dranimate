@@ -112,7 +112,10 @@ class Dranimate {
 				if (!this[`${partName}-4`]) {
 					return;
 				}
-				selectedPuppet.setControlPointPosition(partIndex, new THREE.Vector2(this[`${partName}-4`].position.x, this[`${partName}-4`].position.y))
+				selectedPuppet.setControlPointPosition(
+					partIndex,
+					new THREE.Vector2(this[`${partName}-4`].position.x, this[`${partName}-4`].position.y)
+				);
 			}
 		});
 	}
