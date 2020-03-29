@@ -377,6 +377,13 @@ class Dranimate {
 	setHandTrackingEnabled = (enabled) => {
 		this.handTrackingEnabled = enabled;
 		this.handMeshGroup.visible = enabled;
+
+		if (enabled) {
+			this.handTrackingService.startTracking();
+		}
+		else {
+			this.handTrackingService.stopTracking();
+		}
 	}
 
 	startRenderLoop = () => {
