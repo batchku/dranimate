@@ -42,6 +42,7 @@ class Dranimate {
 		this.isInRenderLoop = true;
 		this.gifRecording = new GifRecording(performance.now(), false);
 		this.handTrackingService = new HandTrackingService();
+		this.handTrackingService.onUpdatePosition = this.updatePalmMeshPosition.bind(this);
 
 		this.backgroundColorMesh;
 		this.backgroundImageMesh;
@@ -91,11 +92,11 @@ class Dranimate {
 		return mesh;
 	}
 
-	updatePalmMeshPosition = () => {
+	updatePalmMeshPosition = (positionData) => {
 		const handParts = ['thumb', 'indexFinger', 'middleFinger', 'ringFinger', 'pinky', 'palmBase'];
 
 		handParts.forEach((partName, partIndex) => {
-			const partPositionData = this.handTrackingService.palmPositionData[partName];
+			const partPositionData = positionData[partName];
 
 			partPositionData.forEach((partData, index) => {
 				this[`${partName}-${index + 1}`].position.set(
@@ -146,7 +147,6 @@ class Dranimate {
 		this.leapHandler = new DranimateLeapHandler(this.renderer.domElement, this.panHandler, this.puppets);
 
 		await this.handTrackingService.loadAsync();
-		this.handTrackingService.startTracking();
 
 		const renderAreaSize = 1000;
 		const scaleMultiplier = 2000;
@@ -380,13 +380,6 @@ class Dranimate {
 	setHandTrackingEnabled = (enabled) => {
 		this.handTrackingEnabled = enabled;
 		this.handMeshGroup.visible = enabled;
-
-		if (enabled) {
-			this.handTrackingService.startTracking();
-		}
-		else {
-			this.handTrackingService.stopTracking();
-		}
 	}
 
 	startRenderLoop = () => {
@@ -442,8 +435,8 @@ class Dranimate {
 	}
 
 	render = (elapsedTime) => {
-		if (this.handTrackingEnabled && this.handTrackingService.palmPositionData) {
-			this.updatePalmMeshPosition();
+		if (this.handTrackingEnabled) {
+			this.handTrackingService.trackAsync();
 		}
 
 		this.renderer.render(this.scene, this.camera);

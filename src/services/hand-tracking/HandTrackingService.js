@@ -4,6 +4,7 @@ export default class HandTrackingService {
 		this.video = null;
 		this.tracking = false;
 		this.palmPositionData = null;
+		this.onUpdatePosition = null;
 
 		this.trackAsync = this.trackAsync.bind(this);
 	}
@@ -11,15 +12,6 @@ export default class HandTrackingService {
 	async loadAsync() {
 		this.model = await handpose.load();
 		await this.loadVideoAsync();
-	}
-
-	startTracking() {
-		this.tracking = true;
-		this.trackAsync();
-	}
-
-	stopTracking() {
-		this.tracking = false;
 	}
 
 	/**
@@ -50,19 +42,16 @@ export default class HandTrackingService {
 	}
 
 	async trackAsync() {
-		if (!this.tracking) {
-			return;
-		}
-
 		const predictions = await this.model.estimateHands(this.video, true);
 
 		// If at least one hand is detected
 		if (predictions.length > 0) {
 			this.palmPositionData = predictions[0].annotations;
+
+			this.onUpdatePosition(this.palmPositionData);
 		}
 		else {
 			this.palmPositionData = null;
 		}
-		requestAnimationFrame(this.trackAsync);
 	}
 }

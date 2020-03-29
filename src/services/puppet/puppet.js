@@ -4,6 +4,7 @@ import ARAP from 'services/arap/arap';
 import Recording from 'services/puppet/Recording';
 import { pointIsInsideTriangle } from 'services/util/math';
 import { clearObject } from 'services/util/threeUtil';
+import dranimate from '../dranimate/dranimate';
 
 const Puppet = function(puppetData) {
 
@@ -213,7 +214,7 @@ Puppet.prototype.update = function(elapsedTime, targetTimestamp) {
   }
 
   // TRANSLATE PUPPET
-  if(shouldMoveXY) {
+  if(shouldMoveXY && !dranimate.handTrackingEnabled) {
     const puppetCenter = this.getCenter();
     const xyDelta = new Vector2(dx, dy);
     this.controlPoints.forEach((controlPoint, index) => {
