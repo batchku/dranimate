@@ -28,6 +28,10 @@ class PuppetEditor extends Component {
     };
   }
 
+  componentWillUnmount() {
+    dranimate.setHandTrackingEnabled(true);
+  }
+
   componentWillMount() {
     if (puppetEditorStateService.isPuppet) {
       const puppet = puppetEditorStateService.getItem();

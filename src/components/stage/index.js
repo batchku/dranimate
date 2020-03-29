@@ -145,6 +145,8 @@ class Stage extends Component {
 				else {
 					puppetEditorStateService.setItem(result);
 					this.setState({ editorIsOpen: true });
+
+					dranimate.setHandTrackingEnabled(false);
 				}
 			})
 			.catch(error => console.log('error', error)); // TODO: show error modal
