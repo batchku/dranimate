@@ -81,7 +81,7 @@ const defaultConfig = {
 	},
 
 	devServer: {
-		https: true,
+		https: false,
 		historyApiFallback: true,
 		watchOptions: { aggregateTimeout: 300, poll: 1000 },
 		headers: {
@@ -91,7 +91,7 @@ const defaultConfig = {
 		},
 		port: 5000
 		// To access dev server from other devices on the network uncomment the following line
-		,host: '0.0.0.0', disableHostCheck: true
+		,host: 'localhost', disableHostCheck: true
 	},
 
 	node: {

@@ -14,6 +14,13 @@ const MOUSE_STATE = {
   OUTSIDE: 'OUTSIDE',
 };
 
+const SELECTED_REGION_COLOR = {
+  red: 150,
+  green: 150,
+  blue: 150,
+  alpha: 255,
+};
+
 const ImageEditorService = function () {
   let that = this;
   let context;
@@ -220,10 +227,10 @@ const ImageEditorService = function () {
   this.addSelectionToNoBackgroundImage = function () {
     for (var i = 0; i < slic.result.data.length; i += 4) {
       if(highlightData.data[i+3] === 255) {
-        imageNoBackgroundData.data[i]     = 255;
-        imageNoBackgroundData.data[i + 1] = 255;
-        imageNoBackgroundData.data[i + 2] = 255;
-        imageNoBackgroundData.data[i + 3] = 255;
+        imageNoBackgroundData.data[i]     = SELECTED_REGION_COLOR.red;
+        imageNoBackgroundData.data[i + 1] = SELECTED_REGION_COLOR.green;
+        imageNoBackgroundData.data[i + 2] = SELECTED_REGION_COLOR.blue;
+        imageNoBackgroundData.data[i + 3] = SELECTED_REGION_COLOR.alpha;
       }
     }
     dummyContext.putImageData(imageNoBackgroundData, 0, 0);
