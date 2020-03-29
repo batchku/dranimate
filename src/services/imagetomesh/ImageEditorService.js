@@ -71,6 +71,16 @@ const ImageEditorService = function () {
           height = normHeight;
           dummyCanvas.width = normWidth;
           dummyCanvas.height = normHeight;
+
+          if (width > canvas.width) {
+            const targetZoom = canvas.width / width;
+            zoom = targetZoom;
+          }
+          if (height > canvas.height) {
+            const targetZoom = canvas.height / height;
+            zoom = targetZoom;
+          }
+
           image = img;
         });
     };
