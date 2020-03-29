@@ -68,7 +68,8 @@ class ImageEditor extends Component {
 
   onNext = () => {
     const imageForegroundSelection = this.imageEditorService.getImageForegroundSelection();
-    this.props.onNext(imageForegroundSelection);
+    const imageEditorZoom = this.imageEditorService.getZoom();
+    this.props.onNext(imageForegroundSelection, imageEditorZoom);
   };
 
   render() {

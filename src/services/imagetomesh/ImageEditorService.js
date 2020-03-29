@@ -184,6 +184,10 @@ const ImageEditorService = function () {
         redraw();
     }
 
+    this.getZoom = function () {
+      return zoom;
+    }
+
     this.setSelectState = state => {
       selectState = state;
       panHandler.setPanEnabled(selectState === SELECT_STATE.PAN);

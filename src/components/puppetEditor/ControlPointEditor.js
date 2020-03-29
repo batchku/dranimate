@@ -17,7 +17,8 @@ class ControlPointEditor extends Component {
       this.canvasElement,
       this.props.imageSrc,
       this.props.backgroundRemovalData,
-      this.props.controlPointPositions
+      this.props.controlPointPositions,
+      this.props.zoom
     );
 
     // passive touch event listeners seem to be needed, which react does not support

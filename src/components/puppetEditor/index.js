@@ -24,6 +24,7 @@ class PuppetEditor extends Component {
       imageSrc: null,
       backgroundRemovalData: null,
       controlPointPositions: null,
+      zoom: 1,
     };
   }
 
@@ -45,10 +46,11 @@ class PuppetEditor extends Component {
 
   onClose = () => this.props.onClose();
 
-  onImageEditorNext = backgroundRemovalData => {
+  onImageEditorNext = (backgroundRemovalData, zoom) => {
     this.setState({
       step: STEPS.CONTROL_POINT,
-      backgroundRemovalData
+      backgroundRemovalData,
+      zoom: zoom
     });
   }
 
@@ -100,6 +102,7 @@ class PuppetEditor extends Component {
                 controlPointPositions={this.state.controlPointPositions}
                 onClose={this.onControlPointEditorBack}
                 onSave={this.onSave}
+                zoom={this.state.zoom}
               />
           }
         </div>

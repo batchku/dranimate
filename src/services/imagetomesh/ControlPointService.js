@@ -31,12 +31,14 @@ const ControlPointService = function () {
     API
 *****************************/
 
-  this.init = function(canvas, imageData, backgroundRemovalData, controlPointPositions) {
+  this.init = function(canvas, imageData, backgroundRemovalData, controlPointPositions, initialZoom) {
     width = canvas.width;
     height = canvas.height;
     context = canvas.getContext('2d');
     controlPoints = controlPointPositions || [];
     context.fillStyle = '#0099EE';
+
+    zoom = initialZoom || 1;
 
     loadImage(imageData)
       .then((img) => {
@@ -163,10 +165,15 @@ const ControlPointService = function () {
 
   const redraw = () => {
     context.clearRect(0, 0, width, height);
+
+    context.save();
+
+    context.scale(zoom, zoom);
     context.drawImage(foregroundImage,
                       0, 0, width, height,
                       0, 0, width, height);
     if (!controlPoints || !controlPoints.length) {
+      context.restore();
       return;
     }
     controlPoints.forEach((cp, index) => {
@@ -176,6 +183,8 @@ const ControlPointService = function () {
       context.arc(x, y, radius, 0, 2 * Math.PI);
       context.fill();
     });
+
+    context.restore();
   }
 
 }
