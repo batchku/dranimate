@@ -33,6 +33,8 @@ class Dranimate {
 		this.touchHandler;
 
 		this.palmBaseMesh = null;
+		this.handTrackingEnabled = true;
+		this.handMeshGroup = new THREE.Group();
 
 		this.lastUpdateTimestamp = performance.now();
 		this.animationRequest;
@@ -68,7 +70,11 @@ class Dranimate {
 	createPalmMeshes = () => {
 		this.handParts.forEach((partName) => {
 			this[partName] = this.createJointMesh(partName);
+
+			this.handMeshGroup.add(this[partName]);
 		});
+
+		this.scene.add(this.handMeshGroup);
 	}
 
 	createJointMesh = (name) => {
@@ -81,8 +87,6 @@ class Dranimate {
 
 		const mesh = new THREE.Mesh(geometry, material);
 		mesh.name = name;
-
-		this.scene.add(mesh);
 
 		return mesh;
 	}
@@ -370,6 +374,11 @@ class Dranimate {
 		}
 	}
 
+	setHandTrackingEnabled = (enabled) => {
+		this.handTrackingEnabled = enabled;
+		this.handMeshGroup.visible = enabled;
+	}
+
 	startRenderLoop = () => {
 		if (this.isInRenderLoop) { return; }
 		this.isInRenderLoop = true;
@@ -423,7 +432,7 @@ class Dranimate {
 	}
 
 	render = (elapsedTime) => {
-		if (this.handTrackingService.palmPositionData) {
+		if (this.handTrackingEnabled && this.handTrackingService.palmPositionData) {
 			this.updatePalmMeshPosition();
 		}
 

@@ -7,6 +7,7 @@ import GifPreview from 'components/GifPreview';
 import TopBar from 'components/topbar';
 import ParamControl from 'components/paramControl';
 import Recorder from 'components/recorder';
+import HandTrackingToolbar from 'components/handTrackingToolbar';
 import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
@@ -246,6 +247,7 @@ class Stage extends Component {
 						closeLoader={this.closeLoader}
 						gifPreviewAvailable={this.gifPreviewAvailable}
 					/>
+					<HandTrackingToolbar/>
 				</div>
 				<Fab
 					className={styles.fab}
