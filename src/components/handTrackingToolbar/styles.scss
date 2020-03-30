@@ -1,5 +1,10 @@
 @import '~styles/index';
 
-.toggleTrackingButton {
-	color: black;
+.toggleTrackingCheckboxContainer {
+	background-color: white;
+	display: flex;
+	align-items: center;
+	padding: 5px;
+	margin-left: 10px;
+	border: solid 1px black;
 }

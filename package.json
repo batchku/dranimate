@@ -55,7 +55,8 @@
     "react-router-dom": "^4.2.2",
     "regenerator-runtime": "^0.13.5",
     "stats.js": "^0.17.0",
-    "three": "^0.90.0"
+    "three": "^0.90.0",
+    "uuid": "^7.0.2"
   },
   "repository": {
     "type": "git",

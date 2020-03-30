@@ -3,37 +3,72 @@ import React, { Component } from 'react';
 import Button from 'components/primitives/button';
 
 import dranimate from 'services/dranimate/dranimate';
+import eventManager from '../../services/eventManager/event-manager';
 
 import styles from './styles.scss';
 
 class HandTrackingToolbar extends Component {
 	constructor(props) {
 		super(props);
+
+		this.puppetEditorOpenedEventId = '';
+		this.puppetEditorClosedEventId = '';
+		
+		// If user manually disabled hand tracking - hand tracking will not be enabled when puppet editor is closed.
+		this.userDisabled = false;
+
 		this.state = {
 			trackingEnabled: true,
 		};
 	}
+	
+	componentWillMount() {
+		this.puppetEditorOpenedEventId = eventManager.on('puppet-editor-opened', this.onPuppetEditorOpen.bind(this));
+		this.puppetEditorClosedEventId = eventManager.on('puppet-editor-closed', this.onPuppetEditorClose.bind(this));
+	}
 
-	/**
-	 * Used to turn hand tracking on/off.
-	 */
-	onTrackingToggle = () => {
+	componentWillUnmount() {
+		eventManager.remove(this.puppetEditorOpenedEventId);
+		eventManager.remove(this.puppetEditorClosedEventId);
+	}
+
+	onPuppetEditorOpen() {
+		this.setTrackingEnabled(false);
+	}
+
+	onPuppetEditorClose() {
+		if (!this.userDisabled) {
+			this.setTrackingEnabled(true);
+		}
+	}
+
+	setTrackingEnabled(enabled) {
 		this.setState({
-			trackingEnabled: !this.state.trackingEnabled
+			trackingEnabled: enabled,
 		}, () => {
 			dranimate.setHandTrackingEnabled(this.state.trackingEnabled);
 		});
+	}
+
+	onTrackingToggle = (event) => {
+		this.userDisabled = !event.target.checked;
+
+		this.setTrackingEnabled(event.target.checked);
 	};
 
 	render() {
 		return (
-			<div>
-				<Button
-					className={styles.toggleTrackingButton}
-					onClick={this.onTrackingToggle}
+			<div className={styles.toggleTrackingCheckboxContainer}>
+				<label htmlFor="hand-tracking-toggle">
+					Hand tracking
+				</label>
+				<input
+					checked={this.state.trackingEnabled}
+					id='hand-tracking-toggle'
+					type='checkbox'
+					onChange={this.onTrackingToggle}
 				>
-					{ this.state.trackingEnabled ? 'Stop tracking hand' : 'Start tracking hand' }
-				</Button>
+				</input>
 			</div>
 		);
 	}

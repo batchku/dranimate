@@ -11,6 +11,8 @@ import { getImageDataFromImage } from 'services/imagetomesh/ImageUtil';
 import loadImage from 'services/util/imageLoader';
 import styles from './styles.scss';
 
+import eventManager from '../../services/eventManager/event-manager';
+
 const STEPS = {
   IMAGE: 'IMAGE',
   CONTROL_POINT: 'CONTROL_POINT'
@@ -29,10 +31,12 @@ class PuppetEditor extends Component {
   }
 
   componentWillUnmount() {
-    dranimate.setHandTrackingEnabled(true);
+    eventManager.emit('puppet-editor-closed');
   }
 
   componentWillMount() {
+    eventManager.emit('puppet-editor-opened');
+
     if (puppetEditorStateService.isPuppet) {
       const puppet = puppetEditorStateService.getItem();
       this.setState({
