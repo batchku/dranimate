@@ -241,6 +241,7 @@ class Stage extends Component {
 					<ZoomPanner
 						onPanSelect={this.onPanSelect}
 						onZoomSelect={this.onZoomSelect}
+						zoomEnabled={!this.state.editorIsOpen}
 					/>
 					<Recorder
 						openLoader={this.openLoader}

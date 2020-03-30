@@ -174,13 +174,13 @@ const ImageEditorService = function () {
       this.updateHighligtedSuperpixel();
     }
 
-    this.zoomIn = function () {
-        zoom += 0.1;
+    this.zoomIn = function (zoomStep) {
+        zoom += zoomStep || 0.1;
         redraw();
     }
 
-    this.zoomOut = function () {
-        zoom -= 0.1;
+    this.zoomOut = function (zoomStep) {
+        zoom -= zoomStep || 0.1;
         redraw();
     }
 
