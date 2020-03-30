@@ -40,9 +40,9 @@ class Recorder extends Component {
   };
 
   handleKeyPress = event => {
-    if (event.keyCode !== 32) { return; }
-    if (event.target.tagName.toUpperCase() === 'INPUT') { return; }
-    this.onPuppetRecordToggle();
+    if (event.code === 'Space' || event.code === 'KeyR') {
+      this.onPuppetRecordToggle();
+    }
   };
 
   render() {
