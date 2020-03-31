@@ -35,6 +35,7 @@ class Dranimate {
 		this.palmBaseMesh = null;
 		this.handTrackingEnabled = true;
 		this.handMeshGroup = new THREE.Group();
+		this.fingerOffsetVectors = {};
 
 		this.lastUpdateTimestamp = performance.now();
 		this.animationRequest;
@@ -58,6 +59,7 @@ class Dranimate {
 		];
 
 		window.addEventListener('resize', $event => this.refreshCamera(), false );
+		window.addEventListener('keydown', this.onKeyDown);
 	}
 
 	getSelectedPuppet = () => {
@@ -108,14 +110,42 @@ class Dranimate {
 
 			const selectedPuppet = this.getSelectedPuppet();
 			if (selectedPuppet) {
-				selectedPuppet.incrementPosition(this['middleFinger-1'].position.x, this['middleFinger-1'].position.y);
-
 				if (!this[`${partName}-4`]) {
 					return;
 				}
+
+				const palmCenter = this['middleFinger-1'].position.clone();
+				const fingerPosition = this[`${partName}-4`].position.clone();
+
+				let calibratedFingerOffset = this.fingerOffsetVectors[partName];
+				const currentFingerOffset = new THREE.Vector3().subVectors(fingerPosition, palmCenter)
+
+				if (!calibratedFingerOffset) {
+					this.calibratePuppet();
+					calibratedFingerOffset = this.fingerOffsetVectors[partName];
+				}
+
+				const fingerOffsetDiff = new THREE.Vector3().subVectors(calibratedFingerOffset, currentFingerOffset);
+
+				const puppetBoundingBox = new THREE.Box2();
+				selectedPuppet.controlPointPositions.forEach((controlPointPosition) => {
+					puppetBoundingBox.expandByPoint(new THREE.Vector2(controlPointPosition[0], controlPointPosition[1]));
+				});
+
+				const controlPointLocalPosition = new THREE.Vector2(
+					selectedPuppet.controlPointPositions[partIndex][0],
+					selectedPuppet.controlPointPositions[partIndex][1]
+				);
+				controlPointLocalPosition.set(
+					controlPointLocalPosition.x - puppetBoundingBox.getSize().x / 2,
+					controlPointLocalPosition.y - puppetBoundingBox.getSize().y / 2,
+				);
+
+				const newControlPointGlobalPosition = new THREE.Vector2().addVectors(palmCenter, controlPointLocalPosition).sub(fingerOffsetDiff);
+
 				selectedPuppet.setControlPointPosition(
 					partIndex,
-					new THREE.Vector2(this[`${partName}-4`].position.x, this[`${partName}-4`].position.y)
+					new THREE.Vector2(newControlPointGlobalPosition.x, newControlPointGlobalPosition.y)
 				);
 			}
 		});
@@ -226,7 +256,52 @@ class Dranimate {
 
 	onTouchEnd = event => this.touchHandler.onTouchEnd(event, this.puppets, this.zoom);
 
+	onKeyDown = (event) => {
+		// Run calibration for selected puppet
+		if (event.key === 'c') {
+			this.calibratePuppet();
+		}
+	}
+
 	hasPuppet = () => this.puppets.length > 0;
+
+	/**
+	 * Calibrates puppet to current hand position (usually relaxed hand pose)
+	 */
+	calibratePuppet = () => {
+		const selectedPuppet = this.getSelectedPuppet();
+		// Don't do anything in case there is no selected puppet
+		if (!selectedPuppet) {
+			return;
+		}
+
+		const puppetBoundingBox = new THREE.Box2();
+		selectedPuppet.controlPointPositions.forEach((controlPointPosition) => {
+			puppetBoundingBox.expandByPoint(new THREE.Vector2(controlPointPosition[0], controlPointPosition[1]));
+		});
+
+		// First reset control point positions for puppet
+		const palmCenter = this['middleFinger-1'].position.clone();
+		selectedPuppet.controlPointPositions.forEach((controlPointPosition, index) => {
+			const controlPointLocalPosition = new THREE.Vector2(controlPointPosition[0], controlPointPosition[1]);
+			controlPointLocalPosition.set(
+				controlPointLocalPosition.x - puppetBoundingBox.getSize().x / 2,
+				controlPointLocalPosition.y - puppetBoundingBox.getSize().y / 2,
+			);
+
+			const controlPointGlobalPosition = new THREE.Vector2().addVectors(palmCenter, controlPointLocalPosition);
+
+			selectedPuppet.setControlPointPosition(index, controlPointGlobalPosition);
+		});
+
+		// Calculate offset vector for each finger
+		const fingers = ['thumb', 'indexFinger', 'middleFinger', 'ringFinger', 'pinky'];
+		fingers.forEach((finger) => {
+			const fingerPosition = this[`${finger}-4`].position.clone();
+
+			this.fingerOffsetVectors[finger] = new THREE.Vector3().subVectors(fingerPosition, palmCenter);
+		});
+	}
 
 	setBackgroundColor = hexString => {
 		const color = new THREE.Color(hexString);
