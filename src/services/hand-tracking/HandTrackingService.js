@@ -1,3 +1,5 @@
+import eventManager from './../../services/eventManager/event-manager';
+
 export default class HandTrackingService {
 	constructor() {
 		this.model = null;
@@ -5,8 +7,24 @@ export default class HandTrackingService {
 		this.tracking = false;
 		this.palmPositionData = null;
 		this.onUpdatePosition = null;
+		this.partPositionData = {};
+
+		this.lowPassFilterEnabled = true;
+		this.lowPassSamplesCount = 4;
+		this.lowPassSamples = [];
 
 		this.trackAsync = this.trackAsync.bind(this);
+
+		eventManager.on('low-pass-filter-toggle', this.lowPassFilterToggle);
+		eventManager.on('low-pass-filter-samples-set', this.lowPassFilterSamplesSet);
+	}
+
+	lowPassFilterToggle = (enabled) => {
+		this.lowPassFilterEnabled = enabled;
+	}
+
+	lowPassFilterSamplesSet = (samples) => {
+		this.lowPassSamplesCount = samples;
 	}
 
 	async loadAsync() {
@@ -41,6 +59,60 @@ export default class HandTrackingService {
 		this.video.play();
 	}
 
+	/**
+	 * Takes last [this.lowPassSamples] frames and averages them in order to stabilize input from hand-pose library.
+	 */
+	lowPassFilter(inputData) {
+		if (this.lowPassSamples.length < this.lowPassSamplesCount) {
+			this.lowPassSamples.push(inputData);
+			return false;
+		}
+
+		const handParts = ['thumb', 'indexFinger', 'middleFinger', 'ringFinger', 'pinky', 'palmBase'];
+
+		this.lowPassSamples.forEach((sample) => {
+			handParts.forEach((partName) => {
+				const partPositionData = sample[partName];
+				partPositionData.forEach((partData, index) => {
+					if (!this[`${partName}-${index}-average`]) {
+						this[`${partName}-${index}-average`] = [0, 0, 0];
+					}
+
+					this[`${partName}-${index}-average`][0] += partData[0];
+					this[`${partName}-${index}-average`][1] += partData[1];
+					this[`${partName}-${index}-average`][2] += partData[2];
+				});
+			});
+		});
+
+		handParts.forEach((partName) => {
+			for(var i = 0; i < 4; i++) {
+				if (this[`${partName}-${i}-average`]) {
+					this[`${partName}-${i}-average`][0] /= this.lowPassSamplesCount;
+					this[`${partName}-${i}-average`][1] /= this.lowPassSamplesCount;
+					this[`${partName}-${i}-average`][2] /= this.lowPassSamplesCount;
+				}
+			}
+		});
+
+		handParts.forEach((partName) => {
+			const partPositionData = this.palmPositionData[partName];
+				partPositionData.forEach((partData, index) => {
+					partData[0] = this[`${partName}-${index}-average`][0];
+					partData[1] = this[`${partName}-${index}-average`][1];
+					partData[2] = this[`${partName}-${index}-average`][2];
+
+					this[`${partName}-${index}-average`][0] = 0;
+					this[`${partName}-${index}-average`][1] = 0;
+					this[`${partName}-${index}-average`][2] = 0;
+				});
+		});
+
+		this.lowPassSamples = [];
+
+		return true;
+	}
+
 	async trackAsync() {
 		const predictions = await this.model.estimateHands(this.video, true);
 
@@ -48,7 +120,15 @@ export default class HandTrackingService {
 		if (predictions.length > 0) {
 			this.palmPositionData = predictions[0].annotations;
 
-			this.onUpdatePosition(this.palmPositionData);
+			if (this.lowPassFilterEnabled) {
+				const result = this.lowPassFilter(predictions[0].annotations);
+				if (result) {
+					this.onUpdatePosition(this.palmPositionData);
+				}
+			}
+			else {
+				this.onUpdatePosition(this.palmPositionData);
+			}
 		}
 		else {
 			this.palmPositionData = null;

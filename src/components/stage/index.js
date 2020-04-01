@@ -8,6 +8,7 @@ import TopBar from 'components/topbar';
 import ParamControl from 'components/paramControl';
 import Recorder from 'components/recorder';
 import HandTrackingToolbar from 'components/handTrackingToolbar';
+import LowPassFilterToolbar from 'components/lowPassFilterToolbar';
 import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
@@ -249,6 +250,7 @@ class Stage extends Component {
 						gifPreviewAvailable={this.gifPreviewAvailable}
 					/>
 					<HandTrackingToolbar/>
+					<LowPassFilterToolbar/>
 				</div>
 				<Fab
 					className={styles.fab}

@@ -1,0 +1,18 @@
+@import '~styles/index';
+
+.container {
+	background-color: white;
+	display: flex;
+	align-items: center;
+	padding: 5px;
+	margin-left: 10px;
+	border: solid 1px black;
+}
+
+.samplesLabel {
+	margin-left: 10px;
+}
+
+.samplesInput {
+	max-width: 50px;
+}
