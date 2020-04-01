@@ -58,6 +58,7 @@ class LowPassFilterToolbar extends Component {
 				<input
 					className={styles.samplesInput}
 					type="number"
+					min={1}
 					id="filterSamples"
 					name="filterSamples"
 					value={this.state.sampleCount}
