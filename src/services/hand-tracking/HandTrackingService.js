@@ -21,10 +21,12 @@ export default class HandTrackingService {
 
 	lowPassFilterToggle = (enabled) => {
 		this.lowPassFilterEnabled = enabled;
+		this.lowPassSamples = [];
 	}
 
 	lowPassFilterSamplesSet = (samples) => {
 		this.lowPassSamplesCount = samples;
+		this.lowPassSamples = [];
 	}
 
 	async loadAsync() {
@@ -63,9 +65,13 @@ export default class HandTrackingService {
 	 * Takes last [this.lowPassSamples] frames and averages them in order to stabilize input from hand-pose library.
 	 */
 	lowPassFilter(inputData) {
+		this.lowPassSamples.push(inputData);
+
 		if (this.lowPassSamples.length < this.lowPassSamplesCount) {
-			this.lowPassSamples.push(inputData);
 			return false;
+		}
+		if (this.lowPassSamples.length > this.lowPassSamplesCount) {
+			this.lowPassSamples.shift();
 		}
 
 		const handParts = ['thumb', 'indexFinger', 'middleFinger', 'ringFinger', 'pinky', 'palmBase'];
@@ -107,8 +113,6 @@ export default class HandTrackingService {
 					this[`${partName}-${index}-average`][2] = 0;
 				});
 		});
-
-		this.lowPassSamples = [];
 
 		return true;
 	}
