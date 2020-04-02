@@ -11,6 +11,8 @@ import { loadTexture } from 'services/util/threeUtil';
 import loadImage from 'services/util/imageLoader';
 import HandTrackingService from 'services/hand-tracking/HandTrackingService';
 
+import eventManager from '../eventManager/event-manager';
+
 const ZOOM = {
 	MIN: 0.5,
 	MAX: 1.5
@@ -260,6 +262,8 @@ class Dranimate {
 		// Run calibration for selected puppet
 		if (event.key === 'c') {
 			this.calibratePuppet();
+
+			eventManager.emit('show-toast', 'Puppet calibrated');
 		}
 	}
 

@@ -13,6 +13,7 @@ import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
 import Slider from 'components/primitives/slider';
+import Toast from 'components/primitives/toast';
 
 import { loadDranimateFile, loadImageFile } from 'services/util/file';
 import puppetEditorStateService from 'services/imagetomesh/PuppetEditorStateService';
@@ -295,6 +296,7 @@ class Stage extends Component {
 					isVisible={this.state.loaderIsVisible}
 					message={this.state.loaderMessage}
 				/>
+				<Toast />
 			</div>
 		);
 	}

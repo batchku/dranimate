@@ -52,7 +52,7 @@ class LowPassFilterToolbar extends Component {
 				</input>
 
 				{/* Number input to set number of samples for low pass filter */}
-				<label className={styles.samplesLabel} for="filterSamples">
+				<label className={styles.samplesLabel} htmlFor="filterSamples">
 					Low pass filter samples:
 				</label>
 				<input
