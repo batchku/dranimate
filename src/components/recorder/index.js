@@ -11,7 +11,6 @@ class Recorder extends Component {
       puppetIsRecording: false,
       gifIsRecording: false,
     };
-    this.keyListener = document.addEventListener('keypress', this.handleKeyPress.bind(this));
   }
 
   componentWillUnmount() {
@@ -33,33 +32,15 @@ class Recorder extends Component {
       .catch(error => console.log('gif error', error));
   };
 
-  onPuppetRecordToggle = (event) => {
-    const puppetIsRecording = !this.state.puppetIsRecording;
-    this.setState({ puppetIsRecording });
-    dranimate.setRecording(puppetIsRecording);
-  };
-
-  handleKeyPress = event => {
-    if (event.code === 'Space' || event.code === 'KeyR') {
-      this.onPuppetRecordToggle();
-    }
-  };
-
   render() {
     return (
       <div className={this.props.className}>
         <Button
-          className={ this.state.puppetIsRecording ? styles.recorder : styles.recorderActive }
-          onClick={this.onPuppetRecordToggle}
+          className={ this.state.gifIsRecording ? styles.recorder : styles.recorderActive }
+          onClick={this.onGifRecordToggle}
         >
-          { this.state.isRecording ? 'Puppet Stop' : 'Puppet Start' }
+          { this.state.isRecording ? 'GIF Stop' : 'GIF Start' }
         </Button>
-      <Button
-        className={ this.state.gifIsRecording ? styles.recorder : styles.recorderActive }
-        onClick={this.onGifRecordToggle}
-      >
-        { this.state.isRecording ? 'GIF Stop' : 'GIF Start' }
-      </Button>
       </div>
     );
   }

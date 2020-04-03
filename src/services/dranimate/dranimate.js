@@ -144,11 +144,13 @@ class Dranimate {
 				);
 
 				const newControlPointGlobalPosition = new THREE.Vector2().addVectors(palmCenter, controlPointLocalPosition).sub(fingerOffsetDiff);
-
-				selectedPuppet.setControlPointPosition(
-					partIndex,
-					new THREE.Vector2(newControlPointGlobalPosition.x, newControlPointGlobalPosition.y)
-				);
+				
+				if (!selectedPuppet.hasRecording()) {
+					selectedPuppet.setControlPointPosition(
+						partIndex,
+						new THREE.Vector2(newControlPointGlobalPosition.x, newControlPointGlobalPosition.y)
+					);
+				}
 			}
 		});
 	}

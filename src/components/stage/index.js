@@ -9,6 +9,7 @@ import ParamControl from 'components/paramControl';
 import Recorder from 'components/recorder';
 import HandTrackingToolbar from 'components/handTrackingToolbar';
 import LowPassFilterToolbar from 'components/lowPassFilterToolbar';
+import PuppetRecorderToolbar from '../puppet-recorder';
 import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
@@ -250,6 +251,7 @@ class Stage extends Component {
 						closeLoader={this.closeLoader}
 						gifPreviewAvailable={this.gifPreviewAvailable}
 					/>
+					<PuppetRecorderToolbar/>
 					<HandTrackingToolbar/>
 					<LowPassFilterToolbar/>
 				</div>
