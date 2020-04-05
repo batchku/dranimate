@@ -33,7 +33,7 @@ class Dranimate {
 		this.touchHandler;
 
 		this.palmBaseMesh = null;
-		this.handTrackingEnabled = true;
+		this.handTrackingEnabled = false;
 		this.handMeshGroup = new THREE.Group();
 		this.fingerOffsetVectors = {};
 
@@ -78,6 +78,7 @@ class Dranimate {
 		});
 
 		this.scene.add(this.handMeshGroup);
+		this.handMeshGroup.visible = false;
 	}
 
 	createJointMesh = (name) => {

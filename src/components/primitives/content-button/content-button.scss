@@ -18,8 +18,10 @@
 	margin-right: 4px;
 	align-items: center;
 	justify-content: center;
+	cursor: pointer;
+	user-select: none;
 }
 
-.content-button-label {
+.content-button-label-container {
 	padding-left: 4px;
 }

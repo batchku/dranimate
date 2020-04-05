@@ -1,9 +1,12 @@
 import React from 'react';
 
+import Typography, {TypographyVariant} from 'components/typography/typography';
+
 import './content-button.scss';
 
 interface ContentButtonProps {
 	label?: string;
+	onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
 class ContentButton extends React.Component<ContentButtonProps, {}> {
@@ -14,15 +17,21 @@ class ContentButton extends React.Component<ContentButtonProps, {}> {
 	public render = (): JSX.Element => {
 		return (
 			<div className='content-button-background'>
-				<div className='content-button-center' style={{
-					paddingLeft: this.props.label ? '20px' : '8px',
-					paddingRight: this.props.label ? '20px' : '8px'
-				}}>
+				<div
+					className='content-button-center'
+					onClick={this.props.onClick}
+					style={{
+						paddingLeft: this.props.label ? '20px' : '8px',
+						paddingRight: this.props.label ? '20px' : '8px'
+					}}
+				>
 					{this.props.children}
 					{this.props.label &&
-					<p className='content-button-label'>
-						{this.props.label}
-					</p>}
+					<div className='content-button-label-container'>
+						<Typography variant={TypographyVariant.HEADING_MEDIUM} color='#00000099'>
+							{this.props.label}
+						</Typography>
+					</div>}
 				</div>
 			</div>
 		);
