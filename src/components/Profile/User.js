@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
 import ServerCollection from 'components/ServerCollection';
 import userService from 'services/api/userService';
-import styles from './styles.scss';
+import './styles.scss';
 
 class User extends Component {
   constructor(props) {
@@ -12,24 +12,24 @@ class User extends Component {
 
   render() {
     return (
-      <div className={ styles.profileContents }>
-        <div className={`${styles.row} ${styles.headerRow}`}>
-          <h2 className={ styles.headerLabel }>User Profile:</h2>
+      <div className='profileContents'>
+        <div className='row headerRow'>
+          <h2 className='headerLabel'>User Profile:</h2>
           <Button
             onClick={ userService.signOut.bind(userService) }
-            className={ styles.formButton }
+            className='formButton'
           >
             Sign Out
           </Button>
           <Button
             onClick={ this.props.onClose }
-            className={ styles.formButton }
+            className='formButton'
           >
             Close
           </Button>
         </div>
         <ServerCollection
-          className={ styles.puppetCollection }
+          className='puppetCollection'
           openLoader={ this.props.openLoader }
           closeLoader={ this.props.closeLoader }
           />

@@ -6,7 +6,7 @@ import MaterialInput from 'components/primitives/materialInput';
 import userService from 'services/api/userService';
 import apiService from 'services/api/apiService';
 import { loadFile } from 'services/util/file';
-import styles from './styles.scss';
+import './styles.scss';
 
 class GifPreview extends Component {
   constructor(props) {
@@ -42,8 +42,8 @@ class GifPreview extends Component {
 
   render() {
     return (
-      <div className={styles.gifPreviewScrim}>
-        <div className={styles.gifPreviewContents}>
+      <div className='gifPreviewScrim'>
+        <div className='gifPreviewContents'>
           <MaterialInput
             type='text'
             label='GIF Name'
@@ -51,9 +51,9 @@ class GifPreview extends Component {
           />
           <img
             src={this.state.base64Gif}
-            className={styles.gif}
+            className='gif'
           />
-          <div className={styles.gifPreviewOptions}>
+          <div className='gifPreviewOptions'>
             <Button onClick={this.onDownload}>
               Download
             </Button>

@@ -5,7 +5,7 @@ import MaterialInput from 'components/primitives/materialInput';
 import SignIn from 'components/Profile/SignIn';
 import User from 'components/Profile/User';
 import userService from 'services/api/userService';
-import styles from './styles.scss';
+import './styles.scss';
 
 class Profile extends Component {
   constructor(props) {
@@ -34,7 +34,7 @@ class Profile extends Component {
   render() {
     return (
       <div
-        className={ styles.profileScrim }
+        className='profileScrim'
         onKeyPress={ this.onKeyPress }
         onClick={ this.onScrimClick }
         >

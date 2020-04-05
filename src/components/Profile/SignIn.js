@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
 import MaterialInput from 'components/primitives/materialInput';
 import userService from 'services/api/userService';
-import styles from './styles.scss';
+import './styles.scss';
 
 class SignIn extends Component {
   constructor(props) {
@@ -60,41 +60,41 @@ class SignIn extends Component {
   renderSignInWithEmail() {
     return (
       <div
-        className={ styles.profileContents }
+        className='profileContents'
         onKeyPress={ this.onKeyPress }>
-        <div className={`${styles.row} ${styles.headerRow}`}>
-          <h3 className={ styles.headerLabel }>Sign In</h3>
+        <div className='row headerRow'>
+          <h3 className='headerLabel'>Sign In</h3>
         </div>
         <MaterialInput
           type='text'
           label='Email'
           onChange={ this.onEmailChange }
-          className={ styles.inputField }
+          className='inputField'
         />
         <MaterialInput
           type='password'
           label='Password'
           onChange={ this.onPasswordChange }
-          className={ styles.inputField }
+          className='inputField'
         />
         <Button
-          className={ styles.profileButton }
+          className='profileButton'
           onClick={ this.onSignIn }
-          className={ styles.formButton }
+          className='formButton'
         >
           Sign In With Email
         </Button>
         <Button
-          className={ styles.profileButton }
+          className='profileButton'
           onClick={ this.onCreateAccount }
-          className={ styles.formButton }
+          className='formButton'
         >
           Create Account
         </Button>
         <Button
-          className={ styles.profileButton }
+          className='profileButton'
           onClick={ this.setSignInWithEmail.bind(this, false) }
-          className={ styles.formButton }
+          className='formButton'
         >
           Cancel
         </Button>
@@ -105,23 +105,23 @@ class SignIn extends Component {
   renderSignIn() {
     return(
       <div
-        className={ styles.profileContents }
+        className='profileContents'
         onKeyPress={ this.onKeyPress }>
         <Button
           onClick={ this.setSignInWithEmail.bind(this, true) }
-          className={ styles.formButton }
+          className='formButton'
         >
           Sign In With Email
         </Button>
         <Button
           onClick={ this.onGoogleSignIn }
-          className={ styles.formButton }
+          className='formButton'
         >
           Sign In With Google
         </Button>
         <Button
           onClick={ this.props.onClose }
-          className={ styles.formButton }
+          className='formButton'
         >
           Close
         </Button>
@@ -131,11 +131,11 @@ class SignIn extends Component {
 
   renderErrorState() {
     return (
-      <div className={ styles.profileContents }>
+      <div className='profileContents'>
         <p>{ this.state.errorMessage }</p>
         <Button
           onClick={ this.resetState }
-          className={ styles.formButton }
+          className='formButton'
         >
           Close
         </Button>
@@ -146,7 +146,7 @@ class SignIn extends Component {
 
   renderAuthForms() {
     return(
-      <div className={styles.blankContainer}>
+      <div className='blankContainer'>
         {
           this.state.isSignInWithEmail ?
             this.renderSignInWithEmail() :
@@ -158,7 +158,7 @@ class SignIn extends Component {
 
   render() {
     return (
-      <div className={styles.blankContainer}>
+      <div className='blankContainer'>
         {
           this.state.errorMessage ?
             this.renderErrorState() :

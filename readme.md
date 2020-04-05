@@ -26,20 +26,6 @@ npm run build
 firebase deploy
 ```
 
-### Other commands
-- Run tests
-```
-npm run test
-```
-- Run linter (will require a lot of work to make this practical)
-```
-npm run lint
-```
-- Build to dist (for hosting on a web server)
-```
-npm run build
-```
-
 ### TODO
 * Leap motion tuning (make it work like OFX dranimate)
 * Puppet editor: make editor area resizable / responsive

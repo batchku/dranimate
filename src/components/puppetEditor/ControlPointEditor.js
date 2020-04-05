@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
 import ControlPointService from './../../services/imagetomesh/ControlPointService';
-import styles from './styles.scss';
+import './styles.scss';
 
 class ControlPointEditor extends Component {
   componentWillMount() {
@@ -35,16 +35,16 @@ class ControlPointEditor extends Component {
     return (
       <div>
 
-        <div className={styles.editorNav}>
+        <div className='editorNav'>
           <Button
             onClick={this.props.onClose}
-            className={styles.navButton}
+            className='navButton'
           >
             Back
           </Button>
           <Button
             onClick={this.onSave}
-            className={styles.navButton}
+            className='navButton'
           >
             Done
           </Button>
@@ -52,7 +52,7 @@ class ControlPointEditor extends Component {
 
         <div>
           <canvas
-            className={styles.editorCanvasChecker}
+            className='editorCanvasChecker'
             ref={input => this.canvasElement = input}
             onMouseMove={this.controlPointService.onMouseMove}
             onMouseDown={this.controlPointService.onMouseDown}
@@ -66,9 +66,9 @@ class ControlPointEditor extends Component {
           />
         </div>
 
-        <div className={styles.editorControlParam}>
-          <div className={styles.editorControlRow}>
-            <div className={styles.editorControlLabel}>
+        <div className='editorControlParam'>
+          <div className='editorControlRow'>
+            <div className='editorControlLabel'>
               <p>2</p>
             </div>
             <p>Control Points</p>

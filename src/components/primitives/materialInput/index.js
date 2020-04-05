@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styles from './styles.scss';
+import './styles.scss';
 
 class MaterialInput extends Component {
   constructor(props) {
@@ -30,17 +30,17 @@ class MaterialInput extends Component {
 
   render() {
     return (
-      <div className={ `${styles.container} ${this.props.className}` }>
+      <div className={ `container ${this.props.className}` }>
         <input
           type={ this.props.type || 'text' }
           onChange={ this.onChange }
           value={ this.state.value }
-          className={ styles.materialInput }
+          className='materialInput'
           required
         />
-        <span className={styles.highlight}></span>
-        <span className={styles.bar}></span>
-        <label className={styles.label}>
+        <span className='highlight'></span>
+        <span className='bar'></span>
+        <label className='label'>
           { this.props.label }
         </label>
       </div>

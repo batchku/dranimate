@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import eventManager from '../../services/eventManager/event-manager';
 
-import styles from './styles.scss';
+import './styles.scss';
 
 class LowPassFilterToolbar extends Component {
 	constructor(props) {
@@ -38,7 +38,7 @@ class LowPassFilterToolbar extends Component {
 
 	render() {
 		return (
-			<div className={styles.container}>
+			<div className='container'>
 				{/* Checkbox to turn low pass filter on/off */}
 				<label htmlFor="hand-tracking-toggle">
 					Low pass filter:
@@ -52,11 +52,11 @@ class LowPassFilterToolbar extends Component {
 				</input>
 
 				{/* Number input to set number of samples for low pass filter */}
-				<label className={styles.samplesLabel} htmlFor="filterSamples">
+				<label className='samplesLabel' htmlFor="filterSamples">
 					Low pass filter samples:
 				</label>
 				<input
-					className={styles.samplesInput}
+					className='samplesInput'
 					type="number"
 					min={1}
 					id="filterSamples"

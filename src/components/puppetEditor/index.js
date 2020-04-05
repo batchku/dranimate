@@ -9,7 +9,7 @@ import generateUniqueId from 'services/util/uuid';
 import { generateMesh } from 'services/imagetomesh/generateMesh';
 import { getImageDataFromImage } from 'services/imagetomesh/ImageUtil';
 import loadImage from 'services/util/imageLoader';
-import styles from './styles.scss';
+import './styles.scss';
 
 import eventManager from '../../services/eventManager/event-manager';
 
@@ -94,8 +94,8 @@ class PuppetEditor extends Component {
 
   render() {
     return (
-      <div className={styles.scrim}>
-        <div className={styles.puppetEditor}>
+      <div className='scrim'>
+        <div className='puppetEditor'>
           {
             this.state.step === STEPS.IMAGE ?
               <ImageEditor

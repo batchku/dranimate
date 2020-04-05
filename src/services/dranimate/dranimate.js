@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import Stats from 'stats.js';
 
 import DranimateMouseHandler from 'services/dranimate/mouseHandler';
-import DranimateLeapHandler from 'services/dranimate/leapHandler';
 import DranimateTouchHandler from 'services/dranimate/touchHandler';
 import { GifRecording, GifBuilder } from 'services/util/GifRecorder';
 import PanHandler from 'services/util/panHandler';
@@ -30,7 +29,6 @@ class Dranimate {
 
 		this.zoom = 1.0;
 		this.panHandler = new PanHandler();
-		this.leapHandler;
 		this.mouseHandler;
 		this.touchHandler;
 
@@ -178,7 +176,7 @@ class Dranimate {
 
 		this.mouseHandler = new DranimateMouseHandler(this.renderer.domElement, this.panHandler);
 		this.touchHandler = new DranimateTouchHandler(this.renderer.domElement, this.panHandler);
-		this.leapHandler = new DranimateLeapHandler(this.renderer.domElement, this.panHandler, this.puppets);
+		// this.leapHandler = new DranimateLeapHandler(this.renderer.domElement, this.panHandler, this.puppets);
 
 		await this.handTrackingService.loadAsync();
 
@@ -510,7 +508,7 @@ class Dranimate {
 	}
 
 	update = (elapsedTime) => {
-		this.leapHandler.update(this.getSelectedPuppet());
+		// this.leapHandler.update(this.getSelectedPuppet());
 		this.puppets.forEach(puppet => puppet.update(elapsedTime));
 		this.panHandler.update(this.camera);
 	}

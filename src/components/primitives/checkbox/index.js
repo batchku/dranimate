@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import generateUniqueId from 'services/util/uuid';
-import styles from './styles.scss';
+import './styles.scss';
 
 class Checkbox extends Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class Checkbox extends Component {
     return (
       <div>
         <input
-        	className={ `${styles.checkboxInput} ${styles.checkboxInputHidden}` }
+        	className='checkboxInput checkboxInputHidden'
         	type="checkbox"
           defaultChecked={ this.props.defaultChecked }
           id={ this.state.uniqueId }
@@ -25,7 +25,7 @@ class Checkbox extends Component {
         />
         <label
           htmlFor={ this.state.uniqueId }
-          className={ styles.checkboxLabel }
+          className='checkboxLabel'
         />
       </div>
     );

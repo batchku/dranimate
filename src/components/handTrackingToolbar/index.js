@@ -5,7 +5,7 @@ import Button from 'components/primitives/button';
 import dranimate from 'services/dranimate/dranimate';
 import eventManager from '../../services/eventManager/event-manager';
 
-import styles from './styles.scss';
+import './styles.scss';
 
 class HandTrackingToolbar extends Component {
 	constructor(props) {
@@ -58,7 +58,7 @@ class HandTrackingToolbar extends Component {
 
 	render() {
 		return (
-			<div className={styles.toggleTrackingCheckboxContainer}>
+			<div className='toggleTrackingCheckboxContainer'>
 				<label htmlFor="hand-tracking-toggle">
 					Hand tracking
 				</label>

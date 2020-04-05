@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
 import dranimate from 'services/dranimate/dranimate';
-import styles from './styles.scss';
+import './styles.scss';
 
 class Recorder extends Component {
   constructor(props) {
@@ -36,7 +36,7 @@ class Recorder extends Component {
     return (
       <div className={this.props.className}>
         <Button
-          className={ this.state.gifIsRecording ? styles.recorder : styles.recorderActive }
+          className={ this.state.gifIsRecording ? 'recorder' : 'recorderActive' }
           onClick={this.onGifRecordToggle}
         >
           { this.state.isRecording ? 'GIF Stop' : 'GIF Start' }

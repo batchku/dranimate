@@ -1,16 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import 'regenerator-runtime';
-
-import './config/firebase';
+import '../config/firebase';
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 
-import App from '../components/app';
+import App from './components/app/app';
+
+import './index.scss';
 
 ReactDOM.render(
-	<App/>,
+	<App />,
 	document.getElementById('root')
 );

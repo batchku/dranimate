@@ -4,7 +4,7 @@ import Button from 'components/primitives/button';
 import RemoteGifPreview from 'components/GifPreview/RemoteGifPreview';
 import apiService from 'services/api/apiService';
 import dranimate from 'services/dranimate/dranimate';
-import styles from './styles.scss';
+import './styles.scss';
 
 class ServerCollection extends Component {
 
@@ -102,17 +102,17 @@ class ServerCollection extends Component {
   render() {
     return (
       <div className={ this.props.className }>
-        <h3 className={styles.serverCollectionLabel}>
+        <h3 className='serverCollectionLabel'>
           Puppet Collection
         </h3>
-        <div className={styles.serverCollectionContainer}>
+        <div className='serverCollectionContainer'>
           {
             this.state.puppets.map((puppetModel) =>
-              <div key={puppetModel.getDatabaseId()} className={styles.puppetContainer}>
+              <div key={puppetModel.getDatabaseId()} className='puppetContainer'>
                 <br />
                 <p>Name {puppetModel.getName()}</p>
                 <img
-                  className={styles.puppetThumbnail}
+                  className='puppetThumbnail'
                   src={puppetModel.thumbnailUrl} />
                 <br />
                 <Button onClick={this.onOpenPuppet.bind(this, puppetModel)}>
@@ -126,17 +126,17 @@ class ServerCollection extends Component {
           }
         </div>
 
-        <h3 className={styles.serverCollectionLabel}>
+        <h3 className='serverCollectionLabel'>
           GIF Collection
         </h3>
-        <div className={styles.serverCollectionContainer}>
+        <div className='serverCollectionContainer'>
           {
             this.state.gifs.map((gifModel) =>
-              <div key={gifModel.getDatabaseId()} className={styles.puppetContainer}>
+              <div key={gifModel.getDatabaseId()} className='puppetContainer'>
                 <br />
                 <p>Name {gifModel.getName()}</p>
                 <img
-                  className={styles.puppetThumbnail}
+                  className='puppetThumbnail'
                   src={gifModel.url} />
                 <br />
                 <Button onClick={() => this.onOpenGif(gifModel)}>

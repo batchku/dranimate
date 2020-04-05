@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styles from './styles.scss';
+import './styles.scss';
 
 class Fab extends Component {
   constructor(props) {
@@ -10,9 +10,9 @@ class Fab extends Component {
   render() {
     return (
       <div className={this.props.className}>
-        <button onClick={this.props.onClick} className={styles.fab}>
-          <span className={styles.fabBar}></span>
-          <span className={styles.fabBar}></span>
+        <button onClick={this.props.onClick} className='fab'>
+          <span className='fabBar'></span>
+          <span className='fabBar'></span>
         </button>
       </div>
     );

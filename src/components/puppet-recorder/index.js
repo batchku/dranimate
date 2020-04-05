@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import eventManager from '../../services/eventManager/event-manager';
 import dranimate from '../../services/dranimate/dranimate';
 
-import styles from './styles.scss';
+import './styles.scss';
 
 class PuppetRecorderToolbar extends Component {
 	constructor(props) {
@@ -82,7 +82,7 @@ class PuppetRecorderToolbar extends Component {
 
 	render() {
 		return (
-			<div className={styles.container}>
+			<div className='container'>
 				{/* Checkbox to play/stop recorded animation for selected puppet */}
 				<label htmlFor="puppet-play-toggle">
 					Play:

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'components/primitives/button';
-import styles from './styles.scss';
+import './styles.scss';
 
 class ZoomPanner extends Component {
 	constructor(props) {
@@ -44,7 +44,7 @@ class ZoomPanner extends Component {
 	renderPanButton() {
 		return (
 			<Button
-				className={this.state.panIsSelected ? styles.panActive : styles.pan}
+				className={this.state.panIsSelected ? 'panActive' : 'pan'}
 				onClick={this.onPanClick}
 			>
 				Pan
@@ -57,13 +57,13 @@ class ZoomPanner extends Component {
 			<div className={this.props.className}>
 				{ this.props.onPanSelect ? this.renderPanButton() : null }
 				<Button
-					className={ styles.zoomButton }
+					className='zoomButton'
 					onClick={() => this.props.onZoomSelect(true)}
 				>
 					Zoom In
 				</Button>
 				<Button
-					className={ styles.zoomButton }
+					className='zoomButton'
 					onClick={() => this.props.onZoomSelect(false)}
 				>
 					Zoom Out

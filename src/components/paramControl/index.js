@@ -7,7 +7,7 @@ import { savePuppetToFile } from 'services/storage/serializer';
 import userService from 'services/api/userService';
 import apiService from 'services/api/apiService';
 import dranimate from 'services/dranimate/dranimate';
-import styles from './styles.scss';
+import './styles.scss';
 
 class ParamControl extends Component {
   constructor(props) {
@@ -66,24 +66,24 @@ class ParamControl extends Component {
   render() {
     return (
       <div className={this.props.className}>
-        <div className={styles.paramRow}>
+        <div className='paramRow'>
           <span>Scale</span>
           <Slider
             min={ 1 }
             max={ 300 }
             defaultValue={ this.state.defaultScale }
             onChange={ this.onScaleChange }
-            className={ styles.paramSlider }
+            className='paramSlider'
           />
         </div>
-        <div className={styles.paramRow}>
+        <div className='paramRow'>
           <span>Rotate</span>
           <Slider
             min={ -628 }
             max={ 628 }
             defaultValue={ this.state.defaultRotation }
             onChange={ this.onRotateChange }
-            className={ styles.paramSlider }
+            className='paramSlider'
           />
         </div>
         <MaterialInput
@@ -91,16 +91,16 @@ class ParamControl extends Component {
           label='Puppet Name'
           onChange={ this.onNameChange }
           initialValue={ this.props.selectedPuppet.getName() }
-          className={ styles.puppetName }
+          className='puppetName'
         />
         <Button
-          className={ styles.actionButton }
+          className='actionButton'
           onClick={this.props.onEditSelectedPuppet}
         >
           Edit Puppet
         </Button>
         <Button
-          className={ styles.actionButton }
+          className='actionButton'
           onClick={this.onDownload}
         >
           Download Puppet
@@ -108,34 +108,34 @@ class ParamControl extends Component {
         {
           userService.isAuthenticated() ?
           <Button
-            className={ styles.actionButton }
+            className='actionButton'
             onClick={this.onSaveToServer}
           >
             Save Puppet to Server
           </Button> : null
         }
         <Button
-          className={ styles.actionButton }
+          className='actionButton'
           onClick={this.props.onDeleteSelectedPuppet}
         >
           Remove Puppet
         </Button>
-        <div className={ styles.buttonRow }>
+        <div className='buttonRow'>
           <Button
-            className={ styles.actionButton }
+            className='actionButton'
             onClick={ this.onMoveUp }
           >
             Move Up
           </Button>
           <Button
-            className={ styles.actionButton }
+            className='actionButton'
             onClick={ this.onMoveBack }
           >
             Move Back
           </Button>
         </div>
         <Button
-          className={ styles.actionButton }
+          className='actionButton'
           onClick={() => this.props.selectedPuppet.clearRecording() }
         >
           Clear Recording

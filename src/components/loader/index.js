@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styles from './styles.scss';
+import './styles.scss';
 
 class Loader extends Component {
   constructor(props) {
@@ -9,15 +9,15 @@ class Loader extends Component {
 
   showLoader() {
     return (
-      <div className={styles.scrim}>
-        <div className={styles.loaderContainer}>
+      <div className='scrim'>
+        <div className='loaderContainer'>
           {
             this.props.message ?
-              <p className={styles.loaderText}>
+              <p className='loaderText'>
                 {this.props.message}
               </p> : null
           }
-          <div className={styles.loaderDots} />
+          <div className='loaderDots' />
         </div>
       </div>
     );

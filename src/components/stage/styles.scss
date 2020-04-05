@@ -1,83 +1,83 @@
-@import '~styles/index';
+@import './../../index.scss';
 
 .stage {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
 }
 
 .dranimateCanvas {
-  width: 100%;
-  height: 100%;
+	width: 100%;
+	height: 100%;
 }
 
 .dranimateCanvasBackground {
-  @include checkerBackground();
+	@include checkerBackground();
 }
 
 .topBar {
-  position: absolute;
-  top: 0;
-  width: 100%;
+	position: absolute;
+	top: 0;
+	width: 100%;
 }
 
 .profileButton {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 10px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 10px;
 }
 
 .fab {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  padding: 15px;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	padding: 15px;
 }
 
 .backgroundButtons {
-  position: absolute;
-  right: 0;
-  top: 35%;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-  height: 100px;
-  background-color: rgba(0, 0, 0, 0.1);
-  border: 1px solid $color-black;
+	position: absolute;
+	right: 0;
+	top: 35%;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	justify-content: space-between;
+	height: 100px;
+	background-color: rgba(0, 0, 0, 0.1);
+	border: 1px solid $color-black;
 }
 
 .hiddenFilePicker {
-  display: none;
+	display: none;
 }
 
 .lowerLeft {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  padding: 15px;
-  border: 1px solid $color-black;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	padding: 15px;
+	border: 1px solid $color-black;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
 }
 
 .paramControl {
-  position: absolute;
-  left: 0;
-  top: 0;
-  padding: 15px;
-  border: 1px solid $color-black;
-  border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.5);
-  max-width: 320px;
-  @include sm() {
-    max-width: none;
-    width: 100%;
-  }
+	position: absolute;
+	left: 0;
+	top: 0;
+	padding: 15px;
+	border: 1px solid $color-black;
+	border-radius: 4px;
+	background-color: rgba(255, 255, 255, 0.5);
+	max-width: 320px;
+	@include sm() {
+		max-width: none;
+		width: 100%;
+	}
 }

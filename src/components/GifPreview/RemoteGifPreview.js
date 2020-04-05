@@ -4,7 +4,7 @@ import FileSaver from 'file-saver';
 import Button from 'components/primitives/button';
 import MaterialInput from 'components/primitives/materialInput';
 import apiService from 'services/api/apiService';
-import styles from './styles.scss';
+import './styles.scss';
 
 class RemoteGifPreview extends Component {
   constructor(props) {
@@ -24,8 +24,8 @@ class RemoteGifPreview extends Component {
 
   render() {
     return (
-      <div className={styles.gifPreviewScrim}>
-        <div className={styles.gifPreviewContents}>
+      <div className='gifPreviewScrim'>
+        <div className='gifPreviewContents'>
           <MaterialInput
             type='text'
             label='GIF Name'
@@ -33,9 +33,9 @@ class RemoteGifPreview extends Component {
           />
           <img
             src={this.props.src}
-            className={styles.gif}
+            className='gif'
           />
-          <div className={styles.gifPreviewOptions}>
+          <div className='gifPreviewOptions'>
             <Button onClick={this.onDownload}>
               Download
             </Button>

@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"noImplicitAny": false,
+		"sourceMap": true,
+		"target": "ES5",
+		"jsx": "react",
+		"module": "ES6",
+		"moduleResolution": "node",
+		"outDir": "dist",
+		"baseUrl": "src",
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true
+	},
+	"exclude": [
+		"dist",
+		"node_modules"
+	],
+}

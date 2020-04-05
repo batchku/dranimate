@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import eventManager from '../../../services/eventManager/event-manager';
 
-import styles from './styles.scss';
+import './styles.scss';
 
 class Toast extends Component {
 	constructor(props) {
@@ -49,7 +49,7 @@ class Toast extends Component {
 	render() {
 		return (
 			this.state.open &&
-			<div ref={this._containerRef} className={styles.container}>
+			<div ref={this._containerRef} className='container'>
 				<p>
 					{this.state.text}
 				</p>

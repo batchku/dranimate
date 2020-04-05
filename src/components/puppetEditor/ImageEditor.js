@@ -6,7 +6,7 @@ import Loader from 'components/loader';
 import Slider from 'components/primitives/slider';
 import ZoomPanner from 'components/zoomPanner';
 import ImageEditorService from './../../services/imagetomesh/ImageEditorService';
-import styles from './styles.scss';
+import './styles.scss';
 
 class ImageEditor extends Component {
 	constructor(props) {
@@ -77,16 +77,16 @@ class ImageEditor extends Component {
 		return (
 			<div>
 
-				<div className={styles.editorNav}>
+				<div className='editorNav'>
 					<Button
 						onClick={this.props.onCancel}
-						className={ styles.navButton }
+						className='navButton'
 					>
 						Cancel
 					</Button>
 					<Button
 						onClick={this.onNext}
-						className={ styles.navButton }
+						className='navButton'
 					>
 						Next
 					</Button>
@@ -94,7 +94,7 @@ class ImageEditor extends Component {
 
 				<div>
 					<canvas
-						className={styles.editorCanvas}
+						className='editorCanvas'
 						ref={input => this.canvasElement = input}
 						onMouseMove={this.imageEditorService.onMouseMove}
 						onMouseDown={this.imageEditorService.onMouseDown}
@@ -112,22 +112,22 @@ class ImageEditor extends Component {
 						/>
 				</div>
 
-				<div className={styles.editorControlParam}>
-					<div className={styles.editorControlRow}>
+				<div className='editorControlParam'>
+					<div className='editorControlRow'>
 
-						<div className={styles.editorControlLabel}>
+						<div className='editorControlLabel'>
 							<p>1</p>
 						</div>
 						<p>Select Image</p>
 
-						<div className={`${styles.editorControlRow} ${styles.rowSpaceAround}`}>
+						<div className='editorControlRow rowSpaceAround'>
 
 							<div>
 								<Checkbox
 									defaultChecked={ this.state.eraseDraw }
 									onChange={ this.onEraseDrawChange }
 								/>
-								<p className={styles.drawEraseLabel}>
+								<p className='drawEraseLabel'>
 									{ this.state.eraseDraw ? 'Draw' : 'Erase'}
 								</p>
 							</div>

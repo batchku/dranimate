@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import Button from 'components/primitives/button';
 import Fab from 'components/primitives/fab';
@@ -9,7 +9,7 @@ import ParamControl from 'components/paramControl';
 import Recorder from 'components/recorder';
 import HandTrackingToolbar from 'components/handTrackingToolbar';
 import LowPassFilterToolbar from 'components/lowPassFilterToolbar';
-import PuppetRecorderToolbar from '../puppet-recorder';
+import PuppetRecorderToolbar from 'components/puppet-recorder';
 import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
@@ -20,17 +20,34 @@ import { loadDranimateFile, loadImageFile } from 'services/util/file';
 import puppetEditorStateService from 'services/imagetomesh/PuppetEditorStateService';
 import dranimate from 'services/dranimate/dranimate';
 
-import styles from './styles.scss';
+import './styles.scss';
 
-const FILE_PICKER_STATE = {
-	DRANIMATE: 'DRANIMATE',
-	BACKGROUND: 'BACKGROUND'
+enum FILE_PICKER_STATE {
+	DRANIMATE = 'DRANIMATE',
+	BACKGROUND = 'BACKGROUND'
 };
-let filePickerState = FILE_PICKER_STATE.DRANIMATE;
 
-class Stage extends Component {
-	constructor() {
-		super();
+interface IStageState {
+	editorIsOpen: boolean;
+	profileIsOpen: boolean;
+	controllerIsOpen: boolean;
+	selectedPuppet: any;
+	loaderIsVisible: boolean;
+	loaderMessage: string;
+	gifPreviewBlob: any;
+	backgroundColor: string;
+	hasBackgroundImage: boolean;
+}
+
+class Stage extends React.Component<{}, IStageState> {
+	private filePickerState: FILE_PICKER_STATE = FILE_PICKER_STATE.DRANIMATE;
+	private dranimateStageContainer: HTMLDivElement;
+	private filePicker: HTMLInputElement;
+	private colorPicker: HTMLInputElement;
+
+	constructor(props: {}) {
+		super(props);
+
 		this.state = {
 			editorIsOpen: false,
 			profileIsOpen: false,
@@ -40,18 +57,12 @@ class Stage extends Component {
 			loaderMessage: '',
 			gifPreviewBlob: null,
 			backgroundColor: '#66FF66',
-			hadBackgroundImage: false,
+			hasBackgroundImage: false,
 		};
 	}
 
 	componentDidMount = () => {
-		// passive touch event listeners seem to be needed, which react does not support
-		this.dranimateStageContainer.addEventListener(
-			'touchmove',
-			event => dranimate.onTouchMove(event),
-			{ passive: false }
-		);
-		dranimate.setup(this.dranimateStageContainer, styles.dranimateCanvasBackground);
+		dranimate.setup(this.dranimateStageContainer, 'dranimateCanvasBackground');
 	};
 
 	onMouseDown = event => {
@@ -76,7 +87,7 @@ class Stage extends Component {
 	};
 
 	onFabClick = () => {
-		filePickerState = FILE_PICKER_STATE.DRANIMATE;
+		this.filePickerState = FILE_PICKER_STATE.DRANIMATE;
 		this.filePicker.click();
 	};
 
@@ -126,11 +137,11 @@ class Stage extends Component {
 	};
 
 	onFileChange = event => {
-		if (filePickerState === FILE_PICKER_STATE.DRANIMATE) {
+		if (this.filePickerState === FILE_PICKER_STATE.DRANIMATE) {
 			this.loadDranimateFile();
 			return;
 		}
-		if (filePickerState === FILE_PICKER_STATE.BACKGROUND) {
+		if (this.filePickerState === FILE_PICKER_STATE.BACKGROUND) {
 			this.loadBackgroundFile();
 			return;
 		}
@@ -163,7 +174,7 @@ class Stage extends Component {
 	};
 
 	onBackgroundImage = event => {
-		filePickerState = FILE_PICKER_STATE.BACKGROUND;
+		this.filePickerState = FILE_PICKER_STATE.BACKGROUND;
 		this.filePicker.click();
 	};
 
@@ -190,10 +201,10 @@ class Stage extends Component {
 
 	render() {
 		return (
-			<div className={styles.stage}>
+			<div className='stage'>
 				<video style={{display: 'none', position: 'fixed'}} id="video" width={'auto'} height={'auto'} playsInline></video>
 				<div
-					className={styles.dranimateCanvas}
+					className='dranimateCanvas'
 					onMouseDown={this.onMouseDown}
 					onMouseMove={dranimate.onMouseMove}
 					onMouseUp={dranimate.onMouseUp}
@@ -201,14 +212,14 @@ class Stage extends Component {
 					onTouchEnd={dranimate.onTouchEnd}
 					ref={input => this.dranimateStageContainer = input}
 				/>
-				<TopBar className={styles.topBar}/>
+				<TopBar className='topBar'/>
 				<Button
-					className={styles.profileButton}
+					className={'profileButton'}
 					onClick={this.onProfileClick}
 				>
 					Profile
 				</Button>
-				<div className={styles.backgroundButtons}>
+				<div className={'backgroundButtons'}>
 					<Button onClick={this.onBackgroundImage}>
 						Background Image
 					</Button>
@@ -219,7 +230,7 @@ class Stage extends Component {
 								max={ 500 }
 								defaultValue={ 100 }
 								onChange={ this.onBackgroundImageSizeChange }
-								className={ styles.backgroundSlider }
+								className='backgroundSlider'
 							/> : null
 					}
 					<Button onClick={() => this.colorPicker.click()}>
@@ -232,7 +243,7 @@ class Stage extends Component {
 				{
 					this.state.selectedPuppet ?
 					<ParamControl
-						className={styles.paramControl}
+						className='paramControl'
 						selectedPuppet={this.state.selectedPuppet}
 						onEditSelectedPuppet={this.onEditSelectedPuppet}
 						onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
@@ -240,7 +251,7 @@ class Stage extends Component {
 						closeLoader={this.closeLoader}
 					/> : null
 				}
-				<div className={styles.lowerLeft}>
+				<div className='lowerLeft'>
 					<ZoomPanner
 						onPanSelect={this.onPanSelect}
 						onZoomSelect={this.onZoomSelect}
@@ -256,7 +267,7 @@ class Stage extends Component {
 					<LowPassFilterToolbar/>
 				</div>
 				<Fab
-					className={styles.fab}
+					className='fab'
 					onClick={this.onFabClick}
 				/>
 				<input
@@ -264,7 +275,7 @@ class Stage extends Component {
 					ref={input => this.filePicker = input}
 					value=''
 					onChange={this.onFileChange}
-					className={styles.hiddenFilePicker}
+					className='hiddenFilePicker'
 				/>
 				<input
 					type='color'

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styles from './styles.scss';
+import './styles.scss';
 
 class Button extends Component {
   constructor(props) {
@@ -10,7 +10,7 @@ class Button extends Component {
   render() {
     return (
       <button
-      	className={ `${styles.button} ${this.props.className}` }
+      	className={ `button ${this.props.className}` }
       	onClick={ this.props.onClick }>
         { this.props.children }
       </button>
