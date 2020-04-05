@@ -2,17 +2,21 @@ import React from 'react';
 
 import './fab.scss';
 
-class FabButton extends React.Component<{}, {}> {
-	constructor(props: {}) {
+interface FabProps {
+	onClick: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+}
+
+class Fab extends React.Component<FabProps, {}> {
+	constructor(props: FabProps) {
 		super(props);
 	}
 
 	public render = (): JSX.Element => {
 		return (
-			<div className='fab-container'>
+			<div className='fab-container' onClick={this.props.onClick}>
 				{this.props.children}
 			</div>
 		);
 	}
 }
-export default FabButton;
+export default Fab;

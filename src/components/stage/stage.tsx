@@ -6,11 +6,6 @@ import TopBar from 'components/top-bar/top-bar';
 import RightBar from 'components/right-bar/right-bar';
 import BottomBar from 'components/bottom-bar/bottom-bar';
 import ParamControl from 'components/paramControl';
-import Recorder from 'components/recorder';
-import HandTrackingToolbar from 'components/handTrackingToolbar';
-import LowPassFilterToolbar from 'components/lowPassFilterToolbar';
-import PuppetRecorderToolbar from 'components/puppet-recorder';
-import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
 import Toast from 'components/primitives/toast';
@@ -18,6 +13,7 @@ import Toast from 'components/primitives/toast';
 import { loadDranimateFile, loadImageFile } from 'services/util/file';
 import puppetEditorStateService from 'services/imagetomesh/PuppetEditorStateService';
 import dranimate from 'services/dranimate/dranimate';
+import eventManager from 'services/eventManager/event-manager';
 
 import './styles.scss';
 
@@ -44,6 +40,8 @@ class Stage extends React.Component<{}, StageState> {
 	private filePicker: HTMLInputElement;
 	private colorPicker: HTMLInputElement;
 
+	private onAddPuppetEventId: string;
+
 	constructor(props: {}) {
 		super(props);
 
@@ -62,6 +60,12 @@ class Stage extends React.Component<{}, StageState> {
 
 	public componentDidMount = (): void => {
 		dranimate.setup(this.dranimateStageContainer, 'dranimate-canvas-background');
+
+		this.onAddPuppetEventId = eventManager.on('on-add-puppet', this.onFabClick);
+	}
+
+	public componentWillUnmount = (): void => {
+		eventManager.remove(this.onAddPuppetEventId);
 	}
 
 	private onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
