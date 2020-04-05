@@ -247,21 +247,6 @@ class Stage extends React.Component<{}, StageState> {
 						closeLoader={this.closeLoader}
 					/> : null
 				}
-				<div className='lowerLeft'>
-					<ZoomPanner
-						onPanSelect={this.onPanSelect}
-						onZoomSelect={this.onZoomSelect}
-						zoomEnabled={!this.state.editorIsOpen}
-					/>
-					<Recorder
-						openLoader={this.openLoader}
-						closeLoader={this.closeLoader}
-						gifPreviewAvailable={this.gifPreviewAvailable}
-					/>
-					<PuppetRecorderToolbar/>
-					<HandTrackingToolbar/>
-					<LowPassFilterToolbar/>
-				</div>
 				<input
 					type='file'
 					ref={(input): void => {
