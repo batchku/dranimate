@@ -83,7 +83,7 @@ class Dranimate {
 	createJointMesh = (name) => {
 		var geometry = new THREE.BoxBufferGeometry(10, 10, 10);
 		var material = new THREE.MeshBasicMaterial({
-			color: 0x000000,
+			color: 0xAAAAAA,
 			depthTest: false,
 			depthWrite: false,
 		});
@@ -227,10 +227,10 @@ class Dranimate {
 		rightPlane.position.add(rightPosition);
 		bottomPlane.position.add(bottomPosition);
 		leftPlane.position.add(leftPosition);
-		this.scene.add(topPlane);
-		this.scene.add(rightPlane);
-		this.scene.add(bottomPlane);
-		this.scene.add(leftPlane);
+		// this.scene.add(topPlane);
+		// this.scene.add(rightPlane);
+		// this.scene.add(bottomPlane);
+		// this.scene.add(leftPlane);
 
 		this.createPalmMeshes();
 

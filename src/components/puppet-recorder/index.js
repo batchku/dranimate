@@ -82,7 +82,7 @@ class PuppetRecorderToolbar extends Component {
 
 	render() {
 		return (
-			<div className='container'>
+			<div className='puppet-recorder-container'>
 				{/* Checkbox to play/stop recorded animation for selected puppet */}
 				<label htmlFor="puppet-play-toggle">
 					Play:

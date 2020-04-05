@@ -7,6 +7,8 @@
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
+
+	@include checkerBackground();
 }
 
 .dranimateCanvas {
@@ -14,8 +16,8 @@
 	height: 100%;
 }
 
-.dranimateCanvasBackground {
-	@include checkerBackground();
+.dranimate-canvas-background {
+	background: transparent;
 }
 
 .topBar {
@@ -36,20 +38,6 @@
 	right: 0;
 	bottom: 0;
 	padding: 15px;
-}
-
-.backgroundButtons {
-	position: absolute;
-	right: 0;
-	top: 35%;
-	padding: 20px;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-	justify-content: space-between;
-	height: 100px;
-	background-color: rgba(0, 0, 0, 0.1);
-	border: 1px solid $color-black;
 }
 
 .hiddenFilePicker {

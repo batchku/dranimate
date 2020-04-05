@@ -1,0 +1,11 @@
+@import './../../styles/colors.scss';
+
+.stage-toolbar-container {
+	display: flex;
+	width: 48px;
+	border-radius: 24px;
+	background: $text-daylight-2;
+	padding-top: 24px;
+	padding-bottom: 24px;
+	flex-direction: column;
+}

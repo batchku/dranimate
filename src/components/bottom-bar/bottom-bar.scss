@@ -1,0 +1,12 @@
+.bottom-bar-container {
+	position: absolute;
+	bottom: 0px;
+	height: 112px;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	padding-left: 120px;
+	padding-right: 120px;
+	box-sizing: border-box;
+}

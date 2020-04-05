@@ -1,0 +1,16 @@
+@import './../../../styles/colors.scss';
+
+.button-container {
+	height: 48px;
+	display: flex;
+	align-items: center;
+	background: $primary;
+	color: $text-dark-1;
+	border-radius: 24px;
+}
+
+.button-label {
+	margin: 0px;
+	padding-left: 24px;
+	padding-right: 24px;
+}

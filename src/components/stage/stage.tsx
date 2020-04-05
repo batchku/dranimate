@@ -1,10 +1,10 @@
 import React from 'react';
 
-import Button from 'components/primitives/button';
-import Fab from 'components/primitives/fab';
 import Loader from 'components/loader';
 import GifPreview from 'components/GifPreview';
-import TopBar from 'components/topbar';
+import TopBar from 'components/top-bar/top-bar';
+import RightBar from 'components/right-bar/right-bar';
+import BottomBar from 'components/bottom-bar/bottom-bar';
 import ParamControl from 'components/paramControl';
 import Recorder from 'components/recorder';
 import HandTrackingToolbar from 'components/handTrackingToolbar';
@@ -13,7 +13,6 @@ import PuppetRecorderToolbar from 'components/puppet-recorder';
 import ZoomPanner from 'components/zoomPanner';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
-import Slider from 'components/primitives/slider';
 import Toast from 'components/primitives/toast';
 
 import { loadDranimateFile, loadImageFile } from 'services/util/file';
@@ -25,9 +24,9 @@ import './styles.scss';
 enum FILE_PICKER_STATE {
 	DRANIMATE = 'DRANIMATE',
 	BACKGROUND = 'BACKGROUND'
-};
+}
 
-interface IStageState {
+interface StageState {
 	editorIsOpen: boolean;
 	profileIsOpen: boolean;
 	controllerIsOpen: boolean;
@@ -39,7 +38,7 @@ interface IStageState {
 	hasBackgroundImage: boolean;
 }
 
-class Stage extends React.Component<{}, IStageState> {
+class Stage extends React.Component<{}, StageState> {
 	private filePickerState: FILE_PICKER_STATE = FILE_PICKER_STATE.DRANIMATE;
 	private dranimateStageContainer: HTMLDivElement;
 	private filePicker: HTMLInputElement;
@@ -61,82 +60,97 @@ class Stage extends React.Component<{}, IStageState> {
 		};
 	}
 
-	componentDidMount = () => {
-		dranimate.setup(this.dranimateStageContainer, 'dranimateCanvasBackground');
-	};
+	public componentDidMount = (): void => {
+		dranimate.setup(this.dranimateStageContainer, 'dranimate-canvas-background');
+	}
 
-	onMouseDown = event => {
+	private onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
 		dranimate.onMouseDown(event);
+
 		const selectedPuppet = dranimate.getSelectedPuppet();
-		this.setState({ selectedPuppet });
-	};
+		this.setState({
+			selectedPuppet: selectedPuppet
+		});
+	}
 
-	closeEditor = () => {
-		this.setState({ editorIsOpen: false });
+	private closeEditor = (): void => {
 		dranimate.startRenderLoop();
-	};
 
-	closeProfile = () => {
-		this.setState({ profileIsOpen: false });
+		this.setState({
+			editorIsOpen: false
+		});
+	}
+
+	private closeProfile = (): void => {
 		dranimate.startRenderLoop();
-	};
 
-	openController = controllerIsOpen => {
-		this.setState({ controllerIsOpen });
-		controllerIsOpen ? dranimate.stopRenderLoop() : dranimate.startRenderLoop();
-	};
+		this.setState({
+			profileIsOpen: false
+		});
+	}
 
-	onFabClick = () => {
+	private onFabClick = (): void => {
 		this.filePickerState = FILE_PICKER_STATE.DRANIMATE;
 		this.filePicker.click();
-	};
+	}
 
-	onZoomSelect = isZoomIn => isZoomIn ? dranimate.zoomIn() : dranimate.zoomOut();
+	private onZoomSelect = (isZoomIn: boolean): void => {
+		isZoomIn ? dranimate.zoomIn() : dranimate.zoomOut();
+	}
 
-	onPanSelect = isPanSelected => dranimate.setPanEnabled(isPanSelected);
+	private onPanSelect = (isPanSelected): void => {
+		dranimate.setPanEnabled(isPanSelected);
+	}
 
-	onDeleteSelectedPuppet = () => {
+	private onDeleteSelectedPuppet = (): void => {
 		dranimate.deleteSelectedPuppet();
 		if (!dranimate.hasPuppet()) {
 			dranimate.stopRenderLoop();
 		}
-		this.setState({ selectedPuppet: null });
-	};
+		this.setState({
+			selectedPuppet: null
+		});
+	}
 
-	onEditSelectedPuppet = () => {
-		console.log('setItem?', dranimate.getSelectedPuppet())
+	private onEditSelectedPuppet = (): void => {
 		puppetEditorStateService.setItem(dranimate.getSelectedPuppet());
-		this.setState({ editorIsOpen: true });
+		this.setState({
+			editorIsOpen: true
+		});
 		dranimate.stopRenderLoop();
-	};
+	}
 
-	openLoader = message => {
+	private openLoader = (message: string): void => {
 		this.setState({
 			loaderIsVisible: true,
 			loaderMessage: message
 		});
 		dranimate.stopRenderLoop();
-	};
+	}
 
-	closeLoader = () => {
+	private closeLoader = (): void => {
 		this.setState({
 			loaderIsVisible: false,
 			loaderMessage: ''
 		});
 		dranimate.startRenderLoop();
-	};
+	}
 
-	gifPreviewAvailable = gifPreviewBlob => {
-		this.setState({ gifPreviewBlob });
+	private gifPreviewAvailable = (gifPreviewBlob): void => {
+		this.setState({
+			gifPreviewBlob
+		});
 		dranimate.stopRenderLoop();
-	};
+	}
 
-	closeGifPreview = () => {
-		this.setState({ gifPreviewBlob: null });
+	private closeGifPreview = (): void => {
+		this.setState({
+			gifPreviewBlob: null
+		});
 		dranimate.startRenderLoop();
-	};
+	}
 
-	onFileChange = event => {
+	private onFileChange = (): void => {
 		if (this.filePickerState === FILE_PICKER_STATE.DRANIMATE) {
 			this.loadDranimateFile();
 			return;
@@ -145,61 +159,66 @@ class Stage extends React.Component<{}, IStageState> {
 			this.loadBackgroundFile();
 			return;
 		}
-		console.log('error: no file picker state');
 	}
 
-	loadDranimateFile = () => {
-		loadDranimateFile(this.filePicker)
-			.then((result) => {
-				const isPuppet = !!result.id;
-				if (isPuppet) {
-					dranimate.addPuppet(result);
-					dranimate.startRenderLoop();
-				}
-				else {
-					puppetEditorStateService.setItem(result);
-					this.setState({ editorIsOpen: true });
-				}
-			})
-			.catch(error => console.log('error', error)); // TODO: show error modal
-	};
+	private loadDranimateFile = async(): Promise<void> => {
+		const file = await loadDranimateFile(this.filePicker)
 
-	loadBackgroundFile = () => {
-		loadImageFile(this.filePicker)
-			.then(imageDataUrl => {
-				dranimate.setBackgroundImage(imageDataUrl);
-				this.setState({ hasBackgroundImage: true });
-			})
-			.catch(error => console.log('error', error)); // TODO: show error modal
-	};
+		const isPuppet = !!file.id;
+		if (isPuppet) {
+			dranimate.addPuppet(file);
+			dranimate.startRenderLoop();
+		}
+		else {
+			puppetEditorStateService.setItem(file);
+			this.setState({
+				editorIsOpen: true
+			});
+		}
+	}
 
-	onBackgroundImage = event => {
+	private loadBackgroundFile = async(): Promise<void> => {
+		const imageFile = await loadImageFile(this.filePicker)
+		dranimate.setBackgroundImage(imageFile);
+
+		this.setState({
+			hasBackgroundImage: true
+		});
+	}
+
+	private onBackgroundImage = (): void => {
 		this.filePickerState = FILE_PICKER_STATE.BACKGROUND;
 		this.filePicker.click();
-	};
+	}
 
-	onBackgroundColorChange = event => {
+	private onBackgroundColorChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
 		const backgroundColor = event.target.value;
 		dranimate.setBackgroundColor(backgroundColor);
-		this.setState({ backgroundColor });
-	};
+		this.setState({
+			backgroundColor
+		});
+	}
 
-	clearBackground = () => {
+	private clearBackground = (): void => {
 		dranimate.clearBackground();
-		this.setState({ hasBackgroundImage: false });
-	};
+		this.setState({
+			hasBackgroundImage: false
+		});
+	}
 
-	onBackgroundImageSizeChange = value => {
+	private onBackgroundImageSizeChange = (value: number): void => {
 		const normalizedValue = value / 100;
 		dranimate.setBackgroundImageSize(normalizedValue);
 	};
 
-	onProfileClick = () => {
-		this.setState({ profileIsOpen: true });
+	private onProfileClick = (): void => {
+		this.setState({
+			profileIsOpen: true
+		});
 		dranimate.stopRenderLoop();
 	};
 
-	render() {
+	public render(): JSX.Element {
 		return (
 			<div className='stage'>
 				<video style={{display: 'none', position: 'fixed'}} id="video" width={'auto'} height={'auto'} playsInline></video>
@@ -210,36 +229,13 @@ class Stage extends React.Component<{}, IStageState> {
 					onMouseUp={dranimate.onMouseUp}
 					onTouchStart={dranimate.onTouchStart}
 					onTouchEnd={dranimate.onTouchEnd}
-					ref={input => this.dranimateStageContainer = input}
+					ref={(input): void => {
+						this.dranimateStageContainer = input;
+					}}
 				/>
-				<TopBar className='topBar'/>
-				<Button
-					className={'profileButton'}
-					onClick={this.onProfileClick}
-				>
-					Profile
-				</Button>
-				<div className={'backgroundButtons'}>
-					<Button onClick={this.onBackgroundImage}>
-						Background Image
-					</Button>
-					{
-						this.state.hasBackgroundImage ?
-							<Slider
-								min={ 0 }
-								max={ 500 }
-								defaultValue={ 100 }
-								onChange={ this.onBackgroundImageSizeChange }
-								className='backgroundSlider'
-							/> : null
-					}
-					<Button onClick={() => this.colorPicker.click()}>
-						Background Color
-					</Button>
-					<Button onClick={this.clearBackground}>
-						Clear background
-					</Button>
-				</div>
+				<TopBar />
+				<RightBar />
+				<BottomBar />
 				{
 					this.state.selectedPuppet ?
 					<ParamControl
@@ -266,20 +262,20 @@ class Stage extends React.Component<{}, IStageState> {
 					<HandTrackingToolbar/>
 					<LowPassFilterToolbar/>
 				</div>
-				<Fab
-					className='fab'
-					onClick={this.onFabClick}
-				/>
 				<input
 					type='file'
-					ref={input => this.filePicker = input}
+					ref={(input): void => {
+						this.filePicker = input
+					}}
 					value=''
 					onChange={this.onFileChange}
 					className='hiddenFilePicker'
 				/>
 				<input
 					type='color'
-					ref={element => this.colorPicker = element}
+					ref={(element): void => {
+						this.colorPicker = element
+					}}
 					value={this.state.backgroundColor}
 					onChange={this.onBackgroundColorChange}
 				/>
@@ -314,5 +310,4 @@ class Stage extends React.Component<{}, IStageState> {
 		);
 	}
 }
-
 export default Stage;

@@ -38,7 +38,7 @@ class LowPassFilterToolbar extends Component {
 
 	render() {
 		return (
-			<div className='container'>
+			<div className='low-pass-filter-container'>
 				{/* Checkbox to turn low pass filter on/off */}
 				<label htmlFor="hand-tracking-toggle">
 					Low pass filter:

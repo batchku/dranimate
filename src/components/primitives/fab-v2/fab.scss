@@ -1,0 +1,13 @@
+@import './../../../styles/colors.scss';
+@import './../../../styles/shadows.scss';
+
+.fab-container {
+	width: 64px;
+	height: 64px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 32px;
+	background: $primary;
+	box-shadow: $elevated;
+}
