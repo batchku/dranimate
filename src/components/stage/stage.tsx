@@ -5,7 +5,6 @@ import GifPreview from 'components/GifPreview';
 import TopBar from 'components/top-bar/top-bar';
 import RightBar from 'components/right-bar/right-bar';
 import BottomBar from 'components/bottom-bar/bottom-bar';
-import ParamControl from 'components/paramControl';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
 import Toast from 'components/primitives/toast';
@@ -240,17 +239,6 @@ class Stage extends React.Component<{}, StageState> {
 				<TopBar />
 				<RightBar />
 				<BottomBar />
-				{
-					this.state.selectedPuppet ?
-					<ParamControl
-						className='paramControl'
-						selectedPuppet={this.state.selectedPuppet}
-						onEditSelectedPuppet={this.onEditSelectedPuppet}
-						onDeleteSelectedPuppet={this.onDeleteSelectedPuppet}
-						openLoader={this.openLoader}
-						closeLoader={this.closeLoader}
-					/> : null
-				}
 				<input
 					type='file'
 					ref={(input): void => {

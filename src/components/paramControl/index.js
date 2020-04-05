@@ -86,13 +86,6 @@ class ParamControl extends Component {
             className='paramSlider'
           />
         </div>
-        <MaterialInput
-          type='text'
-          label='Puppet Name'
-          onChange={ this.onNameChange }
-          initialValue={ this.props.selectedPuppet.getName() }
-          className='puppetName'
-        />
         <Button
           className='actionButton'
           onClick={this.props.onEditSelectedPuppet}
