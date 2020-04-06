@@ -9,7 +9,7 @@ export default class HandTrackingService {
 		this.onUpdatePosition = null;
 		this.partPositionData = {};
 
-		this.lowPassFilterEnabled = true;
+		this.lowPassFilterEnabled = false;
 		this.lowPassSamplesCount = 4;
 		this.lowPassSamples = [];
 

@@ -8,6 +8,7 @@ import BottomBar from 'components/bottom-bar/bottom-bar';
 import PuppetEditor from 'components/puppetEditor';
 import Profile from 'components/Profile';
 import Toast from 'components/primitives/toast';
+import WelcomeMessage from 'components/welcome-message/welcome-message';
 
 import { loadDranimateFile, loadImageFile } from 'services/util/file';
 import puppetEditorStateService from 'services/imagetomesh/PuppetEditorStateService';
@@ -40,6 +41,9 @@ class Stage extends React.Component<{}, StageState> {
 	private colorPicker: HTMLInputElement;
 
 	private onAddPuppetEventId: string;
+	private onOpenLoaderEventId: string;
+	private onCloseLoaderEventId: string;
+	private onEditPuppetEventId: string;
 
 	constructor(props: {}) {
 		super(props);
@@ -61,10 +65,15 @@ class Stage extends React.Component<{}, StageState> {
 		dranimate.setup(this.dranimateStageContainer, 'dranimate-canvas-background');
 
 		this.onAddPuppetEventId = eventManager.on('on-add-puppet', this.onFabClick);
+		this.onOpenLoaderEventId = eventManager.on('open-loader', this.openLoader);
+		this.onCloseLoaderEventId = eventManager.on('close-loader', this.closeLoader);
+		this.onEditPuppetEventId = eventManager.on('edit-puppet', this.onEditSelectedPuppet);
 	}
 
 	public componentWillUnmount = (): void => {
 		eventManager.remove(this.onAddPuppetEventId);
+		eventManager.remove(this.onOpenLoaderEventId);
+		eventManager.remove(this.onCloseLoaderEventId);
 	}
 
 	private onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
@@ -105,7 +114,7 @@ class Stage extends React.Component<{}, StageState> {
 		dranimate.setPanEnabled(isPanSelected);
 	}
 
-	private onDeleteSelectedPuppet = (): void => {
+	public onDeleteSelectedPuppet = (): void => {
 		dranimate.deleteSelectedPuppet();
 		if (!dranimate.hasPuppet()) {
 			dranimate.stopRenderLoop();
@@ -236,6 +245,7 @@ class Stage extends React.Component<{}, StageState> {
 						this.dranimateStageContainer = input;
 					}}
 				/>
+				<WelcomeMessage />
 				<TopBar />
 				<RightBar />
 				<BottomBar />

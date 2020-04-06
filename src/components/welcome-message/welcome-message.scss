@@ -1,0 +1,17 @@
+.welcome-message-container {
+	position: fixed;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 99;
+}
+
+.welcome-message-image {
+	max-height: 445px;
+	cursor: pointer;
+	z-index: 100;
+}

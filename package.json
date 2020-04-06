@@ -4,9 +4,9 @@
   "description": "Dranimate web app",
   "scripts": {
     "build": "npm run clean && npm run build:webpack && npm run build:copy",
-    "build:copy": "npm run build:copy:arap; cp src/manifest.json dist/manifest.json",
+    "build:copy": "npm run build:copy:arap;",
     "build:copy:arap": "mkdir dist/arap; cp src/arap/deform2d.js dist/arap/deform2d.js",
-    "build:webpack": "webpack --colors --progress --display-error-details",
+    "build:webpack": "webpack --colors --progress --display-error-details --config webpack-config-dev.js",
     "clean": "rm -rf dist",
     "lint": "eslint src",
     "test": "jest",
