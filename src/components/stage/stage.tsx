@@ -273,13 +273,6 @@ class Stage extends React.Component<{}, StageState> {
 						/> :
 						null
 				}
-				{ this.state.profileIsOpen ?
-					<Profile
-						onClose={this.closeProfile}
-						openLoader={this.openLoader}
-						closeLoader={this.closeLoader}
-					/> : null
-				}
 				{ this.state.gifPreviewBlob ?
 					<GifPreview
 						gifBlob={this.state.gifPreviewBlob}

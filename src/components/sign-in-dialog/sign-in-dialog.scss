@@ -1,0 +1,79 @@
+.sign-in-dialog-backdrop {
+	position: fixed;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+.sign-in-dialog {
+	background-color: rgb(255, 255, 255);
+	border-radius: 10px;
+	max-height: 600px;
+}
+
+.sign-in-dialog-title {
+	box-shadow:
+		0px -1px 1px rgba(0, 0, 0, 0.08),
+		1px 0px 1px rgba(0, 0, 0, 0.08),
+		-1px 0px 1px rgba(0, 0, 0, 0.08),
+		0px 1px 1px rgba(0, 0, 0, 0.08);
+	border-radius: 10px 10px 0px 0px;
+	display: flex;
+	align-items: center;
+	position: relative;
+	height: 64px;
+}
+
+.sing-in-close-button {
+	position: absolute;
+	left: 8px;
+	cursor: pointer;
+}
+
+.sing-in-title-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+}
+
+.sign-in-dialog-body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 24px;
+}
+
+.sign-in-google-button {
+	border: 1px solid rgba(0, 0, 0, 0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 48px;
+	border-radius: 24px;
+	width: 336px;
+	user-select: none;
+	cursor: pointer;
+}
+
+.sign-in-email-button {
+	border: 1px solid #4A74E2;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 48px;
+	border-radius: 24px;
+	width: 336px;
+	user-select: none;
+	cursor: pointer;
+}
+
+.sign-in-dialog-sign-up-container {
+	user-select: none;
+	cursor: pointer;
+}

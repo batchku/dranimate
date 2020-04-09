@@ -1,0 +1,16 @@
+@import './../../../styles/colors.scss';
+
+.border-button-container {
+	height: 48px;
+	display: flex;
+	align-items: center;
+	color: $text-dark-1;
+	border-radius: 24px;
+	cursor: pointer;
+	user-select: none;
+	padding-left: 24px;
+	padding-right: 24px;
+	border: 1px solid rgba(0, 0, 0, 0.6);
+	box-sizing: border-box;
+	justify-content: center;
+}
