@@ -11,6 +11,7 @@ import loadImage from 'services/util/imageLoader';
 import HandTrackingService from 'services/hand-tracking/HandTrackingService';
 
 import eventManager from '../eventManager/event-manager';
+import puppetAddedOnStageEvent from 'services/eventManager/puppet-added-on-stage-event';
 
 const ZOOM = {
 	MIN: 0.5,
@@ -371,6 +372,8 @@ class Dranimate {
 		}
 		this.puppets.push(p);
 		this.scene.add(p.group);
+
+		puppetAddedOnStageEvent.emit();
 	}
 
 	movePuppet = (puppet, val) => {

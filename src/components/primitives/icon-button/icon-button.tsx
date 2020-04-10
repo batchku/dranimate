@@ -14,10 +14,12 @@ interface IconButtonProps {
 	tooltip?: string;
 	tooltipPosition?: TooltipSide;
 	active?: boolean;
+	disabled?: boolean;
 }
 
 interface IconButtonState {
 	showTooltip: boolean;
+	mouseOver: boolean;
 }
 
 class IconButton extends React.Component<IconButtonProps, IconButtonState> {
@@ -26,19 +28,29 @@ class IconButton extends React.Component<IconButtonProps, IconButtonState> {
 
 		this.state = {
 			showTooltip: false,
+			mouseOver: false,
 		};
 	}
 
 	public render = (): JSX.Element => {
+		let backgroundColor = 'rgba(0, 0, 0, 0.3)';
+		if (this.state.mouseOver) {
+			backgroundColor = 'rgba(0, 0, 0, 0.9)';
+		}
+		if (this.props.active) {
+			backgroundColor = 'rgba(74, 115, 226, 1)';
+		}
+
 		return (
 			<div
 				style={{
-					background: this.props.active ? 'rgba(74, 115, 226, 1)' : 'rgba(0, 0, 0, 0.3)'
+					background: backgroundColor,
+					cursor: this.props.disabled ? 'auto' : 'pointer'
 				}}
 				className='icon-button-container'
-				onClick={this.props.onClick}
-				onMouseEnter={this.onShowTooltip}
-				onMouseLeave={this.onHideTooltip}
+				onClick={this.onClick}
+				onMouseEnter={this.onMouseEnter}
+				onMouseLeave={this.onMouseLeave}
 			>
 				{this.props.children}
 				{this.props.tooltip && this.state.showTooltip && [
@@ -53,15 +65,28 @@ class IconButton extends React.Component<IconButtonProps, IconButtonState> {
 		);
 	}
 
-	private onShowTooltip = (): void => {
+	private onClick = (): void => {
+		if (this.props.disabled) {
+			return;
+		}
+		this.props.onClick();
+	}
+
+	private onMouseEnter = (): void => {
+		if (this.props.disabled) {
+			return;
+		}
+
 		this.setState({
 			showTooltip: true,
+			mouseOver: true,
 		});
 	}
 
-	private onHideTooltip = (): void => {
+	private onMouseLeave = (): void => {
 		this.setState({
 			showTooltip: false,
+			mouseOver: false,
 		});
 	}
 }

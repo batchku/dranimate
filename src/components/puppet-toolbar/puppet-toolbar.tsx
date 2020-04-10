@@ -13,21 +13,25 @@ import dranimate from './../../services/dranimate/dranimate';
 import eventManager from 'services/eventManager/event-manager';
 import apiService from './../../services/api/apiService';
 import puppetSelectedEvent, {PuppetSelectedEventData} from './../../services/eventManager/puppet-selected-event';
+import userSignedInEvent, {UserSignedInEventData} from './../../services/eventManager/user-signed-in-event';
 
 import './puppet-toolbar.scss';
 
 interface PuppetToolbarState {
 	selectedPuppet: boolean;
+	userSignedIn: boolean;
 }
 
 class PuppetToolbar extends React.Component<{}, PuppetToolbarState> {
 	private _puppetSelectedEventId = uuid();
+	private _userSignedInEventId = uuid();
 
 	constructor(props: {}) {
 		super(props);
 
 		this.state = {
 			selectedPuppet: null,
+			userSignedIn: false,
 		};
 	}
 
@@ -36,30 +40,36 @@ class PuppetToolbar extends React.Component<{}, PuppetToolbarState> {
 			callback: this.onPuppetSelected,
 			id: this._puppetSelectedEventId,
 		});
+		userSignedInEvent.subscribe({
+			callback: this.onUserSignedId,
+			id: this._userSignedInEventId,
+		});
 	}
 
 	public componentWillUnmount = (): void => {
 		puppetSelectedEvent.unsubscribe(this._puppetSelectedEventId);
+		userSignedInEvent.unsubscribe(this._userSignedInEventId);
 	}
 
 	public render = (): JSX.Element => {
 		const opacity = this.state.selectedPuppet ? '0.7' : '0.2';
+		const saveIconOpacity = (!this.state.selectedPuppet || !this.state.userSignedIn) ? '0.2' : '0.7';
 
 		return (
 			<div className='puppet-toolbar-container'>
-				<IconButton tooltip='Edit' onClick={this.onEditPuppet}>
+				<IconButton disabled={!this.state.selectedPuppet} tooltip='Edit' onClick={this.onEditPuppet}>
 					<EditIconProps fill='#FFFFFF' opacity={opacity} />
 				</IconButton>
-				<IconButton tooltip='Move to front' onClick={this.onMoveToFront}>
+				<IconButton disabled={!this.state.selectedPuppet} tooltip='Move to front' onClick={this.onMoveToFront}>
 					<MoveToFrontIcon fill='#FFFFFF' opacity={opacity} />
 				</IconButton>
-				<IconButton tooltip='Move to back' onClick={this.onMoveToBack}>
+				<IconButton disabled={!this.state.selectedPuppet} tooltip='Move to back' onClick={this.onMoveToBack}>
 					<MoveToBackIcon fill='#FFFFFF' opacity={opacity} />
 				</IconButton>
-				<IconButton tooltip='Save' onClick={this.onSavePuppetToServer}>
-					<SaveIcon fill='#FFFFFF' opacity={opacity} />
+				<IconButton disabled={!this.state.selectedPuppet || !this.state.userSignedIn} tooltip='Save' onClick={this.onSavePuppetToServer}>
+					<SaveIcon fill='#FFFFFF' opacity={saveIconOpacity} />
 				</IconButton>
-				<IconButton tooltip='Delete' onClick={this.onDeletePuppet}>
+				<IconButton disabled={!this.state.selectedPuppet} tooltip='Delete' onClick={this.onDeletePuppet}>
 					<DeleteIcon fill='#FFFFFF' opacity={opacity} />
 				</IconButton>
 			</div>
@@ -111,6 +121,12 @@ class PuppetToolbar extends React.Component<{}, PuppetToolbarState> {
 
 	private onEditPuppet = (): void => {
 		eventManager.emit('edit-puppet');
+	}
+
+	private onUserSignedId = (data: UserSignedInEventData): void => {
+		this.setState({
+			userSignedIn: Boolean(data.user),
+		});
 	}
 }
 export default PuppetToolbar;

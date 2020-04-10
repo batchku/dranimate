@@ -1,0 +1,113 @@
+
+.input-field {
+	position: relative;
+	height: 68px;
+	width: 336px;
+}
+
+.input-text {
+	transition: all 0.2s;
+	touch-action: manipulation;
+	border: 2px solid rgba(0, 0, 0, 0.6);
+	border-radius: 12px;
+	box-sizing: border-box;
+	height: 48px;
+	position: absolute;
+	width: 100%;
+	padding-left: 16px;
+	padding-bottom: 8px;
+	padding-top: 20px;
+	font-size: 16px;
+	line-height: 20px;
+	font-style: normal;
+	font-weight: normal;
+	color: rgba(0, 0, 0, 0.9);
+}
+
+.input-text:focus {
+	outline: 0;
+}
+
+.input-label-to-to-top {
+	animation-name: input-label-top;
+	animation-duration: 0.2s;
+	animation-fill-mode: forwards;
+}
+
+.input-label-to-to-bottom {
+	animation-name: input-label-bottom;
+	animation-duration: 0.2s;
+	animation-fill-mode: forwards;
+}
+
+.input-label {
+	position: absolute;
+	height: 48px;
+	display: flex;
+	align-items: center;
+	padding-left: 16px;
+	pointer-events: none;
+	cursor: text;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 20px;
+	letter-spacing: 0.1px;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+@keyframes input-label-top {
+	from {
+		font-size: 16px;
+		line-height: 20px;
+		letter-spacing: auto;
+		height: 48px;
+		margin-top: 0px;
+	}
+	to {
+		font-size: 12px;
+		line-height: 16px;
+		letter-spacing: 0.1px;
+		padding-bottom: 12px;
+		height: 16px;
+		margin-top: 4px;
+	}
+}
+
+@keyframes input-label-bottom {
+	from {
+		font-size: 12px;
+		line-height: 16px;
+		letter-spacing: 0.1px;
+		padding-bottom: 12px;
+		height: 16px;
+		margin-top: 4px;
+	}
+	to {
+		font-size: 16px;
+		line-height: 20px;
+		letter-spacing: auto;
+		height: 48px;
+		margin-top: 0px;
+	}
+}
+
+.input-placeholder {
+	position: absolute;
+	top: 48px;
+	margin-left: 16px;
+	margin-top: 4px;
+	font-size: 12px;
+	line-height: 16px;
+	letter-spacing: 0.1px;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+.input-cancel-button {
+	position: absolute;
+	right: 12px;
+	top: 12px;
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
+}

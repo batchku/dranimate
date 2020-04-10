@@ -1,6 +1,9 @@
 import React from 'react';
+import { v1 as uuid } from 'uuid';
 
 import UserProfile from 'components/user-profile/user-profile';
+
+import openUserProfileEvent from 'services/eventManager/open-user-profile-event';
 
 import './profile-image.scss';
 
@@ -15,12 +18,25 @@ interface ProfileImageState {
 class ProfileImage extends React.Component<ProfileImageProps, ProfileImageState> {
 	private readonly DEFAULT_IMAGE_URL = './assets/profile-image-placeholder.svg';
 
+	private _openUserProfileEventId = uuid();
+
 	constructor(props: ProfileImageProps) {
 		super(props);
 
 		this.state = {
 			profileOpen: false,
 		};
+	}
+
+	public componentDidMount = (): void => {
+		openUserProfileEvent.subscribe({
+			callback: this.onOpenProfile,
+			id: this._openUserProfileEventId
+		});
+	}
+
+	public componentWillUnmount = (): void => {
+		openUserProfileEvent.unsubscribe(this._openUserProfileEventId);
 	}
 
 	public render = (): JSX.Element[] => {
