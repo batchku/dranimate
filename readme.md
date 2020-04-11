@@ -1,7 +1,7 @@
 # Dranimate
 
 ### Requirements
-- NodeJS 8
+- NodeJS 12
 - NPM 6
 - Firebase CLI 7
 
