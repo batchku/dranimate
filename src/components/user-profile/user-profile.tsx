@@ -36,7 +36,9 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 
 	public render = (): JSX.Element => {
 		return (
-			<div className='user-profile-backdrop'>
+		<div>
+			<div className='user-profile-backdrop' onClick={this.props.onClose}/>
+			<div className='user-profile-container'>
 				<div className='user-profile-dialog'>
 					<div className='user-profile-dialog-title'>
 						<img className='user-profile-close-button' src='./assets/close.svg' onClick={this.props.onClose}/>
@@ -83,6 +85,7 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 					</div>
 				</div>
 			</div>
+		</div>
 		);
 	}
 

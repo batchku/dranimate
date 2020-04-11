@@ -103,43 +103,46 @@ class SignInDialog extends React.Component<{}, SignInDialogState> {
 
 		return (
 			this.state.open &&
-			<div className='sign-in-dialog-backdrop'>
-				{this.state.signInWithEmailDialogActive && signInWithEmail}
-				{this.state.signUpWithEmailDialogActive && signUpWithEmail}
-				{!this.state.signInWithEmailDialogActive && !this.state.signUpWithEmailDialogActive &&
-				<div className='sign-in-dialog'>
-					<div className='sign-in-dialog-title'>
-						<img className='sing-in-close-button' src='./assets/close.svg' onClick={this.onClose}/>
-						<div className='sing-in-title-container'>
-							<Typography variant={TypographyVariant.TEXT_LARGE} color='rgba(0, 0, 0, 0.9)'>
-								Sign in
-							</Typography>
+			<div>
+				<div className='sign-in-dialog-backdrop' onClick={this.onClose} />
+				<div className='sign-in-dialog-container'>
+					{this.state.signInWithEmailDialogActive && signInWithEmail}
+					{this.state.signUpWithEmailDialogActive && signUpWithEmail}
+					{!this.state.signInWithEmailDialogActive && !this.state.signUpWithEmailDialogActive &&
+					<div className='sign-in-dialog'>
+						<div className='sign-in-dialog-title'>
+							<img className='sing-in-close-button' src='./assets/close.svg' onClick={this.onClose}/>
+							<div className='sing-in-title-container'>
+								<Typography variant={TypographyVariant.TEXT_LARGE} color='rgba(0, 0, 0, 0.9)'>
+									Sign in
+								</Typography>
+							</div>
 						</div>
-					</div>
-					<div className='sign-in-dialog-body'>
-						<div className='sign-in-google-button' onClick={this.onSignInWithGoogleAsync}>
-							<Typography color='rgba(0, 0, 0, 0.6)' variant={TypographyVariant.HEADING_MEDIUM}>
-								{'Continue with Google'}
+						<div className='sign-in-dialog-body'>
+							<div className='sign-in-google-button' onClick={this.onSignInWithGoogleAsync}>
+								<Typography color='rgba(0, 0, 0, 0.6)' variant={TypographyVariant.HEADING_MEDIUM}>
+									{'Continue with Google'}
+								</Typography>
+							</div>
+							<Spacer size={10}/>
+							<div className='sign-in-email-button' onClick={this.openSignInWithEmail}>
+								<Typography color='#4A73E2' variant={TypographyVariant.HEADING_MEDIUM}>
+									{'Sign in with email'}
+								</Typography>
+							</div>
+							<Spacer size={32}/>
+							<Typography color='rgba(0, 0, 0, 0.6)' variant={TypographyVariant.TEXT_SMALL}>
+								{'Don\'t have an account yet?'}
 							</Typography>
+							<Spacer size={22}/>
+							<div className='sign-in-dialog-sign-up-container' onClick={this.openSignUpWithEmail}>
+								<Typography color='#4A73E2' variant={TypographyVariant.HEADING_MEDIUM}>
+									{'Sign up'}
+								</Typography>
+							</div>
 						</div>
-						<Spacer size={10}/>
-						<div className='sign-in-email-button' onClick={this.openSignInWithEmail}>
-							<Typography color='#4A73E2' variant={TypographyVariant.HEADING_MEDIUM}>
-								{'Sign in with email'}
-							</Typography>
-						</div>
-						<Spacer size={32}/>
-						<Typography color='rgba(0, 0, 0, 0.6)' variant={TypographyVariant.TEXT_SMALL}>
-							{'Don\'t have an account yet?'}
-						</Typography>
-						<Spacer size={22}/>
-						<div className='sign-in-dialog-sign-up-container' onClick={this.openSignUpWithEmail}>
-							<Typography color='#4A73E2' variant={TypographyVariant.HEADING_MEDIUM}>
-								{'Sign up'}
-							</Typography>
-						</div>
-					</div>
-				</div>}
+					</div>}
+				</div>
 			</div>
 		);
 	}
