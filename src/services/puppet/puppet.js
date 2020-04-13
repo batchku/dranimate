@@ -1,4 +1,4 @@
-import { Vector2 } from 'three';
+import { Vector2, Box3, Vector3, Raycaster } from 'three';
 import ARAP from 'services/arap/arap';
 // import { PuppetRecording } from 'services/puppet/puppetRecording';
 import Recording from 'services/puppet/Recording';
@@ -42,12 +42,12 @@ const Puppet = function(puppetData) {
 	this.vertsFlatArray = puppetData.vertsFlatArray;
 	this.facesFlatArray = puppetData.facesFlatArray;
 	this.threeMesh = puppetData.threeMesh;
-	this.boundingBox = puppetData.boundingBox;
 	this.controlPointSpheres = puppetData.controlPointSpheres;
 	this.group = puppetData.group;
 	this.undeformedVertices = this.verts;
 	this.needsUpdate = true;
 	this.playRecording = false;
+	this.selectionBox = puppetData.selectionBox;
 
 	// SETUP NEW ARAP MESH
 	console.log('----Puppet.generateMesh from ', this.vertsFlatArray.length / 2);
@@ -282,11 +282,32 @@ Puppet.prototype.update = function(elapsedTime, targetTimestamp) {
 		// UPDATE MISC THREEJS
 		this.threeMesh.geometry.dynamic = true;
 		this.threeMesh.geometry.verticesNeedUpdate = true;
-		this.boundingBox.update();
-		this.boundingBox.scale.z = 1; // To make sure volume != 0 (this will cause that warning to show up)
+		this.selectionBox.boxHelper.update();
+		this.selectionBox.boxHelper.scale.z = 1; // To make sure volume != 0 (this will cause that warning to show up)
 		this.needsUpdate = false;
+
+		this.updateSelectionBox();
 	}
 
+};
+
+Puppet.prototype.updateSelectionBox = function() {
+	const boundingBox = new Box3();
+	boundingBox.setFromObject(this.selectionBox.boxHelper);
+
+	const center = boundingBox.getCenter();
+	const size = boundingBox.getSize();
+
+	this.selectionBox.topAnchor.position.set(center.x, center.y - size.y / 2, center.z);
+	this.selectionBox.bottomAnchor.position.set(center.x, center.y + size.y / 2, center.z);
+	this.selectionBox.leftAnchor.position.set(center.x - size.x / 2, center.y, center.z);
+	this.selectionBox.rightAnchor.position.set(center.x + size.x / 2, center.y, center.z);
+
+	this.selectionBox.topLeftAnchor.position.set(center.x - size.x / 2, center.y - size.y / 2, center.z);
+	this.selectionBox.bottomRightAnchor.position.set(center.x + size.x / 2, center.y + size.y / 2, center.z);
+
+	this.selectionBox.topRightAnchor.position.set(center.x + size.x / 2, center.y - size.y / 2, center.z);
+	this.selectionBox.bottomLeftAnchor.position.set(center.x - size.x / 2, center.y + size.y / 2, center.z);
 };
 
 Puppet.prototype.getCenter = function() {
@@ -298,7 +319,15 @@ Puppet.prototype.cleanup = function () {
 }
 
 Puppet.prototype.setSelectionGUIVisible = function (visible) {
-	this.boundingBox.visible = visible;
+	this.selectionBox.boxHelper.visible = visible;
+	this.selectionBox.topLeftAnchor.visible = visible;
+	this.selectionBox.topAnchor.visible = visible;
+	this.selectionBox.topRightAnchor.visible = visible;
+	this.selectionBox.rightAnchor.visible = visible;
+	this.selectionBox.bottomRightAnchor.visible = visible;
+	this.selectionBox.bottomAnchor.visible = visible;
+	this.selectionBox.bottomLeftAnchor.visible = visible;
+	this.selectionBox.leftAnchor.visible = visible;
 	this.controlPointSpheres.forEach(sphere => sphere.visible = visible);
 
 	eventManager.emit('puppet-selected', {
@@ -318,6 +347,24 @@ Puppet.prototype.pointInsideMesh = function (xUntransformed, yUntransformed) {
 		if (pointIsInsideTriangle(point.x, point.y, v1, v2, v3)) {
 			return true;
 		}
+	}
+	return false;
+}
+
+Puppet.prototype.pointOnRotateAnchor = function (x, y) {
+	const raycaster = new Raycaster(new Vector3(x, y, 100), new Vector3(0, 0, -1));
+	const intersects = raycaster.intersectObject(this.selectionBox.topLeftAnchor);
+	if (intersects.length > 0) {
+		return true;
+	}
+	return false;
+}
+
+Puppet.prototype.pointOnScaleAnchor = function (x, y) {
+	const raycaster = new Raycaster(new Vector3(x, y, 100), new Vector3(0, 0, -1));
+	const intersects = raycaster.intersectObject(this.selectionBox.bottomRightAnchor);
+	if (intersects.length > 0) {
+		return true;
 	}
 	return false;
 }

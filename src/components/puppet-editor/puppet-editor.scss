@@ -1,0 +1,13 @@
+@import './../../index.scss';
+
+.puppet-editor-backdrop {
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	top: 0px;
+	position: absolute;
+	background-color: rgba(0, 0, 0, 0.7);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

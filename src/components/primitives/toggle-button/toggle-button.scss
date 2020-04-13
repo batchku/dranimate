@@ -1,0 +1,31 @@
+.toggle-button-container {
+	display: flex;
+	flex-direction: row;
+	width: 96px;
+	height: 32px;
+	border-radius: 8px;
+	box-sizing: border-box;
+	border: 1px solid #FFFFFF;
+}
+
+.toggle-button-left-container {
+	width: 48px;
+	height: 30px;
+	border-radius: 7px 0px 0px 7px;
+	cursor: pointer;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.toggle-button-right-container {
+	width: 48px;
+	height: 30px;
+	border-radius: 0px 7px 7px 0px;
+	cursor: pointer;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

@@ -1,0 +1,53 @@
+@import './../../../index.scss';
+
+.control-point-editor-container {
+	background-color: white;
+	border-radius: 10px;
+	max-height: 600px;
+}
+
+.control-point-editor-dialog {
+	border-radius: 10px;
+	max-height: 600px;
+	pointer-events: all;
+	@include checkerBackground();
+}
+
+.control-point-editor-dialog-title {
+	box-shadow:
+		0px -1px 1px rgba(0, 0, 0, 0.08),
+		1px 0px 1px rgba(0, 0, 0, 0.08),
+		-1px 0px 1px rgba(0, 0, 0, 0.08),
+		0px 1px 1px rgba(0, 0, 0, 0.08);
+	border-radius: 10px 10px 0px 0px;
+	display: flex;
+	align-items: center;
+	position: relative;
+	height: 64px;
+	background-color: #FFFFFF;
+}
+
+.control-point-editor-back-button {
+	position: absolute;
+	left: 8px;
+	cursor: pointer;
+}
+
+.control-point-editor-next-button {
+	position: absolute;
+	right: 8px;
+	cursor: pointer;
+}
+
+.control-point-editor-title-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+}
+
+.control-point-editor-dialog-body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}

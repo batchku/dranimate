@@ -1,0 +1,203 @@
+@import './../../../index.scss';
+
+.image-editor-container {
+	background-color: white;
+	border-radius: 10px;
+	max-height: 600px;
+}
+
+.image-editor-dialog {
+	border-radius: 10px;
+	max-height: 600px;
+	pointer-events: all;
+	@include checkerBackground();
+}
+
+.image-editor-dialog-title {
+	box-shadow:
+		0px -1px 1px rgba(0, 0, 0, 0.08),
+		1px 0px 1px rgba(0, 0, 0, 0.08),
+		-1px 0px 1px rgba(0, 0, 0, 0.08),
+		0px 1px 1px rgba(0, 0, 0, 0.08);
+	border-radius: 10px 10px 0px 0px;
+	display: flex;
+	align-items: center;
+	position: relative;
+	height: 64px;
+	background-color: #FFFFFF;
+}
+
+.image-editor-close-button {
+	position: absolute;
+	left: 8px;
+	cursor: pointer;
+}
+
+.image-editor-next-button {
+	position: absolute;
+	right: 8px;
+	cursor: pointer;
+}
+
+.image-editor-title-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+}
+
+.image-editor-dialog-body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.image-editor-tool-main-bar {
+	height: 48px;
+	width: 320px;
+	border-radius: 12px 12px 0px 0px;
+	background-color: #4A73E2;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.image-editor-tool-name {
+	display: flex;
+	align-items: center;
+	padding-left: 24px;
+	height: 100%;
+	cursor: default;
+}
+
+.image-editor-tool-actions-container {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	padding-right: 12px;
+	width: 45%;
+}
+
+.image-editor-tool-options {
+	height: 64px;
+	width: 320px;
+	background-color: #4A73E2;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	padding-left: 24px;
+	padding-right: 24px;
+	box-sizing: border-box;
+}
+
+.image-editor-toolbar {
+	background-color: rgba(0, 0, 0, 0.6);
+	width: 320px;
+	height: 48px;
+	display: flex;
+	justify-content: space-between;
+	padding-left: 12px;
+	padding-right: 12px;
+	box-sizing: border-box;
+}
+
+.image-editor-tool-action-icon {
+	cursor: pointer;
+}
+
+.image-editor-undo-redo-container {
+	height: 100%;
+	align-items: center;
+	flex-direction: row;
+}
+
+.image-editor-tools-container {
+	height: 100%;
+	align-items: center;
+	flex-direction: row;
+	justify-content: flex-end;
+}
+
+.image-editor-tool-container {
+	background-color: #4A73E2;
+	cursor: pointer;
+	width: 48px;
+	height: 48px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+
+
+
+
+
+
+
+
+
+.editorControlRow {
+	height: 90px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.rowSpaceAround {
+	width: 100%;
+	justify-content: space-around;
+}
+
+.editorControlParam {
+}
+
+.editorControlDisable {
+	display: none;
+	pointer-events: none;
+	//color: $color-grey-light;
+}
+
+
+.editorControlLabel{
+	font-size: 40px;
+	padding-right: 10px;
+}
+
+.editorCanvasChecker {
+	@include checkerBackground();
+	border: 1px solid black;
+}
+
+.editorControls {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 20px;
+}
+
+
+.editorNav {
+	margin: 10px 0;
+	font-size: $header-font-size;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.navButton {
+	height: 20px;
+	min-width: 80px;
+}
+
+.save {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+}
+
+.drawEraseLabel {
+	min-width: 50px;
+	margin-top: 10px;
+}

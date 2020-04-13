@@ -5,8 +5,7 @@ import GifPreview from 'components/GifPreview';
 import TopBar from 'components/top-bar/top-bar';
 import RightBar from 'components/right-bar/right-bar';
 import BottomBar from 'components/bottom-bar/bottom-bar';
-import PuppetEditor from 'components/puppetEditor';
-import Profile from 'components/Profile';
+import PuppetEditor from 'components/puppet-editor/puppet-editor';
 import Toast from 'components/primitives/toast';
 import WelcomeMessage from 'components/welcome-message/welcome-message';
 

@@ -1,4 +1,5 @@
 import { Vector2 } from 'three';
+import * as THREE from 'three';
 import { getPuppetAndControlPointFromPostion } from 'services/dranimate/util';
 
 import puppetSelectedEvent from './../eventManager/puppet-selected-event';
@@ -18,6 +19,16 @@ export default class DranimateMouseHandler {
 		this.mouseRelative = {x:0, y:0};
 		this.mouseAbsolute = {x:0, y:0};
 		this.selectedPuppet;
+		this.puppetRotationData = {
+			rotatingPuppet: false,
+			previousMouseDirection: new THREE.Vector2(),
+			currentMouseDirection: new THREE.Vector2(),
+		};
+		this.puppetScaleData = {
+			scalingPuppet: false,
+			previousMousePosition: new THREE.Vector2(),
+			currentMousePosition: new THREE.Vector2(),
+		};
 		this.activeControlPoint = { hoveredOver: false, valid: false };
 	}
 
@@ -52,14 +63,28 @@ export default class DranimateMouseHandler {
 
 		// the notion of a selected puppet is only relative to mouse / touch, not leap motion
 		this.selectedPuppet = null;
+		this.puppetRotationData.rotatingPuppet = false;
+		this.puppetScaleData.scalingPuppet = false;
 		for (let i = puppets.length - 1; i >= 0; i--) {
 			if (puppets[i].pointInsideMesh(this.mouseRelative.x, this.mouseRelative.y)) {
 				this.selectedPuppet = puppets[i];
 				break;
 			}
+			if (puppets[i].pointOnRotateAnchor(this.mouseRelative.x, this.mouseRelative.y)) {
+				this.selectedPuppet = puppets[i];
+				this.puppetRotationData.rotatingPuppet = true;
+				this.puppetRotationData.previousMouseDirection = this.getMouseDirection(this.mouseRelative.x, this.mouseRelative.y);
+				break;
+			}
+			if (puppets[i].pointOnScaleAnchor(this.mouseRelative.x, this.mouseRelative.y)) {
+				this.selectedPuppet = puppets[i];
+				this.puppetScaleData.scalingPuppet = true;
+				this.puppetScaleData.previousMousePosition = new THREE.Vector2(this.mouseRelative.x, this.mouseRelative.y);
+				break;
+			}
 		}
 
-		if (this.selectedPuppet) {
+		if (this.selectedPuppet && !this.puppetRotationData.rotatingPuppet) {
 			this.selectedPuppet.setSelectionState(true, this.mouseRelative.x, this.mouseRelative.y);
 		}
 		puppets.forEach(puppet => puppet.setSelectionGUIVisible(puppet === this.selectedPuppet));
@@ -92,6 +117,28 @@ export default class DranimateMouseHandler {
 			return;
 		}
 
+		if (this.puppetRotationData.rotatingPuppet) {
+			this.puppetRotationData.currentMouseDirection = this.getMouseDirection(this.mouseRelative.x, this.mouseRelative.y);
+
+			const angle = this.getVectorsAngle(this.puppetRotationData.previousMouseDirection, this.puppetRotationData.currentMouseDirection);
+			const currentPuppetRotation = this.selectedPuppet.getRotation();
+			const newPuppetRotation = currentPuppetRotation + angle;
+			this.selectedPuppet.setRotation(newPuppetRotation);
+
+			this.puppetRotationData.previousMouseDirection = this.puppetRotationData.currentMouseDirection.clone();
+		}
+
+		if (this.puppetScaleData.scalingPuppet) {
+			this.puppetScaleData.currentMousePosition = new THREE.Vector2(this.mouseRelative.x, this.mouseRelative.y);
+
+			const xDiff = this.puppetScaleData.previousMousePosition.x - this.puppetScaleData.currentMousePosition.x;
+			const currentPuppetScale = this.selectedPuppet.getScale();
+			const newPuppetScale = currentPuppetScale + xDiff;
+			this.selectedPuppet.setScale(newPuppetScale / 100);
+
+			this.puppetScaleData.previousMousePosition = this.puppetScaleData.currentMousePosition.clone();
+		}
+
 		if(this.selectedPuppet && this.selectedPuppet.selectionState.isBeingDragged) {
 			const mouseVector = new Vector2(this.mouseRelative.x, this.mouseRelative.y)
 			this.selectedPuppet.incrementPosition(mouseVector.x, mouseVector.y);
@@ -116,6 +163,8 @@ export default class DranimateMouseHandler {
 			return;
 		}
 		this.activeControlPoint.beingDragged = false;
+		this.puppetRotationData.rotatingPuppet = false;
+		this.puppetScaleData.scalingPuppet = false;
 		if (this.selectedPuppet) {
 			this.selectedPuppet.setSelectionState(false);
 		}
@@ -129,4 +178,17 @@ export default class DranimateMouseHandler {
 		this.selectedPuppet = null;
 	}
 
+	getMouseDirection(x, y) {
+		const center = this.selectedPuppet.getCenter();
+		const mousePosition = new THREE.Vector2(x, y);
+
+		return new THREE.Vector2().subVectors(center, mousePosition).normalize();
+	}
+
+	getVectorsAngle(v1, v2) {
+		const dot = v1.x * v2.x + v1.y * v2.y;
+		const det = v1.x * v2.y - v1.y * v2.x;
+
+		return Math.atan2(det, dot);
+	}
 }

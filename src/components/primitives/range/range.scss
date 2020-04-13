@@ -1,0 +1,45 @@
+.range-container {
+	display: flex;
+	height: 24px;
+	justify-content: space-between;
+	width: 140px;
+}
+
+.range-input-label {
+	font-size: 12px;
+	line-height: 16px;
+	letter-spacing: 0.1px;
+	color: rgba(255, 255, 255, 0.9);
+	margin: 0px;
+	padding-left: 8px;
+	margin-top: 4px;
+}
+
+input[type=range] {
+	-webkit-appearance: none;
+	width: 120px;
+	background: transparent;
+}
+
+input[type=range]:focus {
+	outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	border: 2px solid #FFFFFF;
+	height: 12px;
+	width: 12px;
+	border-radius: 12px;
+	background: #ffffff;
+	cursor: pointer;
+	margin-top: -4px;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+	width: 120px;
+	height: 3px;
+	cursor: pointer;
+	background: rgba(255, 255, 255, 0.4);
+	border-radius: 5.5px;
+}

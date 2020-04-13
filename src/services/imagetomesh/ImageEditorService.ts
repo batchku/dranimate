@@ -29,27 +29,39 @@ const HIGHLIGHTED_REGION_COLOR = {
 };
 
 class ImageEditorService {
+	private context: CanvasRenderingContext2D;
+	private width: number;
+	private height: number;
+	private mouse = {
+		x: 0,
+		y: 0,
+	};
+	private mouseAbs = {
+		x: 0,
+		y: 0,
+	};
+	private image: any;
+	private originalImageData: any;
+	private slic: any;
+	private slicSegmentsCentroids: any;
+	private highlightData: any;
+	private highlightImage = new Image();
+	private highlightImageOutlined = new Image();
+	private imageNoBackgroundData: any;
+	private imageNoBackgroundImage = new Image();
+	private imageNoBackgroundImageOutlined = new Image();
+	private dummyCanvas: HTMLCanvasElement;
+	private dummyContext: CanvasRenderingContext2D;
+	private blankCanvas: HTMLCanvasElement;
+	private blankContext: CanvasRenderingContext2D;
+	private outlineCanvas: HTMLCanvasElement;
+	private outlineContext: CanvasRenderingContext2D;
+	private zoom: number;
+	private panHandler: PanHandler;
+	private mouseState: any;
+	private selectState: any;
+
 	constructor() {
-		this.context;
-		this.width;
-		this.height;
-		this.mouse = {};
-		this.mouseAbs = {};
-
-		this.image;
-		this.originalImageData;
-
-		this.slic;
-		this.slicSegmentsCentroids;
-
-		this.highlightData;
-		this.highlightImage = new Image();
-		this.highlightImageOutlined = new Image();
-
-		this.imageNoBackgroundData;
-		this.imageNoBackgroundImage = new Image();
-		this.imageNoBackgroundImageOutlined = new Image();
-
 		this.dummyCanvas = document.createElement('canvas');
 		this.dummyContext = this.dummyCanvas.getContext('2d');
 		this.blankCanvas = document.createElement('canvas');
@@ -62,19 +74,9 @@ class ImageEditorService {
 
 		this.mouseState = MOUSE_STATE.UP;
 		this.selectState = SELECT_STATE.SELECT;
-
-		this.onMouseMove = this.onMouseMove.bind(this);
-		this.onMouseDown = this.onMouseDown.bind(this);
-		this.onMouseOut = this.onMouseOut.bind(this);
-		this.onMouseUp = this.onMouseUp.bind(this);
-		this.onMouseOver = this.onMouseOver.bind(this);
 	}
 
-/*****************************
-		API
-*****************************/
-
-	init(canvas, imageData, backgroundRemovalData) {
+	public init = (canvas, imageData, backgroundRemovalData): Promise<void> => {
 		this.width = canvas.width;
 		this.height = canvas.height;
 		this.context = canvas.getContext('2d');
@@ -103,13 +105,9 @@ class ImageEditorService {
 
 				this.image = img;
 			});
-	};
+	}
 
-	onMouseMove(event, isTouch) {
-		if (!isTouch) {
-			event.preventDefault();
-		};
-
+	public onMouseMove = (event): void => {
 		const rect = event.target.getBoundingClientRect();
 		this.mouseAbs.x = (event.clientX - rect.left) / this.zoom;
 		this.mouseAbs.y = (event.clientY - rect.top) / this.zoom;
@@ -136,10 +134,9 @@ class ImageEditorService {
 			this.updateHighlightedSuperpixel();
 			this.removeSelectionFromNoBackgroundImage();
 		}
-	};
+	}
 
-	onMouseDown(event, isTouch) {
-		if (!isTouch) { event.preventDefault(); };
+	onMouseDown = (): void => {
 		this.mouseState = MOUSE_STATE.DOWN;
 
 		this.panHandler.onMouseDown(this.mouseAbs.x, this.mouseAbs.y, this.zoom);
@@ -150,77 +147,59 @@ class ImageEditorService {
 		if (this.selectState === SELECT_STATE.DESELECT) {
 			this.removeSelectionFromNoBackgroundImage();
 		}
-	};
+	}
 
-	onContextMenu(event) {
+	onContextMenu = (event): boolean => {
 		event.preventDefault();
 		return false;
 	}
 
-	onMouseUp(event, isTouch) {
-		if (!isTouch) { event.preventDefault(); };
+	onMouseUp = (): void => {
 		this.mouseState = MOUSE_STATE.UP;
 	}
 
-	onMouseOut(event) {
+	onMouseOut = (event): void => {
 		event.preventDefault();
 		this.mouseState = MOUSE_STATE.OUTSIDE;
 		this.updateHighlightedSuperpixel();
 	}
 
-	onMouseOver(event) {
+	onMouseOver = (event): void => {
 		event.preventDefault();
 		if (this.mouseState !== MOUSE_STATE.DOWN) {
 			this.mouseState = MOUSE_STATE.UP;
 		}
-	};
+	}
 
-	onTouchStart(event) {
-		if (event.touches.length > 1) { return; }
-		const now = performance.now();
-		this.onMouseMove(event.touches[0], true); // build highlight data by forcing a "mouse hover"
-		this.onMouseDown(event.touches[0], true);
-	};
-
-	onTouchMove(event) {
-		event.preventDefault();
-		this.onMouseMove(event.touches[0], true);
-	};
-
-	onTouchEnd(event) {
-		if (event.touches.length) { return; }
-		this.onMouseUp(event);
-	};
-
-	doSlic(threshold) {
+	doSlic = (threshold): void => {
 		this.doSLICOnImage(threshold);
 		this.updateHighlightedSuperpixel();
 	}
 
-	zoomIn(zoomStep) {
+	zoomIn = (zoomStep): void => {
 		this.zoom += zoomStep || 0.1;
 		this.redraw();
 	}
 
-	zoomOut(zoomStep) {
+	zoomOut = (zoomStep): void => {
 		this.zoom -= zoomStep || 0.1;
 		this.redraw();
 	}
 
-	getZoom() {
+	getZoom = (): number => {
 		return this.zoom;
 	}
 
-	setSelectState(state) {
+	setSelectState = (state): void => {
 		this.selectState = state;
 		this.panHandler.setPanEnabled(this.selectState === SELECT_STATE.PAN);
-	};
+	}
 
-	setMouseState(state) {
+	setMouseState = (state): void => {
 		this.mouseState = state;
 	}
 
-	getImageForegroundSelection() {
+	getImageForegroundSelection = (): any => {
 		return this.imageNoBackgroundData;
 	}
 
@@ -228,7 +207,7 @@ class ImageEditorService {
 		Private stuff
 *****************************/
 
-	doSLICOnImage(threshold) {
+	doSLICOnImage = (threshold): void => {
 		console.log('SLIC Start', performance.now());
 		const regionSize = threshold || 30;
 
@@ -239,7 +218,7 @@ class ImageEditorService {
 			// we are editing a new puppet without a selection
 			this.imageNoBackgroundData = this.context.createImageData(this.slic.result.width, this.slic.result.height);
 			// imageBackgroundMaskData = this.context.createImageData(slic.result.width, slic.result.height);
-			for (var i = 0; i < this.slic.result.data.length; i += 4) {
+			for (let i = 0; i < this.slic.result.data.length; i += 4) {
 				this.imageNoBackgroundData.data[i] = 0;
 				this.imageNoBackgroundData.data[i + 1] = 0;
 				this.imageNoBackgroundData.data[i + 2] = 0;
@@ -251,10 +230,9 @@ class ImageEditorService {
 				console.error('Error', 'incorrect imageNoBackgroundData');
 				return;
 			}
-			const tempNoBgData = this.context.createImageData(this.slic.result.width, this.slic.result.height);
 			this.dummyContext.putImageData(this.imageNoBackgroundData, 0, 0);
 			this.imageNoBackgroundImage.src = this.dummyCanvas.toDataURL('image/png');
-			this.imageNoBackgroundImage.onload = () => {
+			this.imageNoBackgroundImage.onload = (): void => {
 				this.createOutline(this.imageNoBackgroundImage, this.imageNoBackgroundImageOutlined);
 				this.redraw();
 
@@ -265,14 +243,14 @@ class ImageEditorService {
 		console.log('SLIC Done', performance.now());
 	}
 
-	getEncodedSLICLabel(array, offset) {
+	getEncodedSLICLabel = (array, offset): number => {
 		return array[offset] |
 					(array[offset + 1] << 8) |
 					(array[offset + 2] << 16);
 	}
 
-	addSelectionToNoBackgroundImage() {
-		for (var i = 0; i < this.slic.result.data.length; i += 4) {
+	addSelectionToNoBackgroundImage = (): void => {
+		for (let i = 0; i < this.slic.result.data.length; i += 4) {
 			if(this.highlightData.data[i+3] === 255) {
 				this.imageNoBackgroundData.data[i] = SELECTED_REGION_COLOR.red;
 				this.imageNoBackgroundData.data[i + 1] = SELECTED_REGION_COLOR.green;
@@ -282,7 +260,7 @@ class ImageEditorService {
 		}
 		this.dummyContext.putImageData(this.imageNoBackgroundData, 0, 0);
 		this.imageNoBackgroundImage.src = this.dummyCanvas.toDataURL('image/png');
-		this.imageNoBackgroundImage.onload = () => {
+		this.imageNoBackgroundImage.onload = (): void => {
 			this.createOutline(this.imageNoBackgroundImage, this.imageNoBackgroundImageOutlined);
 			// this.redraw();
 
@@ -290,8 +268,8 @@ class ImageEditorService {
 		};
 	}
 
-	removeSelectionFromNoBackgroundImage() {
-		for (var i = 0; i < this.slic.result.data.length; i += 4) {
+	removeSelectionFromNoBackgroundImage = (): void => {
+		for (let i = 0; i < this.slic.result.data.length; i += 4) {
 			if(this.highlightData.data[i+3] === 255) {
 				this.imageNoBackgroundData.data[i] = 0;
 				this.imageNoBackgroundData.data[i + 1] = 0;
@@ -301,7 +279,7 @@ class ImageEditorService {
 		}
 		this.dummyContext.putImageData(this.imageNoBackgroundData, 0, 0);
 		this.imageNoBackgroundImage.src = this.dummyCanvas.toDataURL('image/png');
-		this.imageNoBackgroundImage.onload = () => {
+		this.imageNoBackgroundImage.onload = (): void => {
 			this.createOutline(this.imageNoBackgroundImage, this.imageNoBackgroundImageOutlined);
 			// this.redraw();
 
@@ -309,7 +287,7 @@ class ImageEditorService {
 		};
 	}
 
-	updateHighlightedSuperpixel() {
+	updateHighlightedSuperpixel = (): void => {
 		if (!this.slic) {
 			return;
 		}
@@ -319,7 +297,7 @@ class ImageEditorService {
 		 */
 		if (this.mouseState === MOUSE_STATE.OUTSIDE) {
 			this.highlightImage.src = this.blankCanvas.toDataURL('image/png');
-			this.highlightImage.onload = () => this.redraw();
+			this.highlightImage.onload = (): void => this.redraw();
 			return;
 		}
 
@@ -331,7 +309,7 @@ class ImageEditorService {
 
 		this.highlightData = this.context.createImageData(this.slic.result.width, this.slic.result.height);
 
-		for (var i = 0; i < this.slic.result.data.length; i += 4) {
+		for (let i = 0; i < this.slic.result.data.length; i += 4) {
 			if(selectedLabel[0] === this.slic.result.data[i] &&
 			selectedLabel[1] === this.slic.result.data[i+1] &&
 			selectedLabel[2] === this.slic.result.data[i+2]) {
@@ -353,7 +331,7 @@ class ImageEditorService {
 		//this.highlightImage.src = this.blankCanvas.toDataURL('image/png');
 		//this.highlightImage.onload = () => {
 			this.highlightImage.src = this.dummyCanvas.toDataURL('image/png');
-			this.highlightImage.onload = () => {
+			this.highlightImage.onload = (): void => {
 				this.createOutline(this.highlightImage, this.highlightImageOutlined);
 				this.redraw();
 
@@ -362,12 +340,12 @@ class ImageEditorService {
 		//}
 	}
 
-	createOutline(imageSrc, imageDst) {
+	createOutline = (imageSrc, imageDst): void => {
 		console.log('creating outline');
 
 		this.outlineContext.save();
 
-		var dArr = [
+		const dArr = [
 			-1,-1,
 			0,-1,
 			1,-1,
@@ -377,12 +355,12 @@ class ImageEditorService {
 			0,1,
 			1,1
 		];
-		var outlineScale = 1;
+		const outlineScale = 1;
 	
 		this.outlineContext.clearRect(0, 0, this.width, this.height);
 
 		// draw images at offsets from the array scaled by s
-		for(var i = 0; i < dArr.length; i += 2) {
+		for(let i = 0; i < dArr.length; i += 2) {
 			this.outlineContext.drawImage(imageSrc, dArr[i] * outlineScale, dArr[i+1] * outlineScale);
 		}
 
@@ -400,7 +378,7 @@ class ImageEditorService {
 		this.outlineContext.restore();
 	}
 
-	redraw() {
+	redraw = (): void => {
 		if (!this.image) {
 			return;
 		}
