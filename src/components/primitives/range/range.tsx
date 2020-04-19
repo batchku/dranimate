@@ -6,8 +6,13 @@ interface RangeState {
 	value: string;
 }
 
-class Range extends React.Component<{}, RangeState> {
-	constructor(props: {}) {
+interface RangeProps {
+	onChangeEnd: () => void;
+	onChange: (value: number) => void;
+}
+
+class Range extends React.Component<RangeProps, RangeState> {
+	constructor(props: RangeProps) {
 		super(props);
 
 		this.state = {
@@ -24,6 +29,7 @@ class Range extends React.Component<{}, RangeState> {
 					max="100"
 					value={this.state.value}
 					onChange={this.onChange}
+					onMouseUp={this.props.onChangeEnd}
 				/>
 					<p className='range-input-label'>
 						{this.state.value}
@@ -35,6 +41,8 @@ class Range extends React.Component<{}, RangeState> {
 	private onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
 		this.setState({
 			value: event.target.value
+		}, () => {
+			this.props.onChange(Number(this.state.value))
 		});
 	}
 }

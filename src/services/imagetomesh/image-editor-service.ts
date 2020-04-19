@@ -47,7 +47,7 @@ class ImageEditorService {
 	private highlightData: any;
 	private highlightImage = new Image();
 	private highlightImageOutlined = new Image();
-	private imageNoBackgroundData: any;
+	private imageNoBackgroundData: ImageData;
 	private imageNoBackgroundImage = new Image();
 	private imageNoBackgroundImageOutlined = new Image();
 	private dummyCanvas: HTMLCanvasElement;
@@ -249,7 +249,7 @@ class ImageEditorService {
 					(array[offset + 2] << 16);
 	}
 
-	addSelectionToNoBackgroundImage = (): void => {
+	private addSelectionToNoBackgroundImage = (): void => {
 		for (let i = 0; i < this.slic.result.data.length; i += 4) {
 			if(this.highlightData.data[i+3] === 255) {
 				this.imageNoBackgroundData.data[i] = SELECTED_REGION_COLOR.red;
@@ -285,6 +285,20 @@ class ImageEditorService {
 
 			this.imageNoBackgroundImage.onload = null;
 		};
+	}
+
+	/**
+	 * Checks if user has selected at least on pixel on input puppet image.
+	 * Used to determine if user can move to next step in puppet creation process.
+	 */
+	public selectedRegionExists = (): boolean => {
+		let selectedRegionExists = false;
+		this.imageNoBackgroundData.data.forEach((pixelData) => {
+			if (pixelData !== 0) {
+				selectedRegionExists = true;
+			}
+		});
+		return selectedRegionExists;
 	}
 
 	updateHighlightedSuperpixel = (): void => {

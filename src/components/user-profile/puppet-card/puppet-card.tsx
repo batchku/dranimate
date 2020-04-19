@@ -47,7 +47,7 @@ class PuppetCard extends React.Component<PuppetCardProps, PuppetCardState> {
 					<div className='puppet-actions-container' onMouseLeave={this.closeActions}>
 						<BorderButton label='Add to scene' color='#4A73E2' fullWidth={true} onClick={this.onAddToSceneAsync} />
 						<Spacer size={10} />
-						<BorderlessButton label='Delete' color='#B60000' onClick={this.onDeletePuppetAsync}/>
+						<BorderlessButton label='Delete' color={{red: 182, green: 0, blue: 0}} onClick={this.onDeletePuppetAsync}/>
 					</div>}
 				</div>
 			</div>
