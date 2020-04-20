@@ -260,7 +260,8 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 		this._controlPointService.clearControlPoints();
 
 		this.setState({
-			currentHandToMap: HandToMap.LEFT
+			currentHandToMap: HandToMap.LEFT,
+			canGoToNextStep: false,
 		});
 	}
 
@@ -268,7 +269,8 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 		this._controlPointService.clearControlPoints();
 
 		this.setState({
-			currentHandToMap: HandToMap.RIGHT
+			currentHandToMap: HandToMap.RIGHT,
+			canGoToNextStep: false,
 		});
 	}
 }

@@ -94,6 +94,7 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 								label='Previous'
 								disabled={false}
 								color='rgba(0, 0, 0, 0.6)'
+								onClick={this.props.onBack}
 							/>
 							<Spacer size={8} />
 							<BorderButton

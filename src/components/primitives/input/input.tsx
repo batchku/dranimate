@@ -1,6 +1,8 @@
 import React from 'react';
 import EmailValidator from 'email-validator';
 
+import CancelIcon from './../../../icons/cancel-icon';
+
 import './input.scss';
 
 interface InputProps {
@@ -95,12 +97,16 @@ class Input extends React.Component<InputProps, InputState> {
 				}} className='input-placeholder' htmlFor="email">
 					{placeholderText}
 				</label>
-				{this.state.value &&
+				{this.state.value && !this.props.color &&
 				<img
 					onClick={this.onClear}
 					className='input-cancel-button'
 					src={this.state.emailValid && !this.props.error ? './assets/cancel.svg' : './assets/invalid-input.svg'}
 				/>}
+				{this.state.value && this.props.color &&
+				<div onClick={this.onClear} className='input-cancel-button'>
+					<CancelIcon fill='white' opacity='0.7'/>
+				</div>}
 			</div>
 		);
 	}
