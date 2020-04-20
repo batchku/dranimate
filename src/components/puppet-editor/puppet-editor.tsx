@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+
 import ImageEditor from './image-editor/image-editor';
 import ControlPointEditor from './control-point-editor.tsx/control-point-editor';
+import PuppetDetailsEditor from './puppet-details-editor/puppet-details-editor';
+
 import dranimate from 'services/dranimate/dranimate';
 import puppetEditorStateService from './../../services/imagetomesh/PuppetEditorStateService';
 import generateUniqueId from 'services/util/uuid';
@@ -14,6 +17,7 @@ import eventManager from '../../services/eventManager/event-manager';
 enum EditorStep {
 	IMAGE = 'image',
 	CONTROL_POINT = 'control-point',
+	DETAILS = 'details',
 }
 
 interface PuppetEditorProps {
@@ -79,8 +83,21 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 		});
 	}
 
-	onSave = (controlPointPositions): void => {
-		if (controlPointPositions.length < 2) {
+	onControlPointEditorNext = (controlPointPositions): void => {
+		this.setState({
+			step: EditorStep.DETAILS,
+			controlPointPositions: controlPointPositions,
+		});
+	}
+
+	onPuppetDetailsEditorBack = (): void => {
+		this.setState({
+			step: EditorStep.CONTROL_POINT
+		});
+	}
+
+	onSave = (): void => {
+		if (this.state.controlPointPositions.length < 2) {
 			alert('Puppet must have at least two control points');
 			return;
 		}
@@ -93,7 +110,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 			.then((imageElement) => {
 				const { width, height } = this.state.backgroundRemovalData;
 				const originalImageData = getImageDataFromImage(imageElement, width, height);
-				return generateMesh(puppetId, puppetName, imageElement, this.state.backgroundRemovalData, originalImageData, controlPointPositions);
+				return generateMesh(puppetId, puppetName, imageElement, this.state.backgroundRemovalData, originalImageData, this.state.controlPointPositions);
 			})
 			.then((puppet) => {
 				if (puppet) {
@@ -107,21 +124,29 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 		return (
 			<div className='puppet-editor-backdrop'>
 				{this.state.step === EditorStep.IMAGE
-					? <ImageEditor
-						imageSrc={this.state.imageSrc}
-						backgroundRemovalData={this.state.backgroundRemovalData}
-						onCancel={this.onClose}
-						onNext={this.onImageEditorNext}
-					/>
-					: <ControlPointEditor
-						imageSrc={this.state.imageSrc}
-						backgroundRemovalData={this.state.backgroundRemovalData}
-						controlPointPositions={this.state.controlPointPositions}
-						onClose={this.onControlPointEditorBack}
-						onSave={this.onSave}
-						zoom={this.state.zoom}
-					/>
-				}
+				&& <ImageEditor
+					imageSrc={this.state.imageSrc}
+					backgroundRemovalData={this.state.backgroundRemovalData}
+					onCancel={this.onClose}
+					onNext={this.onImageEditorNext}
+				/>}
+				{this.state.step === EditorStep.CONTROL_POINT
+				&& <ControlPointEditor
+					imageSrc={this.state.imageSrc}
+					backgroundRemovalData={this.state.backgroundRemovalData}
+					controlPointPositions={this.state.controlPointPositions}
+					onBack={this.onControlPointEditorBack}
+					onClose={this.onClose}
+					onSave={this.onSave}
+					zoom={this.state.zoom}
+					onNext={this.onControlPointEditorNext}
+				/>}
+				{this.state.step === EditorStep.DETAILS
+				&& <PuppetDetailsEditor
+					onClose={this.onClose}
+					onBack={this.onPuppetDetailsEditorBack}
+					onSave={this.onSave}
+				/>}
 			</div>
 		);
 	}

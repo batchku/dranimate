@@ -8,6 +8,10 @@ interface InputProps {
 	placeholder: string;
 	label: string;
 	type: string;
+	fullWidth?: boolean;
+	backgroundColor?: string;
+	color?: string;
+	inputColor?: string;
 	error?: string;
 }
 
@@ -50,24 +54,44 @@ class Input extends React.Component<InputProps, InputState> {
 			placeholderText = this.props.error;
 		}
 
+		let placeholderColor = '';
+		if (this.props.color) {
+			placeholderColor = this.props.color;
+		}
+		if (!this.state.emailValid && this.props.error) {
+			placeholderColor = '#B60000';
+		}
+
+		let color = 'rgba(0, 0, 0, 0.6)';
+		if (this.props.color) {
+			color = this.props.color;
+		}
+
 		return (
-			<div className="input-field">
+			<div style={{
+				width: this.props.fullWidth ? '100%' : '336px'
+			}} className="input-field">
 				<input
 					className='input-text'
 					value={this.state.value}
 					type={this.props.type}
 					style={{
-						borderColor: this.state.emailValid && !this.props.error ? '' : '#B60000'
+						borderColor: this.state.emailValid && !this.props.error ? '' : '#B60000',
+						backgroundColor: this.props.backgroundColor || '',
+						color: this.props.inputColor || 'rgba(0, 0, 0, 0.9)',
+						border: `2px solid ${color}`
 					}}
 					onChange={this.onValueChange}
 					onFocus={this.onInputFocus}
 					onBlur={this.onInputFocusOut}
 				/>
-				<label className={inputLabelClasses} htmlFor="email">
+				<label style={{
+					color: this.props.color || 'rgba(0, 0, 0, 0.6)'
+				}} className={inputLabelClasses} htmlFor="email">
 					{this.props.label}
 				</label>
 				<label style={{
-					color: this.state.emailValid && !this.props.error ? '' : '#B60000'
+					color: placeholderColor
 				}} className='input-placeholder' htmlFor="email">
 					{placeholderText}
 				</label>

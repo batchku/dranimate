@@ -120,6 +120,8 @@ class SignInDialog extends React.Component<{}, SignInDialogState> {
 						</div>
 						<div className='sign-in-dialog-body'>
 							<div className='sign-in-google-button' onClick={this.onSignInWithGoogleAsync}>
+								<img src='./assets/google-icon.svg' />
+								<Spacer size={4} />
 								<Typography color='rgba(0, 0, 0, 0.6)' variant={TypographyVariant.HEADING_MEDIUM}>
 									{'Continue with Google'}
 								</Typography>

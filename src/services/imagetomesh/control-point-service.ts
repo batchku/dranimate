@@ -17,7 +17,7 @@ const FINGER_POINT_MAPPING = {
 	5: 'Pinky'
 };
 
-const CONTROL_POINT_COLOR = '#0099EE';
+const CONTROL_POINT_COLOR = '#4A73E2';
 
 class ControlPointService {
 	private _context: CanvasRenderingContext2D;
@@ -85,7 +85,7 @@ class ControlPointService {
 					index,
 					distance: getDistance(this._mouse.x, this._mouse.y, cp[0], cp[1])
 				}))
-				.filter(cp => cp.distance < 10)
+				.filter(cp => cp.distance < 17)
 				.sort((a, b) => a.distance - b.distance)[0];
 
 			if (nearestControlPoint !== undefined) {
@@ -149,6 +149,12 @@ class ControlPointService {
 
 	public getControlPoints = (): any[] => this._controlPoints;
 
+	public clearControlPoints = (): void => {
+		this._controlPoints = [];
+		this._activeControlPointIndex = -1;
+		this.redraw();
+	}
+
 	public setMouseState = (state): void => this._mouseState = state;
 
 /*****************************
@@ -168,16 +174,16 @@ class ControlPointService {
 		}
 		this._controlPoints.forEach((cp, index) => {
 			const [x, y] = cp;
-			const radius = index === this._activeControlPointIndex ? 10 : 5;
+			const radius = 17;
 			this._context.fillStyle = CONTROL_POINT_COLOR;
 			this._context.beginPath();
 			this._context.arc(x, y, radius, 0, 2 * Math.PI);
 			this._context.fill();
 
-			this._context.font = "20px Montserrat";
-			this._context.fillStyle = "black";
+			this._context.font = "bold 14px Inter";
+			this._context.fillStyle = "white";
 			this._context.textAlign = "center";
-			this._context.fillText(`${index + 1}-${FINGER_POINT_MAPPING[index + 1]}`, x, y - 15);
+			this._context.fillText(`R${index + 1}`, x, y + 6);
 		});
 
 		this._context.restore();

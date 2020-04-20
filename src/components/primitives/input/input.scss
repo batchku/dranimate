@@ -2,7 +2,6 @@
 .input-field {
 	position: relative;
 	height: 68px;
-	width: 336px;
 }
 
 .input-text {
@@ -21,7 +20,6 @@
 	line-height: 20px;
 	font-style: normal;
 	font-weight: normal;
-	color: rgba(0, 0, 0, 0.9);
 }
 
 .input-text:focus {
@@ -53,7 +51,6 @@
 	font-size: 16px;
 	line-height: 20px;
 	letter-spacing: 0.1px;
-	color: rgba(0, 0, 0, 0.6);
 }
 
 @keyframes input-label-top {
