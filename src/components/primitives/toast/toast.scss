@@ -1,0 +1,25 @@
+.toast-container {
+	height: 48px;
+	padding-left: 16px;
+	padding-right: 16px;
+	position: fixed;
+	left: 50%;
+	transform:translateX(-50%);
+	top: -75px;
+	background-color: #248740;
+	animation-name: popup;
+	display: flex;
+	align-items: center;
+	border-radius: 12px;
+	animation-duration: 0.5s;
+	animation-fill-mode: forwards;
+}
+
+@keyframes popup {
+	0% {
+		top: -48px;
+	}
+	100% {
+		top: 96px;
+	}
+}

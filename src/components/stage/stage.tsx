@@ -6,7 +6,7 @@ import TopBar from 'components/top-bar/top-bar';
 import RightBar from 'components/right-bar/right-bar';
 import BottomBar from 'components/bottom-bar/bottom-bar';
 import PuppetEditor from 'components/puppet-editor/puppet-editor';
-import Toast from 'components/primitives/toast';
+import Toast from 'components/primitives/toast/toast';
 import WelcomeMessage from 'components/welcome-message/welcome-message';
 
 import { loadDranimateFile, loadImageFile } from 'services/util/file';
