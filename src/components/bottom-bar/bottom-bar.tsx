@@ -30,10 +30,6 @@ class BottomBar extends React.Component<{}, BottomBarState> {
 			<div className='bottom-bar-container'>
 				<div className='bottom-bar-items'>
 					<ContentButton>
-						<Icon url='./assets/camera.svg'/>
-					</ContentButton>
-					<Spacer size={12} />
-					<ContentButton>
 						<Icon url='./assets/gif.svg'/>
 					</ContentButton>
 					<Spacer size={12} />
