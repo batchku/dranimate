@@ -120,9 +120,11 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 			})
 			.then((puppet) => {
 				if (puppet) {
+					dranimate.addPuppet(puppet);
+					eventManager.emit('open-loader', 'Saving puppet')
 					this.savePuppetAsync(puppet).then(() => {
-						dranimate.addPuppet(puppet);
 						this.onClose();
+						eventManager.emit('close-loader');
 					});
 				}
 			});

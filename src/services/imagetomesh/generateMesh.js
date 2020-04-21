@@ -14,7 +14,7 @@ function findEdgesOfImage(imageNoBackgroundData) {
   for (let i = 0; i < height; ++i) {
     for (let j = 0; j < width; ++j) {
       const offset = 4 * (i * width + j);
-      const alpha = data[4 * (i * width + j) + 3];
+      const alpha = data[4 * (i * width + j) + 4];
       const isSLICBoundary = (alpha !== data[4 * (i * width + j - 1)] ||
                               alpha !== data[4 * (i * width + j + 1)] ||
                               alpha !== data[4 * ((i - 1) * width + j)] ||
