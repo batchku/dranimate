@@ -8,7 +8,7 @@ import PanHandler from 'services/util/panHandler';
 import { clamp } from 'services/util/math';
 import { loadTexture } from 'services/util/threeUtil';
 import loadImage from 'services/util/imageLoader';
-import HandTrackingService from 'services/hand-tracking/HandTrackingService';
+import HandTrackingService from 'services/hand-tracking/hand-tracking-service';
 
 import eventManager from '../eventManager/event-manager';
 import puppetAddedOnStageEvent from 'services/eventManager/puppet-added-on-stage-event';
@@ -179,8 +179,6 @@ class Dranimate {
 		this.mouseHandler = new DranimateMouseHandler(this.renderer.domElement, this.panHandler);
 		this.touchHandler = new DranimateTouchHandler(this.renderer.domElement, this.panHandler);
 		// this.leapHandler = new DranimateLeapHandler(this.renderer.domElement, this.panHandler, this.puppets);
-
-		await this.handTrackingService.loadAsync();
 
 		const renderAreaSize = 1000;
 		const scaleMultiplier = 2000;

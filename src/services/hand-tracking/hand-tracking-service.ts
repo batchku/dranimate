@@ -1,44 +1,49 @@
+import * as handpose from '@tensorflow-models/handpose';
+
 import eventManager from './../../services/eventManager/event-manager';
 
+interface HandPoseAnnotation {
+	[key: string]: Array<[number, number, number]>;
+}
+
 export default class HandTrackingService {
+	private model: handpose.HandPose;
+	private video = null;
+	private tracking = false;
+	private palmPositionData = null;
+	private onUpdatePosition = null;
+	private partPositionData = {};
+	private videoDataLoaded = false;
+
+	private lowPassFilterEnabled = false;
+	private lowPassSamplesCount = 4;
+	private lowPassSamples: HandPoseAnnotation[] = [];
+
 	constructor() {
-		this.model = null;
-		this.video = null;
-		this.tracking = false;
-		this.palmPositionData = null;
-		this.onUpdatePosition = null;
-		this.partPositionData = {};
-
-		this.lowPassFilterEnabled = false;
-		this.lowPassSamplesCount = 4;
-		this.lowPassSamples = [];
-
-		this.trackAsync = this.trackAsync.bind(this);
-
 		eventManager.on('low-pass-filter-toggle', this.lowPassFilterToggle);
 		eventManager.on('low-pass-filter-samples-set', this.lowPassFilterSamplesSet);
 	}
 
-	lowPassFilterToggle = (enabled) => {
+	private async loadAsync(): Promise<void> {
+		this.model = await handpose.load();
+		await this.loadVideoAsync();
+	}
+
+	private lowPassFilterToggle = (enabled: boolean): void => {
 		this.lowPassFilterEnabled = enabled;
 		this.lowPassSamples = [];
 	}
 
-	lowPassFilterSamplesSet = (samples) => {
+	private lowPassFilterSamplesSet = (samples: number): void => {
 		this.lowPassSamplesCount = samples;
 		this.lowPassSamples = [];
-	}
-
-	async loadAsync() {
-		this.model = await handpose.load();
-		await this.loadVideoAsync();
 	}
 
 	/**
 	 * Requests access to user camera and returns a handle to video element
 	 */
-	async setupCameraAsync() {
-		const videoElement = document.getElementById('video');
+	private async setupCameraAsync(): Promise<HTMLVideoElement> {
+		const videoElement = document.getElementById('video') as HTMLVideoElement;
 		const stream = await navigator.mediaDevices.getUserMedia({
 			'audio': false,
 			'video': {
@@ -50,21 +55,22 @@ export default class HandTrackingService {
 		videoElement.srcObject = stream;
 		
 		return new Promise((resolve) => {
-			videoElement.onloadedmetadata = () => {
+			videoElement.onloadedmetadata = (): void => {
 				resolve(videoElement);
 			};
 		});
 	}
 
-	async loadVideoAsync() {
+	private async loadVideoAsync(): Promise<void> {
 		this.video = await this.setupCameraAsync();
 		this.video.play();
+		this.videoDataLoaded = true;
 	}
 
 	/**
 	 * Takes last [this.lowPassSamples] frames and averages them in order to stabilize input from hand-pose library.
 	 */
-	lowPassFilter(inputData) {
+	private lowPassFilter(inputData: HandPoseAnnotation): boolean {
 		this.lowPassSamples.push(inputData);
 
 		if (this.lowPassSamples.length < this.lowPassSamplesCount) {
@@ -92,7 +98,7 @@ export default class HandTrackingService {
 		});
 
 		handParts.forEach((partName) => {
-			for(var i = 0; i < 4; i++) {
+			for(let i = 0; i < 4; i++) {
 				if (this[`${partName}-${i}-average`]) {
 					this[`${partName}-${i}-average`][0] /= this.lowPassSamplesCount;
 					this[`${partName}-${i}-average`][1] /= this.lowPassSamplesCount;
@@ -117,7 +123,14 @@ export default class HandTrackingService {
 		return true;
 	}
 
-	async trackAsync() {
+	async trackAsync(): Promise<void> {
+		if (!this.model) {
+			await this.loadAsync();
+		}
+		if (!this.video || !this.videoDataLoaded) {
+			return;
+		}
+
 		const predictions = await this.model.estimateHands(this.video, true);
 
 		// If at least one hand is detected
