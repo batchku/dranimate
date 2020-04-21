@@ -10,7 +10,7 @@ import Toast from 'components/primitives/toast/toast';
 import WelcomeMessage from 'components/welcome-message/welcome-message';
 
 import { loadDranimateFile, loadImageFile } from 'services/util/file';
-import puppetEditorStateService from 'services/imagetomesh/PuppetEditorStateService';
+import puppetEditorStateService from 'services/imagetomesh/puppet-editor-state-service';
 import dranimate from 'services/dranimate/dranimate';
 import eventManager from 'services/eventManager/event-manager';
 

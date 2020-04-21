@@ -12,6 +12,7 @@ interface PuppetDetailsProps {
 	onSave: () => void;
 	onClose: () => void;
 	onBack: () => void;
+	onNameChange: (name: string) => void;
 }
 
 interface PuppetDetailsState {
@@ -128,6 +129,7 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 		this.setState({
 			name: value,
 		});
+		this.props.onNameChange(value);
 	}
 }
 export default PuppetDetails;

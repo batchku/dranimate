@@ -16,6 +16,9 @@ import {
 	DoubleSide,
 	TextureLoader
 } from 'three';
+
+import * as THREE from 'three';
+
 import Puppet from 'services/puppet/puppet';
 import generateUniqueId from 'services/util/uuid';
 
@@ -26,7 +29,7 @@ let mostFaces = 0;
 function createAnchor(size, color) {
 	const anchorGeometry = new SphereGeometry(size, 32, 32);
 	const anchorMaterial = new MeshBasicMaterial({color: color});
-	const anchor = new Mesh(anchorGeometry, anchorMaterial);
+	const anchor = new THREE.Mesh(anchorGeometry, anchorMaterial);
 	anchor.visible = false;
 	
 	return anchor;
@@ -108,7 +111,6 @@ function buildFromOptions(options) {
 		transparent: true
 	});
 	texturedMaterial.depthWrite = false;
-	texturedMaterial.renderOrder = 1;
 
 	const vertsFlatArray = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
 	const facesFlatArray = faces.map(face => face);
@@ -130,10 +132,10 @@ function buildFromOptions(options) {
 		]);
 	}
 
-	geometry.dynamic = true;
 	// geometry.translate(-200, -200, 0);
 
 	const threeMesh = new Mesh(geometry, texturedMaterial);
+	threeMesh.renderOrder = 1;
 	
 	const selectionBox = createPuppetSelectionBox(threeMesh);
 

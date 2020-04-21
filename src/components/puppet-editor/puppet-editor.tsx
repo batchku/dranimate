@@ -5,14 +5,18 @@ import ControlPointEditor from './control-point-editor.tsx/control-point-editor'
 import PuppetDetailsEditor from './puppet-details-editor/puppet-details-editor';
 
 import dranimate from 'services/dranimate/dranimate';
-import puppetEditorStateService from './../../services/imagetomesh/PuppetEditorStateService';
+import puppetEditorStateService from 'services/imagetomesh/puppet-editor-state-service';
 import generateUniqueId from 'services/util/uuid';
 import { generateMesh } from 'services/imagetomesh/generateMesh';
 import { getImageDataFromImage } from 'services/imagetomesh/ImageUtil';
 import loadImage from 'services/util/imageLoader';
+import apiService from 'services/api/apiService';
+import userService from 'services/api/userService';
+
 import './puppet-editor.scss';
 
 import eventManager from '../../services/eventManager/event-manager';
+import Puppet from 'services/puppet/puppet';
 
 enum EditorStep {
 	IMAGE = 'image',
@@ -33,6 +37,8 @@ interface PuppetEditorState {
 }
 
 class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
+	private _puppetName = '';
+
 	constructor(props: PuppetEditorProps) {
 		super(props);
 
@@ -110,14 +116,31 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 			.then((imageElement) => {
 				const { width, height } = this.state.backgroundRemovalData;
 				const originalImageData = getImageDataFromImage(imageElement, width, height);
-				return generateMesh(puppetId, puppetName, imageElement, this.state.backgroundRemovalData, originalImageData, this.state.controlPointPositions);
+				return generateMesh(puppetId, puppetName || this._puppetName, imageElement, this.state.backgroundRemovalData, originalImageData, this.state.controlPointPositions);
 			})
 			.then((puppet) => {
 				if (puppet) {
-					dranimate.addPuppet(puppet);
+					this.savePuppetAsync(puppet).then(() => {
+						dranimate.addPuppet(puppet);
+						this.onClose();
+					});
 				}
-				this.onClose();
 			});
+	}
+
+	/**
+	 * Saves puppet in database.
+	 */
+	private savePuppetAsync = async(puppet: Puppet): Promise<void> => {
+		if (!userService.isAuthenticated()) {
+			console.warn('User not logged in, skipping puppet save to DB...');
+			return;
+		}
+		await apiService.savePuppet(puppet);
+	}
+
+	private onNameChange = (value: string): void => {
+		this._puppetName = value;
 	}
 
 	render(): JSX.Element {
@@ -146,6 +169,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 					onClose={this.onClose}
 					onBack={this.onPuppetDetailsEditorBack}
 					onSave={this.onSave}
+					onNameChange={this.onNameChange}
 				/>}
 			</div>
 		);

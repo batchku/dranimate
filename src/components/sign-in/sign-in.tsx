@@ -9,8 +9,8 @@ import './sign-in.scss';
 class SignIn extends React.Component {
 	public render(): JSX.Element {
 		return (
-			<div className='sign-in-container' onClick={this.onSignIn}>
-				<Button label='Sign in'/>
+			<div className='sign-in-container'>
+				<Button label='Sign in' onClick={this.onSignIn}/>
 			</div>
 		);
 	}
