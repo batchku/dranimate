@@ -245,9 +245,9 @@ class Stage extends React.Component<{}, StageState> {
 					}}
 				/>
 				<WelcomeMessage />
-				<TopBar />
 				<RightBar />
 				<BottomBar />
+				<TopBar />
 				<input
 					type='file'
 					ref={(input): void => {
