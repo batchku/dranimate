@@ -4,12 +4,13 @@ import BorderButton from 'components/primitives/border-button/border-button';
 import Button from 'components/primitives/button-v2/button';
 import Spacer from 'components/primitives/spacer/spacer';
 import Input from 'components/primitives/input/input';
+import CircularProgress from 'components/primitives/circular-progress/circular-progress';
 import Typography, { TypographyVariant } from 'components/typography/typography';
 
 import './puppet-details-editor.scss';
 
 interface PuppetDetailsProps {
-	onSave: () => void;
+	onSaveAsync: () => Promise<void>;
 	onClose: () => void;
 	onBack: () => void;
 	onNameChange: (name: string) => void;
@@ -18,6 +19,7 @@ interface PuppetDetailsProps {
 interface PuppetDetailsState {
 	name: string;
 	toolOptionsVisible: boolean;
+	saving: boolean;
 }
 
 class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
@@ -29,6 +31,7 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 		this.state = {
 			name: '',
 			toolOptionsVisible: true,
+			saving: false
 		};
 	}
 
@@ -39,7 +42,7 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 
 	public render(): JSX.Element {
 		return (
-			<div className='image-editor-container'>
+			<div className='puppet-details-editor-container'>
 				<div className='image-editor-dialog'>
 					<div className='image-editor-dialog-title'>
 						<img className='image-editor-close-button' src='./assets/close.svg' onClick={this.props.onClose}/>
@@ -105,10 +108,18 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 							/>
 						</div>
 						<div className='image-editor-bottom-bar-right-actions'>
-							<Button label='Save' disabled={!this.state.name} onClick={this.props.onSave} />
+							<Button label='Save' disabled={!this.state.name} onClick={this.onSaveAsync} />
 						</div>
 					</div>
 				</div>
+				{this.state.saving
+				&& <div className='puppet-details-progress-backdrop'>
+					<CircularProgress />
+					<Spacer size={10} />
+					<Typography variant={TypographyVariant.HEADING_SMALL} color='#4A73E2' >
+						Saving the puppet. This may take a while...
+					</Typography>
+				</div>}
 			</div>
 		);
 	}
@@ -130,6 +141,16 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 			name: value,
 		});
 		this.props.onNameChange(value);
+	}
+
+	private onSaveAsync = async(): Promise<void> => {
+		this.setState({
+			saving: true,
+		});
+		await this.props.onSaveAsync();
+		this.setState({
+			saving: false,
+		});
 	}
 }
 export default PuppetDetails;

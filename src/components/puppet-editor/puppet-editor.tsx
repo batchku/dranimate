@@ -102,7 +102,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 		});
 	}
 
-	onSave = (): void => {
+	onSaveAsync = async (): Promise<void> => {
 		if (this.state.controlPointPositions.length < 2) {
 			alert('Puppet must have at least two control points');
 			return;
@@ -112,7 +112,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 		const puppetName = puppetEditorStateService.isPuppet ?
 			puppetEditorStateService.getItem().getName() : '';
 
-		loadImage(this.state.imageSrc)
+		return loadImage(this.state.imageSrc)
 			.then((imageElement) => {
 				const { width, height } = this.state.backgroundRemovalData;
 				const originalImageData = getImageDataFromImage(imageElement, width, height);
@@ -121,10 +121,8 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 			.then((puppet) => {
 				if (puppet) {
 					dranimate.addPuppet(puppet);
-					eventManager.emit('open-loader', 'Saving puppet')
-					this.savePuppetAsync(puppet).then(() => {
+					return this.savePuppetAsync(puppet).then(() => {
 						this.onClose();
-						eventManager.emit('close-loader');
 					});
 				}
 			});
@@ -162,7 +160,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 					controlPointPositions={this.state.controlPointPositions}
 					onBack={this.onControlPointEditorBack}
 					onClose={this.onClose}
-					onSave={this.onSave}
+					onSave={this.onSaveAsync}
 					zoom={this.state.zoom}
 					onNext={this.onControlPointEditorNext}
 				/>}
@@ -170,7 +168,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 				&& <PuppetDetailsEditor
 					onClose={this.onClose}
 					onBack={this.onPuppetDetailsEditorBack}
-					onSave={this.onSave}
+					onSaveAsync={this.onSaveAsync}
 					onNameChange={this.onNameChange}
 				/>}
 			</div>

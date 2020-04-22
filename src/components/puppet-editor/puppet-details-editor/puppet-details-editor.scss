@@ -7,3 +7,21 @@
 	justify-content: center;
 	box-sizing: border-box;
 }
+
+.puppet-details-editor-container {
+	position: relative;
+}
+
+.puppet-details-progress-backdrop {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.9);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
