@@ -17,6 +17,11 @@ const FINGER_POINT_MAPPING = {
 	5: 'Pinky'
 };
 
+export enum ActiveHand {
+	LEFT = 'left',
+	RIGHT = 'right',
+}
+
 const CONTROL_POINT_COLOR = '#4A73E2';
 
 class ControlPointService {
@@ -31,6 +36,7 @@ class ControlPointService {
 		x: 0,
 		y: 0,
 	};
+	private _activeHand = 'right';
 
 	private _foregroundImage;
 	private _controlPoints = [];
@@ -157,6 +163,11 @@ class ControlPointService {
 
 	public setMouseState = (state): void => this._mouseState = state;
 
+	public setActiveHand = (activeHand: ActiveHand): void => {
+		this._activeHand = activeHand;
+		this.redraw();
+	}
+
 /*****************************
 		Private stuff
 *****************************/
@@ -183,7 +194,7 @@ class ControlPointService {
 			this._context.font = "bold 14px Inter";
 			this._context.fillStyle = "white";
 			this._context.textAlign = "center";
-			this._context.fillText(`R${index + 1}`, x, y + 6);
+			this._context.fillText(`${this._activeHand === ActiveHand.LEFT ? 'L' : 'R'}${index + 1}`, x, y + 6);
 		});
 
 		this._context.restore();

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import ImageEditor from './image-editor/image-editor';
-import ControlPointEditor from './control-point-editor.tsx/control-point-editor';
+import ControlPointEditor from './control-point-editor/control-point-editor';
 import PuppetDetailsEditor from './puppet-details-editor/puppet-details-editor';
 
 import dranimate from 'services/dranimate/dranimate';

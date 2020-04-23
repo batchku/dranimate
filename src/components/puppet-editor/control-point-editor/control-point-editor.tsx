@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ControlPointService from 'services/imagetomesh/control-point-service';
+import ControlPointService, {ActiveHand} from 'services/imagetomesh/control-point-service';
 
 import './control-point-editor.scss';
 import Typography, { TypographyVariant } from 'components/typography/typography';
@@ -143,11 +143,11 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 							{this.state.currentHandToMap === HandToMap.LEFT
 							&& <div className='control-point-editor-hand-option-container'>
 								<img src='./assets/hand-l.svg' />
-								<FingerLabel label='R1' position={{left: '86%', top: '45%'}} highlighted={controlPoints.length === 0} placed={controlPoints.length > 0} />
-								<FingerLabel label='R2' position={{left: '42%', top: '-1%'}} highlighted={controlPoints.length === 1} placed={controlPoints.length > 1} />
-								<FingerLabel label='R3' position={{left: '23%', top: '3%'}} highlighted={controlPoints.length === 2} placed={controlPoints.length > 2} />
-								<FingerLabel label='R4' position={{left: '10%', top: '24%'}} highlighted={controlPoints.length === 3} placed={controlPoints.length > 3} />
-								<FingerLabel label='R5' position={{left: '-2%', top: '50%'}} highlighted={controlPoints.length === 4} placed={controlPoints.length > 4} />
+								<FingerLabel label='L1' position={{left: '86%', top: '45%'}} highlighted={controlPoints.length === 0} placed={controlPoints.length > 0} />
+								<FingerLabel label='L2' position={{left: '42%', top: '-1%'}} highlighted={controlPoints.length === 1} placed={controlPoints.length > 1} />
+								<FingerLabel label='L3' position={{left: '23%', top: '3%'}} highlighted={controlPoints.length === 2} placed={controlPoints.length > 2} />
+								<FingerLabel label='L4' position={{left: '10%', top: '24%'}} highlighted={controlPoints.length === 3} placed={controlPoints.length > 3} />
+								<FingerLabel label='L5' position={{left: '-2%', top: '50%'}} highlighted={controlPoints.length === 4} placed={controlPoints.length > 4} />
 							</div>}
 						</div>}
 						<div className='image-editor-toolbar'>
@@ -258,6 +258,7 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 
 	private setLeftHandActive = (): void => {
 		this._controlPointService.clearControlPoints();
+		this._controlPointService.setActiveHand(ActiveHand.LEFT);
 
 		this.setState({
 			currentHandToMap: HandToMap.LEFT,
@@ -267,6 +268,7 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 
 	private setRightHandActive = (): void => {
 		this._controlPointService.clearControlPoints();
+		this._controlPointService.setActiveHand(ActiveHand.RIGHT);
 
 		this.setState({
 			currentHandToMap: HandToMap.RIGHT,
