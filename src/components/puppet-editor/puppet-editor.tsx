@@ -170,6 +170,8 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 					onBack={this.onPuppetDetailsEditorBack}
 					onSaveAsync={this.onSaveAsync}
 					onNameChange={this.onNameChange}
+					imageSrc={this.state.imageSrc}
+					backgroundRemovalData={this.state.backgroundRemovalData}
 				/>}
 			</div>
 		);

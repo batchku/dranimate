@@ -10,6 +10,7 @@ interface InputProps {
 	placeholder: string;
 	label: string;
 	type: string;
+	value?: string;
 	fullWidth?: boolean;
 	backgroundColor?: string;
 	color?: string;
@@ -29,9 +30,9 @@ class Input extends React.Component<InputProps, InputState> {
 		super(props);
 
 		this.state = {
-			focused: false,
-			initialRender: true,
-			value: '',
+			focused: Boolean(this.props.value),
+			initialRender: !this.props.value,
+			value: this.props.value || '',
 			emailValid: true,
 		}
 	}

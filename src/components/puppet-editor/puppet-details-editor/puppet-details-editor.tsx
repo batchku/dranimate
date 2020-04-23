@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 
+import { extractForeground, getImageDataFromImage } from 'services/imagetomesh/ImageUtil.js';
+import loadImage from 'services/util/imageLoader';
+
 import BorderButton from 'components/primitives/border-button/border-button';
 import Button from 'components/primitives/button-v2/button';
 import Spacer from 'components/primitives/spacer/spacer';
@@ -14,6 +17,8 @@ interface PuppetDetailsProps {
 	onClose: () => void;
 	onBack: () => void;
 	onNameChange: (name: string) => void;
+	imageSrc: any;
+	backgroundRemovalData: any;
 }
 
 interface PuppetDetailsState {
@@ -24,12 +29,16 @@ interface PuppetDetailsState {
 
 class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 	private _canvasElement: HTMLCanvasElement;
+	private _context: CanvasRenderingContext2D;
+	private _puppetImage: any;
+	private _width: number;
+	private _height: number;
 
 	constructor(props: PuppetDetailsProps) {
 		super(props);
 
 		this.state = {
-			name: '',
+			name: 'My puppet',
 			toolOptionsVisible: true,
 			saving: false
 		};
@@ -38,6 +47,8 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 	public componentDidMount(): void {
 		this._canvasElement.width = 400;
 		this._canvasElement.height = 300;
+
+		this.initPuppetImage();
 	}
 
 	public render(): JSX.Element {
@@ -89,6 +100,7 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 								inputColor='rgba(255, 255, 255, 0.9)'
 								color='rgba(255, 255, 255, 0.7)'
 								fullWidth={true}
+								value={this.state.name}
 							/>
 						</div>}
 					</div>
@@ -124,6 +136,37 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 		);
 	}
 
+	private initPuppetImage = async(): Promise<void> => {
+		this._context = this._canvasElement.getContext('2d');
+		
+		this._width = this._canvasElement.width;
+		this._height = this._canvasElement.height;
+
+		const image = await loadImage(this.props.imageSrc)
+		
+		const largerSize = Math.max(image.width, image.height);
+		const normWidth = (image.width / largerSize) * 400;
+		const normHeight = (image.height / largerSize) * 400;
+
+		this._width = normWidth;
+		this._height = normHeight;
+
+		const originalImageData = getImageDataFromImage(image, this._width, this._height);
+		const imageNoBG = await extractForeground(originalImageData, this.props.backgroundRemovalData);
+		
+		this._puppetImage = imageNoBG;
+		this.redraw();
+	}
+
+	private redraw = (): void => {
+		this._context.save();
+
+		this._context.clearRect(0, 0, this._width, this._height);
+		this._context.drawImage(this._puppetImage, 0, 0, this._width, this._height, 0, 0, this._width, this._height);
+
+		this._context.restore();
+	}
+
 	private showToolOptions = (): void => {
 		this.setState({
 			toolOptionsVisible: true,
@@ -148,9 +191,6 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 			saving: true,
 		});
 		await this.props.onSaveAsync();
-		this.setState({
-			saving: false,
-		});
 	}
 }
 export default PuppetDetails;
