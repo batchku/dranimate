@@ -6,10 +6,14 @@
 	flex-direction: column;
 	justify-content: center;
 	box-sizing: border-box;
+	pointer-events: all;
 }
 
 .puppet-details-editor-container {
-	position: relative;
+	background-color: white;
+	border-radius: 10px;
+	max-height: 600px;
+	width: 792px;
 }
 
 .puppet-details-progress-backdrop {

@@ -74,12 +74,6 @@
 	flex-grow: 1;
 }
 
-.image-editor-dialog-body {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
 .image-editor-tool-main-bar {
 	height: 48px;
 	width: 320px;
@@ -88,6 +82,7 @@
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	pointer-events: all;
 }
 
 .image-editor-tool-name {
@@ -117,6 +112,7 @@
 	padding-left: 24px;
 	padding-right: 24px;
 	box-sizing: border-box;
+	pointer-events: all;
 }
 
 .image-editor-toolbar {
@@ -128,6 +124,7 @@
 	padding-left: 12px;
 	padding-right: 12px;
 	box-sizing: border-box;
+	pointer-events: all;
 }
 
 .image-editor-tool-action-icon {

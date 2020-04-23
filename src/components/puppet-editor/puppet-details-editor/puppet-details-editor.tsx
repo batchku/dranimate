@@ -19,6 +19,7 @@ interface PuppetDetailsProps {
 	onNameChange: (name: string) => void;
 	imageSrc: any;
 	backgroundRemovalData: any;
+	zoom: number;
 }
 
 interface PuppetDetailsState {
@@ -33,9 +34,12 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 	private _puppetImage: any;
 	private _width: number;
 	private _height: number;
+	private _zoom = 1;
 
 	constructor(props: PuppetDetailsProps) {
 		super(props);
+
+		this._zoom = this.props.zoom || 1;
 
 		this.state = {
 			name: 'My puppet',
@@ -63,46 +67,51 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 							</Typography>
 						</div>
 					</div>
-					<div className='image-editor-dialog-body'>
-						<canvas
-							ref={(input): void => {
-								this._canvasElement = input
-							}}
-						/>
-						<div className='image-editor-tool-main-bar'>
-							<div className='image-editor-tool-name'>
-								<Typography variant={TypographyVariant.TEXT_MEDIUM} color='#FFFFFF'>
-									Puppet details
-								</Typography>
-							</div>
-							<div className='image-editor-tool-actions-container'>
-								<div className='image-editor-tool-action-icon-container'>
-									<img className='image-editor-tool-action-icon' src='./assets/question-mark.svg' />
-								</div>
-								{this.state.toolOptionsVisible &&
-								<div className='image-editor-tool-action-icon-container'>
-									<img className='image-editor-tool-action-icon' src='./assets/arrow-down.svg' onClick={this.hideToolOptions} />
-								</div>}
-								{!this.state.toolOptionsVisible &&
-								<div className='image-editor-tool-action-icon-container'>
-									<img className='image-editor-tool-action-icon' src='./assets/arrow-up.svg' onClick={this.showToolOptions} />
-								</div>}
-							</div>
-						</div>
-						{this.state.toolOptionsVisible &&
-						<div className='puppet-details-editor-tool-options'>
-							<Input
-								onChange={this.onNameChange}
-								label='Puppet name'
-								placeholder='Enter a short name for your puppet'
-								type='text'
-								backgroundColor='#4A73E2'
-								inputColor='rgba(255, 255, 255, 0.9)'
-								color='rgba(255, 255, 255, 0.7)'
-								fullWidth={true}
-								value={this.state.name}
+					<div className='puppet-editor-dialog-body'>
+						<div className='puppet-editor-canvas-container'>
+							<canvas
+								className='puppet-editor-canvas'
+								ref={(input): void => {
+									this._canvasElement = input
+								}}
 							/>
-						</div>}
+						</div>
+						<div className='puppet-editor-options-container'>
+							<div className='image-editor-tool-main-bar'>
+								<div className='image-editor-tool-name'>
+									<Typography variant={TypographyVariant.TEXT_MEDIUM} color='#FFFFFF'>
+										Puppet details
+									</Typography>
+								</div>
+								<div className='image-editor-tool-actions-container'>
+									<div className='image-editor-tool-action-icon-container'>
+										<img className='image-editor-tool-action-icon' src='./assets/question-mark.svg' />
+									</div>
+									{this.state.toolOptionsVisible &&
+									<div className='image-editor-tool-action-icon-container'>
+										<img className='image-editor-tool-action-icon' src='./assets/arrow-down.svg' onClick={this.hideToolOptions} />
+									</div>}
+									{!this.state.toolOptionsVisible &&
+									<div className='image-editor-tool-action-icon-container'>
+										<img className='image-editor-tool-action-icon' src='./assets/arrow-up.svg' onClick={this.showToolOptions} />
+									</div>}
+								</div>
+							</div>
+							{this.state.toolOptionsVisible &&
+							<div className='puppet-details-editor-tool-options'>
+								<Input
+									onChange={this.onNameChange}
+									label='Puppet name'
+									placeholder='Enter a short name for your puppet'
+									type='text'
+									backgroundColor='#4A73E2'
+									inputColor='rgba(255, 255, 255, 0.9)'
+									color='rgba(255, 255, 255, 0.7)'
+									fullWidth={true}
+									value={this.state.name}
+								/>
+							</div>}
+						</div>
 					</div>
 					<div className='image-editor-dialog-bottom-bar'>
 						<div className='image-editor-bottom-bar-left-actions'>
@@ -162,6 +171,7 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 		this._context.save();
 
 		this._context.clearRect(0, 0, this._width, this._height);
+		this._context.scale(this._zoom, this._zoom);
 		this._context.drawImage(this._puppetImage, 0, 0, this._width, this._height, 0, 0, this._width, this._height);
 
 		this._context.restore();

@@ -99,58 +99,63 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 							</Typography>
 						</div>
 					</div>
-					<div className='image-editor-dialog-body'>
-						<canvas
-							ref={(input): void => {
-								this._canvasElement = input
-							}}
-							onMouseMove={this._imageEditorService.onMouseMove}
-							onMouseDown={this._imageEditorService.onMouseDown}
-							onContextMenu={this._imageEditorService.onContextMenu}
-							onMouseUp={this.onMouseUp}
-							onMouseOut={this._imageEditorService.onMouseOut}
-							onMouseOver={this._imageEditorService.onMouseOver}
-						/>
-						<div className='image-editor-tool-main-bar'>
-							<div className='image-editor-tool-name'>
-								<Typography variant={TypographyVariant.TEXT_MEDIUM} color='#FFFFFF'>
-									Magic selection
-								</Typography>
-							</div>
-							<div className='image-editor-tool-actions-container'>
-								<div className='image-editor-tool-action-icon-container'>
-									<img className='image-editor-tool-action-icon' src='./assets/question-mark.svg' />
-								</div>
-								{this.state.toolOptionsVisible &&
-								<div className='image-editor-tool-action-icon-container'>
-									<img className='image-editor-tool-action-icon' src='./assets/arrow-down.svg' onClick={this.hideToolOptions} />
-								</div>}
-								{!this.state.toolOptionsVisible &&
-								<div className='image-editor-tool-action-icon-container'>
-									<img className='image-editor-tool-action-icon' src='./assets/arrow-up.svg' onClick={this.showToolOptions} />
-								</div>}
-							</div>
-						</div>
-						{this.state.toolOptionsVisible &&
-						<div className='image-editor-tool-options'>
-							<ToggleButton
-								leftIconNameActive='brush-active.svg'
-								leftIconNameInactive='brush-inactive.svg'
-								rightIconNameActive='eraser-active.svg'
-								rightIconNameInactive='eraser-inactive.svg'
-								onLeftSelected={this.onActivateBrush}
-								onRightSelected={this.onActivateEraser}
+					<div className='puppet-editor-dialog-body'>
+						<div className='puppet-editor-canvas-container'>
+							<canvas
+								className='puppet-editor-canvas'
+								ref={(input): void => {
+									this._canvasElement = input
+								}}
+								onMouseMove={this._imageEditorService.onMouseMove}
+								onMouseDown={this._imageEditorService.onMouseDown}
+								onContextMenu={this._imageEditorService.onContextMenu}
+								onMouseUp={this.onMouseUp}
+								onMouseOut={this._imageEditorService.onMouseOut}
+								onMouseOver={this._imageEditorService.onMouseOver}
 							/>
-							<Range onChangeEnd={this.runSlic} onChange={this.updateThresholdUi} />
-						</div>}
-						<div className='image-editor-toolbar'>
-							<div className='image-editor-undo-redo-container'>
-								<img className='image-editor-tool-action-icon' src='./assets/undo.svg' />
-								<img className='image-editor-tool-action-icon' src='./assets/redo.svg' />
+						</div>
+						<div className='puppet-editor-options-container'>
+							<div className='image-editor-tool-main-bar'>
+								<div className='image-editor-tool-name'>
+									<Typography variant={TypographyVariant.TEXT_MEDIUM} color='#FFFFFF'>
+										Magic selection
+									</Typography>
+								</div>
+								<div className='image-editor-tool-actions-container'>
+									<div className='image-editor-tool-action-icon-container'>
+										<img className='image-editor-tool-action-icon' src='./assets/question-mark.svg' />
+									</div>
+									{this.state.toolOptionsVisible &&
+									<div className='image-editor-tool-action-icon-container'>
+										<img className='image-editor-tool-action-icon' src='./assets/arrow-down.svg' onClick={this.hideToolOptions} />
+									</div>}
+									{!this.state.toolOptionsVisible &&
+									<div className='image-editor-tool-action-icon-container'>
+										<img className='image-editor-tool-action-icon' src='./assets/arrow-up.svg' onClick={this.showToolOptions} />
+									</div>}
+								</div>
 							</div>
-							<div className='image-editor-tools-container'>
-								<div className='image-editor-tool-container'>
-									<img className='image-editor-tool-action-icon' src='./assets/wand.svg' />
+							{this.state.toolOptionsVisible &&
+							<div className='image-editor-tool-options'>
+								<ToggleButton
+									leftIconNameActive='brush-active.svg'
+									leftIconNameInactive='brush-inactive.svg'
+									rightIconNameActive='eraser-active.svg'
+									rightIconNameInactive='eraser-inactive.svg'
+									onLeftSelected={this.onActivateBrush}
+									onRightSelected={this.onActivateEraser}
+								/>
+								<Range onChangeEnd={this.runSlic} onChange={this.updateThresholdUi} />
+							</div>}
+							<div className='image-editor-toolbar'>
+								<div className='image-editor-undo-redo-container'>
+									<img className='image-editor-tool-action-icon' src='./assets/undo.svg' />
+									<img className='image-editor-tool-action-icon' src='./assets/redo.svg' />
+								</div>
+								<div className='image-editor-tools-container'>
+									<div className='image-editor-tool-container'>
+										<img className='image-editor-tool-action-icon' src='./assets/wand.svg' />
+									</div>
 								</div>
 							</div>
 						</div>

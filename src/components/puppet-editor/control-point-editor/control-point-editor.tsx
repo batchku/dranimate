@@ -49,7 +49,7 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 		super(props);
 
 		this.state = {
-			canGoToNextStep: false,
+			canGoToNextStep: this.props.controlPointPositions?.length > 0,
 			toolOptionsVisible: true,
 			currentFingerToMap: FingerToMap.THUMB,
 			currentHandToMap: HandToMap.RIGHT,
@@ -83,92 +83,97 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 							</Typography>
 						</div>
 					</div>
-					<div className='control-point-editor-dialog-body'>
-						<canvas
-							ref={(input): void => {
-								this._canvasElement = input
-							}}
-							onMouseMove={this._controlPointService.onMouseMove}
-							onMouseDown={this.onMouseDown}
-							onContextMenu={this._controlPointService.onContextMenu}
-							onMouseUp={this._controlPointService.onMouseUp}
-							onMouseOut={this._controlPointService.onMouseOut}
-							onMouseOver={this._controlPointService.onMouseOver}
-							onDoubleClick={this.onDoubleClick}
-						/>
-						<div className='image-editor-tool-main-bar'>
-							<div className='control-point-editor-tool-name'>
-								{controlPoints.length < 5
-								&& <Typography variant={TypographyVariant.TEXT_MEDIUM} color='#FFFFFF'>
-									{`${this.state.currentHandToMap} ${this.state.currentFingerToMap} finger`}
-								</Typography>}
-								{controlPoints.length < 5
-								&& <Typography variant={TypographyVariant.TEXT_X_SMALL} color='rgba(255, 255, 255, 0.7)'>
-									Tap on the figure to map
-								</Typography>}
-								{controlPoints.length > 4
-								&& <Typography variant={TypographyVariant.TEXT_MEDIUM} color='#FFFFFF'>
-									All fingers mapped
-								</Typography>}
-								{controlPoints.length > 4
-								&& <Typography variant={TypographyVariant.TEXT_X_SMALL} color='rgba(255, 255, 255, 0.7)'>
-									Drag markers to update position
-								</Typography>}
-							</div>
-							<div className='control-point-editor-tool-actions-container'>
-								<div className='image-editor-tool-action-icon-container'>
-									<img className='image-editor-tool-action-icon' src='./assets/question-mark.svg' />
-								</div>
-								{this.state.toolOptionsVisible &&
-								<div className='image-editor-tool-action-icon-container'>
-									<img className='image-editor-tool-action-icon' src='./assets/arrow-down.svg' onClick={this.hideToolOptions} />
-								</div>}
-								{!this.state.toolOptionsVisible &&
-								<div className='image-editor-tool-action-icon-container'>
-									<img className='image-editor-tool-action-icon' src='./assets/arrow-up.svg' onClick={this.showToolOptions} />
-								</div>}
-							</div>
+					<div className='puppet-editor-dialog-body'>
+						<div className='puppet-editor-canvas-container'>
+							<canvas
+								className='puppet-editor-canvas'
+								ref={(input): void => {
+									this._canvasElement = input
+								}}
+								onMouseMove={this._controlPointService.onMouseMove}
+								onMouseDown={this.onMouseDown}
+								onContextMenu={this._controlPointService.onContextMenu}
+								onMouseUp={this._controlPointService.onMouseUp}
+								onMouseOut={this._controlPointService.onMouseOut}
+								onMouseOver={this._controlPointService.onMouseOver}
+								onDoubleClick={this.onDoubleClick}
+							/>
 						</div>
-						{this.state.toolOptionsVisible &&
-						<div className='control-point-editor-tool-options'>
-							{this.state.currentHandToMap === HandToMap.RIGHT
-							&& <div className='control-point-editor-hand-option-container'>
-								<img src='./assets/hand-r.svg' />
-								<FingerLabel label='R1' position={{left: '-2%', top: '45%'}} highlighted={controlPoints.length === 0} placed={controlPoints.length > 0} />
-								<FingerLabel label='R2' position={{left: '42%', top: '-1%'}} highlighted={controlPoints.length === 1} placed={controlPoints.length > 1} />
-								<FingerLabel label='R3' position={{left: '61%', top: '3%'}} highlighted={controlPoints.length === 2} placed={controlPoints.length > 2} />
-								<FingerLabel label='R4' position={{left: '74%', top: '24%'}} highlighted={controlPoints.length === 3} placed={controlPoints.length > 3} />
-								<FingerLabel label='R5' position={{left: '87%', top: '50%'}} highlighted={controlPoints.length === 4} placed={controlPoints.length > 4} />
-							</div>}
-							{this.state.currentHandToMap === HandToMap.LEFT
-							&& <div className='control-point-editor-hand-option-container'>
-								<img src='./assets/hand-l.svg' />
-								<FingerLabel label='L1' position={{left: '86%', top: '45%'}} highlighted={controlPoints.length === 0} placed={controlPoints.length > 0} />
-								<FingerLabel label='L2' position={{left: '42%', top: '-1%'}} highlighted={controlPoints.length === 1} placed={controlPoints.length > 1} />
-								<FingerLabel label='L3' position={{left: '23%', top: '3%'}} highlighted={controlPoints.length === 2} placed={controlPoints.length > 2} />
-								<FingerLabel label='L4' position={{left: '10%', top: '24%'}} highlighted={controlPoints.length === 3} placed={controlPoints.length > 3} />
-								<FingerLabel label='L5' position={{left: '-2%', top: '50%'}} highlighted={controlPoints.length === 4} placed={controlPoints.length > 4} />
-							</div>}
-						</div>}
-						<div className='image-editor-toolbar'>
-							<div className='control-point-editor-toolbar-description'>
-								<Typography variant={TypographyVariant.TEXT_X_SMALL} color='rgba(255, 255, 255, 0.7)'>
-									Select the hand that you want to animate your puppet with
-								</Typography>
+						<div className='puppet-editor-options-container'>
+							<div className='image-editor-tool-main-bar'>
+								<div className='control-point-editor-tool-name'>
+									{controlPoints.length < 5
+									&& <Typography variant={TypographyVariant.TEXT_MEDIUM} color='#FFFFFF'>
+										{`${this.state.currentHandToMap} ${this.state.currentFingerToMap} finger`}
+									</Typography>}
+									{controlPoints.length < 5
+									&& <Typography variant={TypographyVariant.TEXT_X_SMALL} color='rgba(255, 255, 255, 0.7)'>
+										Tap on the figure to map
+									</Typography>}
+									{controlPoints.length > 4
+									&& <Typography variant={TypographyVariant.TEXT_MEDIUM} color='#FFFFFF'>
+										All fingers mapped
+									</Typography>}
+									{controlPoints.length > 4
+									&& <Typography variant={TypographyVariant.TEXT_X_SMALL} color='rgba(255, 255, 255, 0.7)'>
+										Drag markers to update position
+									</Typography>}
+								</div>
+								<div className='control-point-editor-tool-actions-container'>
+									<div className='image-editor-tool-action-icon-container'>
+										<img className='image-editor-tool-action-icon' src='./assets/question-mark.svg' />
+									</div>
+									{this.state.toolOptionsVisible &&
+									<div className='image-editor-tool-action-icon-container'>
+										<img className='image-editor-tool-action-icon' src='./assets/arrow-down.svg' onClick={this.hideToolOptions} />
+									</div>}
+									{!this.state.toolOptionsVisible &&
+									<div className='image-editor-tool-action-icon-container'>
+										<img className='image-editor-tool-action-icon' src='./assets/arrow-up.svg' onClick={this.showToolOptions} />
+									</div>}
+								</div>
 							</div>
-							<Spacer size={16} />
-							<div className='control-point-editor-toolbar-actions'>
-								<CircleIconButton
-									iconUrl='./assets/left-hand.svg'
-									active={this.state.currentHandToMap === HandToMap.LEFT}
-									onClick={this.setLeftHandActive}
-								/>
-								<Spacer size={8} />
-								<CircleIconButton
-									iconUrl='./assets/right-hand.svg'
-									active={this.state.currentHandToMap === HandToMap.RIGHT}
-									onClick={this.setRightHandActive}
-								/>
+							{this.state.toolOptionsVisible &&
+							<div className='control-point-editor-tool-options'>
+								{this.state.currentHandToMap === HandToMap.RIGHT
+								&& <div className='control-point-editor-hand-option-container'>
+									<img src='./assets/hand-r.svg' />
+									<FingerLabel label='R1' position={{left: '-2%', top: '45%'}} highlighted={controlPoints.length === 0} placed={controlPoints.length > 0} />
+									<FingerLabel label='R2' position={{left: '42%', top: '-1%'}} highlighted={controlPoints.length === 1} placed={controlPoints.length > 1} />
+									<FingerLabel label='R3' position={{left: '61%', top: '3%'}} highlighted={controlPoints.length === 2} placed={controlPoints.length > 2} />
+									<FingerLabel label='R4' position={{left: '74%', top: '24%'}} highlighted={controlPoints.length === 3} placed={controlPoints.length > 3} />
+									<FingerLabel label='R5' position={{left: '87%', top: '50%'}} highlighted={controlPoints.length === 4} placed={controlPoints.length > 4} />
+								</div>}
+								{this.state.currentHandToMap === HandToMap.LEFT
+								&& <div className='control-point-editor-hand-option-container'>
+									<img src='./assets/hand-l.svg' />
+									<FingerLabel label='L1' position={{left: '86%', top: '45%'}} highlighted={controlPoints.length === 0} placed={controlPoints.length > 0} />
+									<FingerLabel label='L2' position={{left: '42%', top: '-1%'}} highlighted={controlPoints.length === 1} placed={controlPoints.length > 1} />
+									<FingerLabel label='L3' position={{left: '23%', top: '3%'}} highlighted={controlPoints.length === 2} placed={controlPoints.length > 2} />
+									<FingerLabel label='L4' position={{left: '10%', top: '24%'}} highlighted={controlPoints.length === 3} placed={controlPoints.length > 3} />
+									<FingerLabel label='L5' position={{left: '-2%', top: '50%'}} highlighted={controlPoints.length === 4} placed={controlPoints.length > 4} />
+								</div>}
+							</div>}
+							<div className='image-editor-toolbar'>
+								<div className='control-point-editor-toolbar-description'>
+									<Typography variant={TypographyVariant.TEXT_X_SMALL} color='rgba(255, 255, 255, 0.7)'>
+										Select the hand that you want to animate your puppet with
+									</Typography>
+								</div>
+								<Spacer size={16} />
+								<div className='control-point-editor-toolbar-actions'>
+									<CircleIconButton
+										iconUrl='./assets/left-hand.svg'
+										active={this.state.currentHandToMap === HandToMap.LEFT}
+										onClick={this.setLeftHandActive}
+									/>
+									<Spacer size={8} />
+									<CircleIconButton
+										iconUrl='./assets/right-hand.svg'
+										active={this.state.currentHandToMap === HandToMap.RIGHT}
+										onClick={this.setRightHandActive}
+									/>
+								</div>
 							</div>
 						</div>
 					</div>

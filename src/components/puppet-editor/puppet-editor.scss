@@ -11,3 +11,41 @@
 	justify-content: center;
 	align-items: center;
 }
+
+.puppet-editor-canvas {
+	pointer-events: all;
+}
+
+.puppet-editor-canvas-container {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	top: 0px;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	pointer-events: none;
+}
+
+.puppet-editor-options-container {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	top: 0px;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-direction: column;
+	pointer-events: none;
+}
+
+.puppet-editor-dialog-body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+	height: 472px;
+	pointer-events: none;
+}

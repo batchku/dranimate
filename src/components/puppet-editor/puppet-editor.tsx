@@ -172,6 +172,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 					onNameChange={this.onNameChange}
 					imageSrc={this.state.imageSrc}
 					backgroundRemovalData={this.state.backgroundRemovalData}
+					zoom={this.state.zoom}
 				/>}
 			</div>
 		);

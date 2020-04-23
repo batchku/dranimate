@@ -355,8 +355,6 @@ class ImageEditorService {
 	}
 
 	createOutline = (imageSrc, imageDst): void => {
-		console.log('creating outline');
-
 		this.outlineContext.save();
 
 		const dArr = [
