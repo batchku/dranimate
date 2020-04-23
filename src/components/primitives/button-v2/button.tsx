@@ -1,12 +1,14 @@
 import React from 'react';
 
 import './button.scss';
+import Typography, { TypographyVariant } from 'components/typography/typography';
 
 interface ButtonProps {
 	label: string;
 	onClick?: () => void;
 	fullWidth?: boolean;
 	disabled?: boolean;
+	width?: number;
 }
 
 class Button extends React.Component<ButtonProps, {}> {
@@ -20,11 +22,21 @@ class Button extends React.Component<ButtonProps, {}> {
 			buttonClasses += ' button-disabled';
 		}
 
+		let buttonWidth = '';
+		if (this.props.fullWidth) {
+			buttonWidth = '100%';
+		}
+		if (this.props.width) {
+			buttonWidth = `${this.props.width}px`;
+		}
+
 		return (
 			<div style={{
-				width: this.props.fullWidth ? '100%' : '',
+				width: buttonWidth,
 			}} className={buttonClasses} onClick={this.onClick}>
-				<p className='button-label'>{this.props.label}</p>
+				<Typography variant={TypographyVariant.HEADING_MEDIUM} color='#FFFFFF'>
+					{this.props.label}
+				</Typography>
 			</div>
 		);
 	}

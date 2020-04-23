@@ -5,6 +5,7 @@ import ToggleButton from 'components/primitives/toggle-button/toggle-button';
 import BorderButton from 'components/primitives/border-button/border-button';
 import Button from 'components/primitives/button-v2/button';
 import Spacer from 'components/primitives/spacer/spacer';
+import PuppetEditorClosePrompt from '../close-prompt/puppet-editor-close-prompt';
 import Typography, { TypographyVariant } from 'components/typography/typography';
 
 import ImageEditorService from 'services/imagetomesh/image-editor-service';
@@ -26,6 +27,7 @@ interface ImageEditorState {
 	step: number;
 	toolOptionsVisible: boolean;
 	canGoToNextStep: boolean;
+	exitPromptOpen: boolean;
 }
 
 class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
@@ -43,6 +45,7 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 			step: 0,
 			toolOptionsVisible: true,
 			canGoToNextStep: false,
+			exitPromptOpen: false,
 		};
 	}
 
@@ -90,9 +93,11 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 	public render(): JSX.Element {
 		return (
 			<div className='image-editor-container'>
+				{this.state.exitPromptOpen
+				&& <PuppetEditorClosePrompt onClose={this.props.onCancel} onKeepCreating={this.onCloseExitPrompt} />}
 				<div className='image-editor-dialog'>
 					<div className='image-editor-dialog-title'>
-						<img className='image-editor-close-button' src='./assets/close.svg' onClick={this.props.onCancel}/>
+						<img className='image-editor-close-button' src='./assets/close.svg' onClick={this.onOpenExitPrompt}/>
 						<div className='image-editor-title-container'>
 							<Typography variant={TypographyVariant.TEXT_LARGE} color='rgba(0, 0, 0, 0.9)'>
 								Select Figure
@@ -183,6 +188,18 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 				</div>
 			</div>
 		);
+	}
+
+	private onCloseExitPrompt = (): void => {
+		this.setState({
+			exitPromptOpen: false,
+		});
+	}
+
+	private onOpenExitPrompt = (): void => {
+		this.setState({
+			exitPromptOpen: true,
+		});
 	}
 
 	private onMouseUp = (): void => {

@@ -8,6 +8,7 @@ import Button from 'components/primitives/button-v2/button';
 import Spacer from 'components/primitives/spacer/spacer';
 import Input from 'components/primitives/input/input';
 import CircularProgress from 'components/primitives/circular-progress/circular-progress';
+import PuppetEditorClosePrompt from '../close-prompt/puppet-editor-close-prompt';
 import Typography, { TypographyVariant } from 'components/typography/typography';
 
 import './puppet-details-editor.scss';
@@ -26,6 +27,7 @@ interface PuppetDetailsState {
 	name: string;
 	toolOptionsVisible: boolean;
 	saving: boolean;
+	exitPromptOpen: boolean;
 }
 
 class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
@@ -44,7 +46,8 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 		this.state = {
 			name: 'My puppet',
 			toolOptionsVisible: true,
-			saving: false
+			saving: false,
+			exitPromptOpen: false,
 		};
 	}
 
@@ -58,9 +61,11 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 	public render(): JSX.Element {
 		return (
 			<div className='puppet-details-editor-container'>
+				{this.state.exitPromptOpen
+				&& <PuppetEditorClosePrompt onClose={this.props.onClose} onKeepCreating={this.onCloseExitPrompt} />}
 				<div className='image-editor-dialog'>
 					<div className='image-editor-dialog-title'>
-						<img className='image-editor-close-button' src='./assets/close.svg' onClick={this.props.onClose}/>
+						<img className='image-editor-close-button' src='./assets/close.svg' onClick={this.onOpenExitPrompt}/>
 						<div className='image-editor-title-container'>
 							<Typography variant={TypographyVariant.TEXT_LARGE} color='rgba(0, 0, 0, 0.9)'>
 								Puppet details
@@ -143,6 +148,18 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 				</div>}
 			</div>
 		);
+	}
+
+	private onCloseExitPrompt = (): void => {
+		this.setState({
+			exitPromptOpen: false,
+		});
+	}
+
+	private onOpenExitPrompt = (): void => {
+		this.setState({
+			exitPromptOpen: true,
+		});
 	}
 
 	private initPuppetImage = async(): Promise<void> => {

@@ -1,0 +1,13 @@
+.puppet-editor-close-prompt-backdrop {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: rgba(255, 255, 255, 0.9);
+	z-index: 1;
+	border-radius: 10px;
+}

@@ -2,13 +2,15 @@ import React from 'react';
 
 import ControlPointService, {ActiveHand} from 'services/imagetomesh/control-point-service';
 
-import './control-point-editor.scss';
 import Typography, { TypographyVariant } from 'components/typography/typography';
 import BorderButton from 'components/primitives/border-button/border-button';
 import Spacer from 'components/primitives/spacer/spacer';
 import Button from 'components/primitives/button-v2/button';
 import FingerLabel from 'components/finger-label/finger-label';
 import CircleIconButton from 'components/primitives/circle-icon-button/circle-icon-button';
+import PuppetEditorClosePrompt from '../close-prompt/puppet-editor-close-prompt';
+
+import './control-point-editor.scss';
 
 enum HandToMap {
 	LEFT = 'Left',
@@ -39,6 +41,7 @@ interface ControlPointEditorState {
 	toolOptionsVisible: boolean;
 	currentFingerToMap: FingerToMap;
 	currentHandToMap: HandToMap;
+	exitPromptOpen: boolean;
 }
 
 class ControlPointEditor extends React.Component<ControlPointEditorProps, ControlPointEditorState> {
@@ -53,6 +56,7 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 			toolOptionsVisible: true,
 			currentFingerToMap: FingerToMap.THUMB,
 			currentHandToMap: HandToMap.RIGHT,
+			exitPromptOpen: false,
 		};
 	}
 
@@ -74,9 +78,11 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 
 		return (
 			<div className='control-point-editor-container'>
+				{this.state.exitPromptOpen
+				&& <PuppetEditorClosePrompt onClose={this.props.onClose} onKeepCreating={this.onCloseExitPrompt} />}
 				<div className='control-point-editor-dialog'>
 					<div className='control-point-editor-dialog-title'>
-					<img className='image-editor-close-button' src='./assets/close.svg' onClick={this.props.onClose}/>
+					<img className='image-editor-close-button' src='./assets/close.svg' onClick={this.onOpenExitPrompt}/>
 						<div className='control-point-editor-title-container'>
 							<Typography variant={TypographyVariant.TEXT_LARGE} color='rgba(0, 0, 0, 0.9)'>
 								Map fingers
@@ -201,6 +207,18 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 				</div>
 			</div>
 		);
+	}
+
+	private onCloseExitPrompt = (): void => {
+		this.setState({
+			exitPromptOpen: false,
+		});
+	}
+
+	private onOpenExitPrompt = (): void => {
+		this.setState({
+			exitPromptOpen: true,
+		});
 	}
 
 	private onNext = (): void => {

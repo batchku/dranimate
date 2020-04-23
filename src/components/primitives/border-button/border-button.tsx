@@ -9,6 +9,7 @@ interface BorderButtonProps {
 	color?: string;
 	disabledColor?: string;
 	fullWidth?: boolean;
+	width?: number;
 	disabled?: boolean;
 	onClick?: () => void;
 }
@@ -24,11 +25,19 @@ class BorderButton extends React.Component<BorderButtonProps, {}> {
 			color = this.props.disabledColor;
 		}
 
+		let buttonWidth = '';
+		if (this.props.fullWidth) {
+			buttonWidth = '100%';
+		}
+		if (this.props.width) {
+			buttonWidth = `${this.props.width}px`;
+		}
+
 		return (
 			<div
 				style={{
 					borderColor: color || 'rgba(0, 0, 0, 0.6)',
-					width: this.props.fullWidth ? '100%' : '',
+					width: buttonWidth,
 				}}
 				className='border-button-container'
 				onClick={this.onClick}
