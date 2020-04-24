@@ -38,6 +38,8 @@ function createAnchor(size, color) {
 
 function createTexturedPlane(size, texturePath) {
 	const anchorTexture = new TextureLoader().load(texturePath);
+	anchorTexture.anisotropy = 8;
+	anchorTexture.minFilter = THREE.LinearMipMapNearestFilter;
 	const anchorGeometry = new PlaneGeometry(size, size);
 	const anchorMaterial = new MeshBasicMaterial({
 		side: DoubleSide,

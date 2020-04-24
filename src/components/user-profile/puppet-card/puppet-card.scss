@@ -37,9 +37,16 @@
 	top: 0px;
 	bottom: 0px;
 	display: flex;
-	padding: 12px;
 	justify-content: center;
 	align-items: center;
-	flex-direction: column;
+	flex-direction: row;
 	background-color: rgba(255, 255, 255, 0.9);
+}
+
+.puppet-actions-icon-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
 }

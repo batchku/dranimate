@@ -1,4 +1,4 @@
-import requestPuppetCreation from 'services/puppet/PuppetFactory';
+import requestPuppetCreation from 'services/puppet/puppet-factory';
 import loadImage from 'services/util/imageLoader';
 import generateUniqueId from 'services/util/uuid';
 

@@ -26,6 +26,7 @@ const webpackConfig = {
 			components: path.resolve(__dirname, 'src/components/'),
 			services: path.resolve(__dirname, 'src/services/'),
 			styles: path.resolve(__dirname, 'src/styles/'),
+			icons: path.resolve(__dirname, 'src/icons'),
 		}
 	},
 	devtool: 'source-map',

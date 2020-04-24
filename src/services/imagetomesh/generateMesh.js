@@ -1,7 +1,7 @@
 import Delaunay from 'delaunay-fast';
 import { extractForeground } from './ImageUtil.js';
 import CanvasUtils from './canvasutils';
-import requestPuppetCreation from './../puppet/PuppetFactory';
+import requestPuppetCreation from './../puppet/puppet-factory';
 
 function findEdgesOfImage(imageNoBackgroundData) {
   const width = imageNoBackgroundData.width;

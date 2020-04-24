@@ -23,6 +23,7 @@
 	background-color: rgb(255, 255, 255);
 	border-radius: 10px;
 	pointer-events: all;
+	position: relative;
 }
 
 .user-profile-dialog-title {
@@ -99,4 +100,19 @@
 	display: grid;
 	grid-template-columns: repeat(3, 240px);
 	grid-gap: 12px;
+}
+
+.user-profile-loading-overlay {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.9);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	z-index: 1;
 }

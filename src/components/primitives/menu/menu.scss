@@ -1,0 +1,32 @@
+.menu-container {
+	position: fixed;
+	display: flex;
+	flex-direction: column;
+}
+
+.menu-arrow-pointer {
+	width: 0;
+	height: 0;
+	border-left: 8px solid transparent;
+	border-right: 8px solid transparent;
+	border-bottom: 12px solid #FFFFFF;
+	pointer-events: none;
+	transform: translateX(-50%);
+}
+
+.menu-body {
+	width: 100%;
+	background: #FFFFFF;
+	border-radius: 12px;
+	box-shadow:
+		0px 0px 6px rgba(0, 0, 0, 0.3),
+		0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.menu-body div:first-child {
+	border-radius: 12px 12px 0px 0px;
+}
+
+.menu-body div:last-child {
+	border-radius: 0px 0px 12px 12px;
+}

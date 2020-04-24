@@ -3,10 +3,13 @@ import React from 'react';
 import apiService from 'services/api/apiService';
 import userService from 'services/api/userService';
 
+import showToastEvent from 'services/eventManager/show-toast-event';
+
 import Typography, { TypographyVariant } from 'components/typography/typography';
 import Spacer from 'components/primitives/spacer/spacer';
 import BorderButton from 'components/primitives/border-button/border-button';
 import PuppetCard from './puppet-card/puppet-card';
+import CircularProgress from 'components/primitives/circular-progress/circular-progress';
 
 import './user-profile.scss';
 
@@ -17,6 +20,7 @@ interface UserProfileProps {
 
 interface UserProfileState {
 	userPuppets: any[];
+	addingPuppet: boolean;
 }
 
 class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
@@ -27,6 +31,7 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 
 		this.state = {
 			userPuppets: [],
+			addingPuppet: false,
 		};
 	}
 
@@ -39,6 +44,14 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 			<div key='backdrop' className='user-profile-backdrop' onClick={this.props.onClose}/>,
 			<div key='profile-container' className='user-profile-container'>
 				<div className='user-profile-dialog'>
+					{this.state.addingPuppet
+					&& <div className='user-profile-loading-overlay'>
+						<CircularProgress />
+						<Spacer size={10} />
+						<Typography variant={TypographyVariant.HEADING_SMALL} color='#4A73E2' >
+							Loading the puppet. This may take a while... 
+						</Typography>
+					</div>}
 					<div className='user-profile-dialog-title'>
 						<img className='user-profile-close-button' src='./assets/close.svg' onClick={this.props.onClose}/>
 						<div className='user-profile-title-container'>
@@ -77,6 +90,7 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 										puppet={puppet}
 										onDelete={this.onPuppetDeleted}
 										onAddToScene={this.onAddToScene}
+										onStartAddingToScene={this.onStartAddingToScene}
 									/>
 								);
 							})}
@@ -108,6 +122,17 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 
 	private onAddToScene = (): void => {
 		this.props.onClose();
+
+		showToastEvent.emit({
+			duration: 4,
+			text: 'Puppet successfully added to the scene.'
+		});
+	}
+
+	private onStartAddingToScene = (): void => {
+		this.setState({
+			addingPuppet: true,
+		});
 	}
 }
 export default UserProfile;
