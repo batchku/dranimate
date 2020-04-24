@@ -1,4 +1,4 @@
-import { Vector2, Box3, Vector3, Raycaster } from 'three';
+import { Vector2, Box3, Vector3, Raycaster, MeshBasicMaterial } from 'three';
 import ARAP from 'services/arap/arap';
 // import { PuppetRecording } from 'services/puppet/puppetRecording';
 import Recording from 'services/puppet/Recording';
@@ -27,7 +27,7 @@ class Puppet {
 	private vertsFlatArray: any;
 	private facesFlatArray: any;
 	private threeMesh: any;
-	private controlPointSpheres: any;
+	private controlPointPlanes: THREE.Mesh[];
 	private group: any;
 	private undeformedVertices: any;
 	private needsUpdate: boolean;
@@ -65,7 +65,7 @@ class Puppet {
 		this.vertsFlatArray = puppetData.vertsFlatArray;
 		this.facesFlatArray = puppetData.facesFlatArray;
 		this.threeMesh = puppetData.threeMesh;
-		this.controlPointSpheres = puppetData.controlPointSpheres;
+		this.controlPointPlanes = puppetData.controlPointPlanes;
 		this.group = puppetData.group;
 		this.undeformedVertices = this.verts;
 		this.needsUpdate = true;
@@ -159,9 +159,11 @@ class Puppet {
 	updateControlPointColors = (): void => {
 		const activeIndices = this.recording.getActiveIndices();
 		this.controlPoints.forEach((controlPoint, index) => {
-			const controlPointSphere = this.controlPointSpheres[index];
+			const controlPointSphere = this.controlPointPlanes[index];
 			const color = activeIndices.has(index) ? 0xEE1111 : 0x1144FF;
-			controlPointSphere.material.color.setHex(color);
+			if (controlPointSphere.material instanceof MeshBasicMaterial) {
+				controlPointSphere.material.color.setHex(color);
+			}
 		});
 	}
 
@@ -294,7 +296,7 @@ class Puppet {
 			// UPDATE CONTROL POINT GRAPHICS
 			this.controlPoints.forEach((controlPoint, index) => {
 				const vertex = this.threeMesh.geometry.vertices[controlPoint];
-				const controlPointSphere = this.controlPointSpheres[index];
+				const controlPointSphere = this.controlPointPlanes[index];
 				controlPointSphere.position.x = vertex.x;
 				controlPointSphere.position.y = vertex.y;
 			});
@@ -351,7 +353,7 @@ class Puppet {
 		this.selectionBox.bottomAnchor.visible = visible;
 		this.selectionBox.bottomLeftAnchor.visible = visible;
 		this.selectionBox.leftAnchor.visible = visible;
-		this.controlPointSpheres.forEach(sphere => sphere.visible = visible);
+		this.controlPointPlanes.forEach(sphere => sphere.visible = visible);
 	
 		eventManager.emit('puppet-selected', {
 			selected: visible,

@@ -21,6 +21,7 @@ import * as THREE from 'three';
 
 import Puppet from 'services/puppet/puppet';
 import generateUniqueId from 'services/util/uuid';
+import ControlPoint from 'services/puppet/control-point';
 
 // Temporary guard against this nasty guy: https://github.com/cmuartfab/dranimate-browser_archive/issues/1
 const errorMessage = 'Must load largest puppet first.'
@@ -28,20 +29,21 @@ let mostFaces = 0;
 
 function createAnchor(size, color) {
 	const anchorGeometry = new SphereGeometry(size, 32, 32);
-	const anchorMaterial = new MeshBasicMaterial({color: color});
+	const anchorMaterial = new MeshBasicMaterial({color: color, depthWrite: false});
 	const anchor = new THREE.Mesh(anchorGeometry, anchorMaterial);
 	anchor.visible = false;
 	
 	return anchor;
 }
 
-function createTexturedAnchor(size, texturePath) {
+function createTexturedPlane(size, texturePath) {
 	const anchorTexture = new TextureLoader().load(texturePath);
 	const anchorGeometry = new PlaneGeometry(size, size);
 	const anchorMaterial = new MeshBasicMaterial({
 		side: DoubleSide,
 		map: anchorTexture,
 		transparent: true,
+		depthWrite: false,
 	});
 	const anchor = new Mesh(anchorGeometry, anchorMaterial);
 	anchor.rotateX(Math.PI);
@@ -52,6 +54,9 @@ function createTexturedAnchor(size, texturePath) {
 
 function createPuppetSelectionBox(threeMesh) {
 	const boxHelperMesh = new BoxHelper(threeMesh, new Color(0xFFFFFF));
+	if (boxHelperMesh.material instanceof MeshBasicMaterial) {
+		boxHelperMesh.material.depthWrite = false;
+	}
 	boxHelperMesh.visible = false;
 
 	const topAnchor = createAnchor(3, 0xFFFFFF);
@@ -59,8 +64,8 @@ function createPuppetSelectionBox(threeMesh) {
 	const bottomAnchor = createAnchor(3, 0xFFFFFF);
 	const leftAnchor = createAnchor(3, 0xFFFFFF);
 
-	const topLeftAnchor = createTexturedAnchor(50, './assets/rotate-puppet.png');
-	const bottomRightAnchor = createTexturedAnchor(50, './assets/scale-puppet.png');
+	const topLeftAnchor = createTexturedPlane(50, './assets/rotate-puppet.png');
+	const bottomRightAnchor = createTexturedPlane(50, './assets/scale-puppet.png');
 
 	const topRightAnchor = createAnchor(9, 0xFFFFFF);
 	const bottomLeftAnchor = createAnchor(9, 0xFFFFFF);
@@ -135,7 +140,7 @@ function buildFromOptions(options) {
 	// geometry.translate(-200, -200, 0);
 
 	const threeMesh = new Mesh(geometry, texturedMaterial);
-	threeMesh.renderOrder = 1;
+	// threeMesh.renderOrder = 1;
 	
 	const selectionBox = createPuppetSelectionBox(threeMesh);
 
@@ -152,14 +157,12 @@ function buildFromOptions(options) {
 		vertexSum.y / geometry.vertices.length
 	);
 
-	const controlPointSpheres = controlPoints.map(() => {
-		const sphere = new Mesh(
-			new SphereGeometry(15, 32, 32),
-			new MeshBasicMaterial({ color: 0x1144FF })
-		);
-		sphere.position.z = 10;
-		sphere.visible = false;
-		return sphere;
+	const controlPointPlanes = options.controlPointPositions.map((controlPoint: ControlPoint) => {
+		const controlPointPlane = createTexturedPlane(50, `./assets/${controlPoint.label}.png`);
+		controlPointPlane.position.z = 10;
+		controlPointPlane.visible = false;
+
+		return controlPointPlane;
 	});
 
 	// FOR TESTING THE CENTER OF THE PUPPET:
@@ -183,7 +186,7 @@ function buildFromOptions(options) {
 	group.add(selectionBox.topRightAnchor);
 	group.add(selectionBox.bottomLeftAnchor);
 	// group.add(centerSphere);
-	controlPointSpheres.forEach(cp => group.add(cp));
+	controlPointPlanes.forEach(cp => group.add(cp));
 
 	return {
 		image,
@@ -198,7 +201,7 @@ function buildFromOptions(options) {
 		facesFlatArray,
 		threeMesh,
 		selectionBox,
-		controlPointSpheres,
+		controlPointPlanes: controlPointPlanes,
 		group,
 		halfSize,
 		center,
