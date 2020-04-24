@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ControlPointService, {ActiveHand} from 'services/imagetomesh/control-point-service';
+import ControlPointService, {ActiveHand, FingerToMap} from 'services/imagetomesh/control-point-service';
 
 import Typography, { TypographyVariant } from 'components/typography/typography';
 import BorderButton from 'components/primitives/border-button/border-button';
@@ -15,14 +15,6 @@ import './control-point-editor.scss';
 enum HandToMap {
 	LEFT = 'Left',
 	RIGHT = 'Right',
-}
-
-enum FingerToMap {
-	THUMB = 'thumb',
-	INDEX = 'index',
-	MIDDLE = 'middle',
-	RING = 'ring',
-	PINKY = 'pinky'
 }
 
 interface ControlPointEditorProps {
@@ -144,20 +136,80 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 								{this.state.currentHandToMap === HandToMap.RIGHT
 								&& <div className='control-point-editor-hand-option-container'>
 									<img src='./assets/hand-r.svg' />
-									<FingerLabel label='R1' position={{left: '-2%', top: '45%'}} highlighted={controlPoints.length === 0} placed={controlPoints.length > 0} />
-									<FingerLabel label='R2' position={{left: '42%', top: '-1%'}} highlighted={controlPoints.length === 1} placed={controlPoints.length > 1} />
-									<FingerLabel label='R3' position={{left: '61%', top: '3%'}} highlighted={controlPoints.length === 2} placed={controlPoints.length > 2} />
-									<FingerLabel label='R4' position={{left: '74%', top: '24%'}} highlighted={controlPoints.length === 3} placed={controlPoints.length > 3} />
-									<FingerLabel label='R5' position={{left: '87%', top: '50%'}} highlighted={controlPoints.length === 4} placed={controlPoints.length > 4} />
+									<FingerLabel
+										label='R1'
+										position={{left: '-2%', top: '45%'}}
+										highlighted={this.state.currentFingerToMap === FingerToMap.THUMB && controlPoints.length < 5}
+										placed={this._controlPointService.controlPointPlaced('R1')}
+										onClick={(): void => {this.setCurrentFingerToMap(FingerToMap.THUMB)}}
+									/>
+									<FingerLabel
+										label='R2'
+										position={{left: '42%', top: '-1%'}}
+										highlighted={this.state.currentFingerToMap === FingerToMap.INDEX && controlPoints.length < 5}
+										placed={this._controlPointService.controlPointPlaced('R2')}
+										onClick={(): void => {this.setCurrentFingerToMap(FingerToMap.INDEX)}}
+									/>
+									<FingerLabel
+										label='R3'
+										position={{left: '61%', top: '3%'}}
+										highlighted={this.state.currentFingerToMap === FingerToMap.MIDDLE && controlPoints.length < 5}
+										placed={this._controlPointService.controlPointPlaced('R3')}
+										onClick={(): void => {this.setCurrentFingerToMap(FingerToMap.MIDDLE)}}
+									/>
+									<FingerLabel
+										label='R4'
+										position={{left: '74%', top: '24%'}}
+										highlighted={this.state.currentFingerToMap === FingerToMap.RING && controlPoints.length < 5}
+										placed={this._controlPointService.controlPointPlaced('R4')}
+										onClick={(): void => {this.setCurrentFingerToMap(FingerToMap.RING)}}
+									/>
+									<FingerLabel
+										label='R5'
+										position={{left: '87%', top: '50%'}}
+										highlighted={this.state.currentFingerToMap === FingerToMap.PINKY && controlPoints.length < 5}
+										placed={this._controlPointService.controlPointPlaced('R5')}
+										onClick={(): void => {this.setCurrentFingerToMap(FingerToMap.PINKY)}}
+									/>
 								</div>}
 								{this.state.currentHandToMap === HandToMap.LEFT
 								&& <div className='control-point-editor-hand-option-container'>
 									<img src='./assets/hand-l.svg' />
-									<FingerLabel label='L1' position={{left: '86%', top: '45%'}} highlighted={controlPoints.length === 0} placed={controlPoints.length > 0} />
-									<FingerLabel label='L2' position={{left: '42%', top: '-1%'}} highlighted={controlPoints.length === 1} placed={controlPoints.length > 1} />
-									<FingerLabel label='L3' position={{left: '23%', top: '3%'}} highlighted={controlPoints.length === 2} placed={controlPoints.length > 2} />
-									<FingerLabel label='L4' position={{left: '10%', top: '24%'}} highlighted={controlPoints.length === 3} placed={controlPoints.length > 3} />
-									<FingerLabel label='L5' position={{left: '-2%', top: '50%'}} highlighted={controlPoints.length === 4} placed={controlPoints.length > 4} />
+									<FingerLabel
+										label='L1'
+										position={{left: '86%', top: '45%'}}
+										highlighted={this.state.currentFingerToMap === FingerToMap.THUMB && controlPoints.length < 5}
+										placed={this._controlPointService.controlPointPlaced('L1')}
+										onClick={(): void => {this.setCurrentFingerToMap(FingerToMap.THUMB)}}
+									/>
+									<FingerLabel
+										label='L2'
+										position={{left: '42%', top: '-1%'}}
+										highlighted={this.state.currentFingerToMap === FingerToMap.INDEX && controlPoints.length < 5}
+										placed={this._controlPointService.controlPointPlaced('L2')}
+										onClick={(): void => {this.setCurrentFingerToMap(FingerToMap.INDEX)}}
+									/>
+									<FingerLabel
+										label='L3'
+										position={{left: '23%', top: '3%'}}
+										highlighted={this.state.currentFingerToMap === FingerToMap.MIDDLE && controlPoints.length < 5}
+										placed={this._controlPointService.controlPointPlaced('L3')}
+										onClick={(): void => {this.setCurrentFingerToMap(FingerToMap.MIDDLE)}}
+									/>
+									<FingerLabel
+										label='L4'
+										position={{left: '10%', top: '24%'}}
+										highlighted={this.state.currentFingerToMap === FingerToMap.RING && controlPoints.length < 5}
+										placed={this._controlPointService.controlPointPlaced('L4')}
+										onClick={(): void => {this.setCurrentFingerToMap(FingerToMap.RING)}}
+									/>
+									<FingerLabel
+										label='L5'
+										position={{left: '-2%', top: '50%'}}
+										highlighted={this.state.currentFingerToMap === FingerToMap.PINKY && controlPoints.length < 5}
+										placed={this._controlPointService.controlPointPlaced('L5')}
+										onClick={(): void => {this.setCurrentFingerToMap(FingerToMap.PINKY)}}
+									/>
 								</div>}
 							</div>}
 							<div className='image-editor-toolbar'>
@@ -226,13 +278,26 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 	}
 	
 	private onMouseDown = (): void => {
-		this._controlPointService.onMouseDown();
+		this._controlPointService.onMouseDown(this.state.currentFingerToMap, this.getFingerLabel(this.state.currentFingerToMap));
 
 		const controlPoints = this._controlPointService.getControlPoints();
 		this.setState({
 			canGoToNextStep: controlPoints.length > 0,
 		});
 		this.updateCurrentFingerToMap();
+	}
+
+	private getFingerLabel = (fingerName: string): string => {
+		const fingerNameToIndexMap = {
+			'thumb': 1,
+			'index': 2,
+			'middle': 3,
+			'ring': 4,
+			'pinky': 5,
+		};
+		const fingerHandIndicator = this.state.currentHandToMap === HandToMap.LEFT ? 'L' : 'R';
+
+		return `${fingerHandIndicator}${fingerNameToIndexMap[fingerName]}`;
 	}
 
 	private onDoubleClick = (): void => {
@@ -246,22 +311,13 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 	}
 
 	private updateCurrentFingerToMap = (): void => {
-		const controlPoints = this._controlPointService.getControlPoints();
-		let fingerToMap = FingerToMap.THUMB;
-		switch (controlPoints.length) {
-			case 1:
-				fingerToMap = FingerToMap.INDEX;
-				break;
-			case 2:
-				fingerToMap = FingerToMap.MIDDLE;
-				break;
-			case 3:
-				fingerToMap = FingerToMap.RING;
-				break;
-			case 4:
-				fingerToMap = FingerToMap.PINKY;
-				break;
-		}
+		const nextFingerToMap = this._controlPointService.getNextFingerToMap();
+		this.setState({
+			currentFingerToMap: nextFingerToMap,
+		});
+	}
+
+	private setCurrentFingerToMap = (fingerToMap: FingerToMap): void => {
 		this.setState({
 			currentFingerToMap: fingerToMap,
 		});

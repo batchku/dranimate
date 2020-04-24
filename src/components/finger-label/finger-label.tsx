@@ -10,6 +10,7 @@ interface FingerLabelProps {
 		left: string;
 		top: string;
 	};
+	onClick: () => void;
 }
 
 class FingerLabel extends React.Component<FingerLabelProps, {}> {
@@ -33,7 +34,7 @@ class FingerLabel extends React.Component<FingerLabelProps, {}> {
 				top: this.props.position.top,
 				background: this.props.highlighted ? '#4A73E2' : '#F3F5FA',
 				borderColor: this.props.placed ? 'rgba(0, 0, 0, 0.8)' : '#4A73E2',
-			}} className='finger-label-container'>
+			}} className='finger-label-container' onClick={this.props.onClick}>
 				<p style={{
 					color: textColor
 				}} className='finger-label-text'>

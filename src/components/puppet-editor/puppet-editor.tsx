@@ -15,8 +15,9 @@ import userService from 'services/api/userService';
 
 import './puppet-editor.scss';
 
-import eventManager from '../../services/eventManager/event-manager';
+import eventManager from 'services/eventManager/event-manager';
 import Puppet from 'services/puppet/puppet';
+import ControlPoint from 'services/puppet/control-point';
 
 enum EditorStep {
 	IMAGE = 'image',
@@ -32,7 +33,7 @@ interface PuppetEditorState {
 	imageSrc: any;
 	step: EditorStep;
 	backgroundRemovalData: any;
-	controlPointPositions: any;
+	controlPoints: ControlPoint[];
 	zoom: number;
 }
 
@@ -47,7 +48,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 			this.state = {
 				imageSrc: puppet.image.src,
 				backgroundRemovalData: puppet.backgroundRemovalData || null,
-				controlPointPositions: puppet.controlPointPositions,
+				controlPoints: puppet.controlPointPositions,
 				zoom: 1,
 				step: EditorStep.IMAGE
 			};
@@ -57,7 +58,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 				imageSrc: puppetEditorStateService.getItem(),
 				step: EditorStep.IMAGE,
 				backgroundRemovalData: null,
-				controlPointPositions: null,
+				controlPoints: null,
 				zoom: 1,
 			};
 		}
@@ -89,10 +90,10 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 		});
 	}
 
-	onControlPointEditorNext = (controlPointPositions): void => {
+	onControlPointEditorNext = (controlPoints): void => {
 		this.setState({
 			step: EditorStep.DETAILS,
-			controlPointPositions: controlPointPositions,
+			controlPoints: controlPoints,
 		});
 	}
 
@@ -103,7 +104,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 	}
 
 	onSaveAsync = async (): Promise<void> => {
-		if (this.state.controlPointPositions.length < 2) {
+		if (this.state.controlPoints.length < 2) {
 			alert('Puppet must have at least two control points');
 			return;
 		}
@@ -116,7 +117,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 			.then((imageElement) => {
 				const { width, height } = this.state.backgroundRemovalData;
 				const originalImageData = getImageDataFromImage(imageElement, width, height);
-				return generateMesh(puppetId, puppetName || this._puppetName, imageElement, this.state.backgroundRemovalData, originalImageData, this.state.controlPointPositions);
+				return generateMesh(puppetId, puppetName || this._puppetName, imageElement, this.state.backgroundRemovalData, originalImageData, this.state.controlPoints);
 			})
 			.then((puppet) => {
 				if (puppet) {
@@ -157,7 +158,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 				&& <ControlPointEditor
 					imageSrc={this.state.imageSrc}
 					backgroundRemovalData={this.state.backgroundRemovalData}
-					controlPointPositions={this.state.controlPointPositions}
+					controlPointPositions={this.state.controlPoints}
 					onBack={this.onControlPointEditorBack}
 					onClose={this.onClose}
 					onSave={this.onSaveAsync}

@@ -82,7 +82,7 @@ function generatePuppetGeometry(contourPoints, controlPoints, imageNoBackgroundD
   const controlPointIndices = [];
   controlPoints.forEach((controlPoint) => {
     controlPointIndices.push(vertices.length);
-    vertices.push(controlPoint);
+    vertices.push([controlPoint.position.x, controlPoint.position.y]);
   });
 
   /* Run delaunay on vertices to generate mesh */

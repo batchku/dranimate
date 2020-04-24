@@ -2,6 +2,7 @@ import { extractForeground, getImageDataFromImage } from 'services/imagetomesh/I
 import loadImage from 'services/util/imageLoader';
 import PanHandler from 'services/util/panHandler';
 import { getDistance } from 'services/util/math';
+import ControlPoint from 'services/puppet/control-point';
 
 const MOUSE_STATE = {
 	UP: 'UP',
@@ -22,6 +23,14 @@ export enum ActiveHand {
 	RIGHT = 'right',
 }
 
+export enum FingerToMap {
+	THUMB = 'thumb',
+	INDEX = 'index',
+	MIDDLE = 'middle',
+	RING = 'ring',
+	PINKY = 'pinky',
+}
+
 const CONTROL_POINT_COLOR = '#4A73E2';
 
 class ControlPointService {
@@ -39,7 +48,7 @@ class ControlPointService {
 	private _activeHand = 'right';
 
 	private _foregroundImage;
-	private _controlPoints = [];
+	private _controlPoints: ControlPoint[] = [];
 	private _controlPointIndices = [];
 	private _activeControlPointIndex = -1;
 
@@ -48,11 +57,11 @@ class ControlPointService {
 	private _panHandler = new PanHandler();
 	private _mouseState = MOUSE_STATE.UP;
 
-	public init = (canvas, imageData, backgroundRemovalData, controlPointPositions, initialZoom): void => {
+	public init = (canvas, imageData, backgroundRemovalData, controlPoints: ControlPoint[], initialZoom): void => {
 		this._width = canvas.width;
 		this._height = canvas.height;
 		this._context = canvas.getContext('2d');
-		this._controlPoints = controlPointPositions || [];
+		this._controlPoints = controlPoints || [];
 		this._context.fillStyle = CONTROL_POINT_COLOR;
 
 		this._zoom = initialZoom || 1;
@@ -82,14 +91,16 @@ class ControlPointService {
 		this._mouse.x = Math.round(this._mouse.x);
 		this._mouse.y = Math.round(this._mouse.y);
 
-		if (!this._controlPoints.length) { return; }
+		if (!this._controlPoints.length) {
+			return;
+		}
 
 		// Hover state control point logic
 		if (this._mouseState === MOUSE_STATE.UP) {
 			const nearestControlPoint = this._controlPoints
 				.map((cp, index) => ({
 					index,
-					distance: getDistance(this._mouse.x, this._mouse.y, cp[0], cp[1])
+					distance: getDistance(this._mouse.x, this._mouse.y, cp.position.x, cp.position.y)
 				}))
 				.filter(cp => cp.distance < 17)
 				.sort((a, b) => a.distance - b.distance)[0];
@@ -104,13 +115,13 @@ class ControlPointService {
 		// Dragging control point logic
 		if (this._mouseState === MOUSE_STATE.DOWN && this._controlPoints[this._activeControlPointIndex]) {
 			const cp = this._controlPoints[this._activeControlPointIndex];
-			cp[0] = this._mouse.x;
-			cp[1] = this._mouse.y;
+			cp.position.x = this._mouse.x;
+			cp.position.y = this._mouse.y;
 		}
 		this.redraw();
 	};
 
-	public onMouseDown = (): void => {
+	public onMouseDown = (fingerName: string, fingerLabel: string): void => {
 		this._mouseState = MOUSE_STATE.DOWN;
 		if (this._activeControlPointIndex >= 0) { return; }
 
@@ -119,7 +130,14 @@ class ControlPointService {
 			return;
 		}
 
-		this._controlPoints.push([ this._mouse.x, this._mouse.y ]);
+		this._controlPoints.push({
+			position: {
+				x: this._mouse.x,
+				y: this._mouse.y,
+			},
+			name: fingerName,
+			label: fingerLabel,
+		});
 		this._activeControlPointIndex = this._controlPoints.length - 1;
 
 		this.redraw();
@@ -168,6 +186,32 @@ class ControlPointService {
 		this.redraw();
 	}
 
+	public controlPointPlaced(controlPointLabel: string): boolean {
+		const controlPoint = this._controlPoints.find((controlPoint) => {
+			return controlPoint.label === controlPointLabel;
+		});
+		return Boolean(controlPoint);
+	}
+
+	public getNextFingerToMap = (): FingerToMap => {
+		const fingersToMap: FingerToMap[] = [
+			FingerToMap.THUMB,
+			FingerToMap.INDEX,
+			FingerToMap.MIDDLE,
+			FingerToMap.RING,
+			FingerToMap.PINKY
+		];
+		for(let i = 0; i < fingersToMap.length; i++) {
+			const mappedFinger = this._controlPoints.find((controlPoint) => {
+				return controlPoint.name === fingersToMap[i].toLowerCase();
+			});
+
+			if (!mappedFinger) {
+				return fingersToMap[i];
+			}
+		}
+	}
+
 /*****************************
 		Private stuff
 *****************************/
@@ -183,22 +227,20 @@ class ControlPointService {
 			this._context.restore();
 			return;
 		}
-		this._controlPoints.forEach((cp, index) => {
-			const [x, y] = cp;
+		this._controlPoints.forEach((cp) => {
 			const radius = 17;
 			this._context.fillStyle = CONTROL_POINT_COLOR;
 			this._context.beginPath();
-			this._context.arc(x, y, radius, 0, 2 * Math.PI);
+			this._context.arc(cp.position.x, cp.position.y, radius, 0, 2 * Math.PI);
 			this._context.fill();
 
 			this._context.font = "bold 14px Inter";
 			this._context.fillStyle = "white";
 			this._context.textAlign = "center";
-			this._context.fillText(`${this._activeHand === ActiveHand.LEFT ? 'L' : 'R'}${index + 1}`, x, y + 6);
+			this._context.fillText(cp.label, cp.position.x, cp.position.y + 6);
 		});
 
 		this._context.restore();
 	}
-
 }
 export default ControlPointService;

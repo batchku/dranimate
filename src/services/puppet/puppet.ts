@@ -6,6 +6,7 @@ import { pointIsInsideTriangle } from 'services/util/math';
 import { clearObject } from 'services/util/threeUtil';
 import dranimate from '../dranimate/dranimate';
 import eventManager from '../eventManager/event-manager';
+import ControlPoint from './control-point';
 
 class Puppet {
 	private current: any;
@@ -16,7 +17,7 @@ class Puppet {
 	private recording = new Recording();
 	private image: any;
 	private imageNoBG: any;
-	private controlPointPositions: any;
+	private controlPointPositions: ControlPoint[];
 	private backgroundRemovalData: any;
 	private wireframeMaterial: any;
 	private texturedMaterial: any;

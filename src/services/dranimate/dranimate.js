@@ -99,6 +99,13 @@ class Dranimate {
 
 	updatePalmMeshPosition = (positionData) => {
 		const handParts = ['thumb', 'indexFinger', 'middleFinger', 'ringFinger', 'pinky', 'palmBase'];
+		const handposeToDranimateFingerName = {
+			'thumb': 'thumb',
+			'indexFinger': 'index',
+			'middleFinger': 'middle',
+			'ringFinger': 'ring',
+			'pinky': 'pinky',
+		};
 
 		handParts.forEach((partName, partIndex) => {
 			const partPositionData = positionData[partName];
@@ -131,13 +138,24 @@ class Dranimate {
 				const fingerOffsetDiff = new THREE.Vector3().subVectors(calibratedFingerOffset, currentFingerOffset);
 
 				const puppetBoundingBox = new THREE.Box2();
-				selectedPuppet.controlPointPositions.forEach((controlPointPosition) => {
-					puppetBoundingBox.expandByPoint(new THREE.Vector2(controlPointPosition[0], controlPointPosition[1]));
+				selectedPuppet.controlPointPositions.forEach((controlPoint) => {
+					puppetBoundingBox.expandByPoint(new THREE.Vector2(controlPoint.position.x, controlPoint.position.y));
 				});
 
+				const controlPointIndex = selectedPuppet.controlPointPositions.findIndex((controlPoint) => {
+					return controlPoint.name === handposeToDranimateFingerName[partName];
+				});
+				const controlPoint = selectedPuppet.controlPointPositions.find((controlPoint) => {
+					return controlPoint.name === handposeToDranimateFingerName[partName];
+				});
+
+				if ((controlPointIndex !== 0 && !controlPointIndex) || !controlPoint) {
+					return;
+				}
+
 				const controlPointLocalPosition = new THREE.Vector2(
-					selectedPuppet.controlPointPositions[partIndex][0],
-					selectedPuppet.controlPointPositions[partIndex][1]
+					controlPoint.position.x,
+					controlPoint.position.y
 				);
 				controlPointLocalPosition.set(
 					controlPointLocalPosition.x - puppetBoundingBox.getSize().x / 2,
@@ -148,7 +166,7 @@ class Dranimate {
 				
 				if (!selectedPuppet.hasRecording()) {
 					selectedPuppet.setControlPointPosition(
-						partIndex,
+						controlPointIndex,
 						new THREE.Vector2(newControlPointGlobalPosition.x, newControlPointGlobalPosition.y)
 					);
 				}
@@ -284,17 +302,20 @@ class Dranimate {
 		}
 
 		const puppetBoundingBox = new THREE.Box2();
-		selectedPuppet.controlPointPositions.forEach((controlPointPosition) => {
-			puppetBoundingBox.expandByPoint(new THREE.Vector2(controlPointPosition[0], controlPointPosition[1]));
+		selectedPuppet.controlPointPositions.forEach((controlPoint) => {
+			puppetBoundingBox.expandByPoint(new THREE.Vector2(controlPoint.position.x, controlPoint.position.y));
 		});
+
+		let puppetBoundingBoxSize = new THREE.Vector2();
+		puppetBoundingBoxSize = puppetBoundingBox.getSize(puppetBoundingBoxSize);
 
 		// First reset control point positions for puppet
 		const palmCenter = this['middleFinger-1'].position.clone();
-		selectedPuppet.controlPointPositions.forEach((controlPointPosition, index) => {
-			const controlPointLocalPosition = new THREE.Vector2(controlPointPosition[0], controlPointPosition[1]);
+		selectedPuppet.controlPointPositions.forEach((controlPoint, index) => {
+			const controlPointLocalPosition = new THREE.Vector2(controlPoint.position.x, controlPoint.position.y);
 			controlPointLocalPosition.set(
-				controlPointLocalPosition.x - puppetBoundingBox.getSize().x / 2,
-				controlPointLocalPosition.y - puppetBoundingBox.getSize().y / 2,
+				controlPointLocalPosition.x - puppetBoundingBoxSize.x / 2,
+				controlPointLocalPosition.y - puppetBoundingBoxSize.y / 2,
 			);
 
 			const controlPointGlobalPosition = new THREE.Vector2().addVectors(palmCenter, controlPointLocalPosition);
