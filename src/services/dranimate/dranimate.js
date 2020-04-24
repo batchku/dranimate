@@ -12,6 +12,7 @@ import HandTrackingService from 'services/hand-tracking/hand-tracking-service';
 
 import eventManager from '../eventManager/event-manager';
 import puppetAddedOnStageEvent from 'services/eventManager/puppet-added-on-stage-event';
+import showToastEvent from 'services/eventManager/show-toast-event';
 
 const ZOOM = {
 	MIN: 0.5,
@@ -263,7 +264,10 @@ class Dranimate {
 		if (event.key === 'c') {
 			this.calibratePuppet();
 
-			eventManager.emit('show-toast', 'Puppet calibrated');
+			showToastEvent.emit({
+				duration: 4,
+				text: 'Hand mapping calibration is successful for this puppet.',
+			});
 		}
 	}
 
