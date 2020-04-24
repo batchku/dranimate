@@ -5,7 +5,7 @@
 	position: fixed;
 	left: 50%;
 	transform:translateX(-50%);
-	top: -75px;
+	top: -48px;
 	background-color: #248740;
 	animation-name: popup;
 	display: flex;
@@ -20,6 +20,6 @@
 		top: -48px;
 	}
 	100% {
-		top: 96px;
+		top: 124px;
 	}
 }
