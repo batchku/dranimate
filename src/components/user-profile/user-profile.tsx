@@ -2,6 +2,7 @@ import React from 'react';
 
 import apiService from 'services/api/apiService';
 import userService from 'services/api/userService';
+import { savePuppetToFile } from 'services/storage/serializer';
 
 import showToastEvent from 'services/eventManager/show-toast-event';
 
@@ -20,7 +21,8 @@ interface UserProfileProps {
 
 interface UserProfileState {
 	userPuppets: any[];
-	addingPuppet: boolean;
+	showLoadingOverlay: boolean;
+	loadingOverlayMessage: string;
 }
 
 class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
@@ -31,7 +33,8 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 
 		this.state = {
 			userPuppets: [],
-			addingPuppet: false,
+			showLoadingOverlay: false,
+			loadingOverlayMessage: '',
 		};
 	}
 
@@ -44,12 +47,12 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 			<div key='backdrop' className='user-profile-backdrop' onClick={this.props.onClose}/>,
 			<div key='profile-container' className='user-profile-container'>
 				<div className='user-profile-dialog'>
-					{this.state.addingPuppet
+					{this.state.showLoadingOverlay
 					&& <div className='user-profile-loading-overlay'>
 						<CircularProgress />
 						<Spacer size={10} />
 						<Typography variant={TypographyVariant.HEADING_SMALL} color='#4A73E2' >
-							Loading the puppet. This may take a while... 
+							{this.state.loadingOverlayMessage}
 						</Typography>
 					</div>}
 					<div className='user-profile-dialog-title'>
@@ -91,6 +94,7 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 										onDelete={this.onPuppetDeleted}
 										onAddToScene={this.onAddToScene}
 										onStartAddingToScene={this.onStartAddingToScene}
+										onDownloadPuppet={this.onDownloadPuppetAsync}
 									/>
 								);
 							})}
@@ -109,6 +113,18 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 
 		this.setState({
 			userPuppets: puppets
+		});
+	}
+
+	private onDownloadPuppetAsync = async (puppet: any): Promise<void> => {
+		this.setState({
+			showLoadingOverlay: true,
+			loadingOverlayMessage: 'Preparing your puppet for export. This may take a while...'
+		});
+		savePuppetToFile(await apiService.openPuppet(puppet));
+		this.setState({
+			showLoadingOverlay: false,
+			loadingOverlayMessage: ''
 		});
 	}
 
@@ -131,7 +147,8 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 
 	private onStartAddingToScene = (): void => {
 		this.setState({
-			addingPuppet: true,
+			showLoadingOverlay: true,
+			loadingOverlayMessage: 'Loading the puppet. This may take a while...'
 		});
 	}
 }

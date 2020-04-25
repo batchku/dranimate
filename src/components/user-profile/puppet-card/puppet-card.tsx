@@ -20,6 +20,7 @@ interface PuppetCardProps {
 	onDelete: () => void;
 	onAddToScene: () => void;
 	onStartAddingToScene: () => void;
+	onDownloadPuppet: (puppet: any) => void;
 }
 
 interface PuppetCardState {
@@ -28,7 +29,6 @@ interface PuppetCardState {
 	editHighlighted: boolean;
 	moreHighlighted: boolean;
 	moreMenuVisible: boolean;
-
 }
 
 class PuppetCard extends React.Component<PuppetCardProps, PuppetCardState> {
@@ -124,9 +124,13 @@ class PuppetCard extends React.Component<PuppetCardProps, PuppetCardState> {
 		);
 	}
 
-	private async onDownloadPuppetAsync(): Promise<void> {
-		const puppet = await apiService.openPuppet(this.props.puppet);
-		savePuppetToFile(puppet);
+	private onDownloadPuppetAsync(): void {
+		this.setState({
+			moreMenuVisible: false,
+			actionsVisible: false,
+		});
+
+		this.props.onDownloadPuppet(this.props.puppet);
 	}
 
 	private openActions = (): void => {
