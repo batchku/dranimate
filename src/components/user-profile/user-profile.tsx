@@ -5,6 +5,7 @@ import userService from 'services/api/userService';
 import { savePuppetToFile } from 'services/storage/serializer';
 
 import showToastEvent from 'services/eventManager/show-toast-event';
+import editPuppetEvent from 'services/eventManager/edit-puppet-event';
 
 import Typography, { TypographyVariant } from 'components/typography/typography';
 import Spacer from 'components/primitives/spacer/spacer';
@@ -95,6 +96,7 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 										onAddToScene={this.onAddToScene}
 										onStartAddingToScene={this.onStartAddingToScene}
 										onDownloadPuppet={this.onDownloadPuppetAsync}
+										onEdit={this.onEditAsync}
 									/>
 								);
 							})}
@@ -103,6 +105,18 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 				</div>
 			</div>
 		]);
+	}
+
+	private onEditAsync = async (puppet: any): Promise<void> => {
+		this.setState({
+			showLoadingOverlay: true,
+			loadingOverlayMessage: 'Preparing your puppet for edit. This may take a while...'
+		});
+		const puppetModel = await apiService.openPuppet(puppet);
+		editPuppetEvent.emit({
+			puppet: puppetModel
+		});
+		this.props.onClose();
 	}
 
 	private fetchPuppetsForUserAsync = async(): Promise<void> => {

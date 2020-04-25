@@ -35,11 +35,10 @@ interface PuppetEditorState {
 	backgroundRemovalData: any;
 	controlPoints: ControlPoint[];
 	zoom: number;
+	name: string;
 }
 
 class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
-	private _puppetName = '';
-
 	constructor(props: PuppetEditorProps) {
 		super(props);
 
@@ -50,7 +49,8 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 				backgroundRemovalData: puppet.backgroundRemovalData || null,
 				controlPoints: puppet.controlPointPositions,
 				zoom: 1,
-				step: EditorStep.IMAGE
+				step: EditorStep.IMAGE,
+				name: puppet.name,
 			};
 		}
 		else {
@@ -60,6 +60,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 				backgroundRemovalData: null,
 				controlPoints: null,
 				zoom: 1,
+				name: 'My puppet'
 			};
 		}
 	}
@@ -110,14 +111,12 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 		}
 		const puppetId = puppetEditorStateService.isPuppet ?
 			puppetEditorStateService.getItem().id : generateUniqueId();
-		const puppetName = puppetEditorStateService.isPuppet ?
-			puppetEditorStateService.getItem().getName() : '';
 
 		return loadImage(this.state.imageSrc)
 			.then((imageElement) => {
 				const { width, height } = this.state.backgroundRemovalData;
 				const originalImageData = getImageDataFromImage(imageElement, width, height);
-				return generateMesh(puppetId, puppetName || this._puppetName, imageElement, this.state.backgroundRemovalData, originalImageData, this.state.controlPoints);
+				return generateMesh(puppetId, this.state.name, imageElement, this.state.backgroundRemovalData, originalImageData, this.state.controlPoints);
 			})
 			.then((puppet) => {
 				if (puppet) {
@@ -141,7 +140,9 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 	}
 
 	private onNameChange = (value: string): void => {
-		this._puppetName = value;
+		this.setState({
+			name: value,
+		});
 	}
 
 	render(): JSX.Element {
@@ -174,6 +175,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 					imageSrc={this.state.imageSrc}
 					backgroundRemovalData={this.state.backgroundRemovalData}
 					zoom={this.state.zoom}
+					name={this.state.name}
 				/>}
 			</div>
 		);

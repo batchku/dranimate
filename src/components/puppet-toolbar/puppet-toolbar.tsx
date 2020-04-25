@@ -10,10 +10,10 @@ import MoveToFrontIcon from './../../icons/move-to-front-icon';
 import EditIconProps from './../../icons/edit-icon';
 
 import dranimate from './../../services/dranimate/dranimate';
-import eventManager from 'services/eventManager/event-manager';
 import puppetSelectedEvent, {PuppetSelectedEventData} from './../../services/eventManager/puppet-selected-event';
 import userSignedInEvent, {UserSignedInEventData} from './../../services/eventManager/user-signed-in-event';
 import showToastEvent from 'services/eventManager/show-toast-event';
+import editPuppetEvent from 'services/eventManager/edit-puppet-event';
 
 import './puppet-toolbar.scss';
 
@@ -149,7 +149,9 @@ class PuppetToolbar extends React.Component<{}, PuppetToolbarState> {
 	}
 
 	private onEditPuppet = (): void => {
-		eventManager.emit('edit-puppet');
+		editPuppetEvent.emit({
+			puppet: dranimate.getSelectedPuppet()
+		});
 	}
 
 	private onUserSignedId = (data: UserSignedInEventData): void => {

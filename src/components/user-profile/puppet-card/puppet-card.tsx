@@ -11,7 +11,6 @@ import MoreIcon from 'icons/more-icon';
 
 import apiService from 'services/api/apiService';
 import dranimate from 'services/dranimate/dranimate';
-import { savePuppetToFile } from 'services/storage/serializer';
 
 import './puppet-card.scss';
 
@@ -21,6 +20,7 @@ interface PuppetCardProps {
 	onAddToScene: () => void;
 	onStartAddingToScene: () => void;
 	onDownloadPuppet: (puppet: any) => void;
+	onEdit: (puppet: any) => void;
 }
 
 interface PuppetCardState {
@@ -92,7 +92,7 @@ class PuppetCard extends React.Component<PuppetCardProps, PuppetCardState> {
 							</Typography>
 						</div>
 						<Spacer size={24} />
-						<div className='puppet-actions-icon-container' onMouseEnter={(): void => {this.onSetHighlightedEdit(true)}} onMouseLeave={(): void => {this.onSetHighlightedEdit(false)}}>
+						<div className='puppet-actions-icon-container' onClick={this.onEdit} onMouseEnter={(): void => {this.onSetHighlightedEdit(true)}} onMouseLeave={(): void => {this.onSetHighlightedEdit(false)}}>
 							<EditIcon fill={this.state.editHighlighted ? '#4A73E2' : 'black'} opacity={this.state.editHighlighted ? '1' : '0.6'} />
 							<Spacer size={4} />
 							<Typography variant={TypographyVariant.TEXT_X_SMALL} color={this.state.editHighlighted ? '#4A73E2' : 'rgba(0, 0, 0, 0.6)'}>
@@ -122,6 +122,10 @@ class PuppetCard extends React.Component<PuppetCardProps, PuppetCardState> {
 				</div>}
 			</div>
 		);
+	}
+
+	private onEdit = (): void => {
+		this.props.onEdit(this.props.puppet);
 	}
 
 	private onDownloadPuppetAsync(): void {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { v1 as uuid } from 'uuid';
 
 import Loader from 'components/loader';
 import GifPreview from 'components/GifPreview';
@@ -13,6 +14,7 @@ import { loadDranimateFile, loadImageFile } from 'services/util/file';
 import puppetEditorStateService from 'services/imagetomesh/puppet-editor-state-service';
 import dranimate from 'services/dranimate/dranimate';
 import eventManager from 'services/eventManager/event-manager';
+import editPuppetEvent, { EditPuppetEventData } from 'services/eventManager/edit-puppet-event';
 
 import './styles.scss';
 
@@ -42,7 +44,7 @@ class Stage extends React.Component<{}, StageState> {
 	private onAddPuppetEventId: string;
 	private onOpenLoaderEventId: string;
 	private onCloseLoaderEventId: string;
-	private onEditPuppetEventId: string;
+	private onEditPuppetEventId = uuid();
 
 	constructor(props: {}) {
 		super(props);
@@ -66,13 +68,19 @@ class Stage extends React.Component<{}, StageState> {
 		this.onAddPuppetEventId = eventManager.on('on-add-puppet', this.onFabClick);
 		this.onOpenLoaderEventId = eventManager.on('open-loader', this.openLoader);
 		this.onCloseLoaderEventId = eventManager.on('close-loader', this.closeLoader);
-		this.onEditPuppetEventId = eventManager.on('edit-puppet', this.onEditSelectedPuppet);
+
+		editPuppetEvent.subscribe({
+			callback: this.onEditPuppet,
+			id: this.onEditPuppetEventId,
+		});
 	}
 
 	public componentWillUnmount = (): void => {
 		eventManager.remove(this.onAddPuppetEventId);
 		eventManager.remove(this.onOpenLoaderEventId);
 		eventManager.remove(this.onCloseLoaderEventId);
+
+		editPuppetEvent.unsubscribe(this.onEditPuppetEventId);
 	}
 
 	private onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
@@ -123,8 +131,8 @@ class Stage extends React.Component<{}, StageState> {
 		});
 	}
 
-	private onEditSelectedPuppet = (): void => {
-		puppetEditorStateService.setItem(dranimate.getSelectedPuppet());
+	private onEditPuppet = (data: EditPuppetEventData): void => {
+		puppetEditorStateService.setItem(data.puppet);
 		this.setState({
 			editorIsOpen: true
 		});

@@ -21,10 +21,10 @@ interface PuppetDetailsProps {
 	imageSrc: any;
 	backgroundRemovalData: any;
 	zoom: number;
+	name: string;
 }
 
 interface PuppetDetailsState {
-	name: string;
 	toolOptionsVisible: boolean;
 	saving: boolean;
 	exitPromptOpen: boolean;
@@ -44,7 +44,6 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 		this._zoom = this.props.zoom || 1;
 
 		this.state = {
-			name: 'My puppet',
 			toolOptionsVisible: true,
 			saving: false,
 			exitPromptOpen: false,
@@ -113,7 +112,7 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 									inputColor='rgba(255, 255, 255, 0.9)'
 									color='rgba(255, 255, 255, 0.7)'
 									fullWidth={true}
-									value={this.state.name}
+									value={this.props.name}
 								/>
 							</div>}
 						</div>
@@ -134,7 +133,7 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 							/>
 						</div>
 						<div className='image-editor-bottom-bar-right-actions'>
-							<Button label='Save' disabled={!this.state.name} onClick={this.onSaveAsync} />
+							<Button label='Save' disabled={!this.props.name} onClick={this.onSaveAsync} />
 						</div>
 					</div>
 				</div>
@@ -207,9 +206,6 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 	}
 
 	private onNameChange = (value: string): void => {
-		this.setState({
-			name: value,
-		});
 		this.props.onNameChange(value);
 	}
 
