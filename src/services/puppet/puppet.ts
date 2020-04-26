@@ -174,7 +174,7 @@ class Puppet {
 		});
 	
 		if (this.recording.isRecording()) {
-			const puppetCenter = this.getCenter();
+			const puppetCenter = this.getPuppetCenter2d();
 			const normalizedControlPoints = controlPoints.map((controlPoint) => {
 				const position = controlPoint.position.clone()
 					.rotateAround(puppetCenter, -this.getRotation())
@@ -194,7 +194,7 @@ class Puppet {
 	
 		// NOTE: there still might be some unforseen problems with over recording
 		if (this.recording.isRecording()) {
-			const puppetCenter = this.getCenter();
+			const puppetCenter = this.getPuppetCenter2d();
 			const point = position
 				.rotateAround(puppetCenter, -this.getRotation())
 				.sub(puppetCenter);
@@ -225,7 +225,7 @@ class Puppet {
 		if (shouldRotate) {
 			const deltaRotation = this.current.rotation - this.previous.rotation;
 			this.previous.rotation = this.current.rotation;
-			const puppetCenter = this.getCenter();
+			const puppetCenter = this.getPuppetCenter2d();
 			this.controlPoints.forEach((controlPoint, index) => {
 				const {x, y} = this.threeMesh.geometry.vertices[controlPoint];
 				const point = new Vector2(x, y)
@@ -239,7 +239,7 @@ class Puppet {
 	
 		// TRANSLATE PUPPET
 		if(shouldMoveXY && !dranimate.handTrackingEnabled) {
-			const puppetCenter = this.getCenter();
+			const puppetCenter = this.getPuppetCenter2d();
 			const xyDelta = new Vector2(dx, dy);
 			this.controlPoints.forEach((controlPoint, index) => {
 				const position = this.threeMesh.geometry.vertices[controlPoint].clone();
@@ -258,7 +258,7 @@ class Puppet {
 	
 			const recordedFrames = this.recording.getCurrentFrame(recordingTimeStamp);
 			recordedFrames.forEach(recordedFrame => {
-				const puppetCenter = this.getCenter();
+				const puppetCenter = this.getPuppetCenter2d();
 				const absoluteControlPoints = recordedFrame.controlPoints.map((controlPoint) => {
 					const point = controlPoint.position.clone()
 						.add(puppetCenter)
@@ -281,7 +281,7 @@ class Puppet {
 			// UPDATE ARAP DEFORMER
 			ARAP.updateMeshDeformation(this.arapMeshID);
 			const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
-			const puppetCenter = this.getCenter();
+			const puppetCenter = this.getPuppetCenter2d();
 			for (let i = 0; i < deformedVerts.length; i += 2) {
 				const vertex = this.threeMesh.geometry.vertices[i / 2];
 				const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
@@ -337,6 +337,16 @@ class Puppet {
 
 	getCenter = () => {
 		return this.current.center.clone();
+	}
+
+	getPuppetCenter2d = (): Vector2 => {
+		const boundingBox = new Box3();
+		boundingBox.setFromObject(this.selectionBox.boxHelper.object);
+		
+		let center = new Vector3();
+		center = boundingBox.getCenter(center);
+
+		return new Vector2(center.x, center.y);
 	}
 
 	cleanup = () => {

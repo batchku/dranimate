@@ -108,7 +108,7 @@ export default class DranimateMouseHandler {
 			// control point is being dragged by mouse
 			const puppet = puppets[this.activeControlPoint.puppetIndex];
 			const ci = this.activeControlPoint.controlPointIndex;
-			const puppetCenter = puppet.getCenter();
+			const puppetCenter = puppet.getPuppetCenter2d();
 			const mouseVector = new Vector2(this.mouseRelative.x, this.mouseRelative.y)
 				.sub(puppetCenter)
 				.multiplyScalar(1 / puppet.getScale())
@@ -179,7 +179,7 @@ export default class DranimateMouseHandler {
 	}
 
 	getMouseDirection(x, y) {
-		const center = this.selectedPuppet.getCenter();
+		const center = this.selectedPuppet.getPuppetCenter2d();
 		const mousePosition = new THREE.Vector2(x, y);
 
 		return new THREE.Vector2().subVectors(center, mousePosition).normalize();
