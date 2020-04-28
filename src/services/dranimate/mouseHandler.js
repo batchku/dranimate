@@ -84,7 +84,7 @@ export default class DranimateMouseHandler {
 			}
 		}
 
-		if (this.selectedPuppet && !this.puppetRotationData.rotatingPuppet) {
+		if (this.selectedPuppet && !this.puppetRotationData.rotatingPuppet && !this.puppetScaleData.scalingPuppet) {
 			this.selectedPuppet.setSelectionState(true, this.mouseRelative.x, this.mouseRelative.y);
 		}
 		puppets.forEach(puppet => puppet.setSelectionGUIVisible(puppet === this.selectedPuppet));
@@ -131,10 +131,10 @@ export default class DranimateMouseHandler {
 		if (this.puppetScaleData.scalingPuppet) {
 			this.puppetScaleData.currentMousePosition = new THREE.Vector2(this.mouseRelative.x, this.mouseRelative.y);
 
-			const xDiff = this.puppetScaleData.previousMousePosition.x - this.puppetScaleData.currentMousePosition.x;
+			const xDiff = (this.puppetScaleData.currentMousePosition.x - this.puppetScaleData.previousMousePosition.x) / 100;
 			const currentPuppetScale = this.selectedPuppet.getScale();
-			const newPuppetScale = currentPuppetScale + xDiff;
-			this.selectedPuppet.setScale(newPuppetScale / 100);
+			const newPuppetScale = Math.max(0.1, currentPuppetScale + xDiff);
+			this.selectedPuppet.setScale(newPuppetScale);
 
 			this.puppetScaleData.previousMousePosition = this.puppetScaleData.currentMousePosition.clone();
 		}
