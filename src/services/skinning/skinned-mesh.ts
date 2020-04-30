@@ -3,7 +3,7 @@ import {
 	Texture,
 	Matrix4,
 	ShaderMaterial,
-  DoubleSide,
+	DoubleSide,
 	BufferGeometry,
 	Float32BufferAttribute
 } from 'three';
@@ -67,7 +67,7 @@ export default class SkinnedMesh {
 		geometry.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
 		/* Create skinning material */
 		this.createMaterial(texture, this.handlesFlatArray);
-    /* Create mesh */
+		/* Create mesh */
 		this.mesh = new Mesh(geometry, this.skinningMaterial);
 	}
 	/* Get three.js mesh instance*/
@@ -76,12 +76,12 @@ export default class SkinnedMesh {
 	}
 	/* Call when handle position changed */
 	public updateHandle(index: number, x: number, y:number): void {
-    const originalX = this.handlesFlatArray[index*2+0];
-    const originalY = this.handlesFlatArray[index*2+1];
+		const originalX = this.handlesFlatArray[index*2+0];
+		const originalY = this.handlesFlatArray[index*2+1];
 		const handleTransform = new Matrix4().makeTranslation(x - originalX, y - originalY, 0.0);
 		//handleTransform.premultiply(new Matrix4().makeRotationZ(0.0));
 		handleTransform.transpose();
-    // Testing temp
+		// Testing temp
 		const flat = handleTransform.toArray();
 		this.skinningMaterial.uniforms.handleTransforms.value[index*16+0] = flat[0];
 		this.skinningMaterial.uniforms.handleTransforms.value[index*16+1] = flat[1];
@@ -104,8 +104,8 @@ export default class SkinnedMesh {
 	private createMaterial(texture: object, handlesFlatArray: Array<number>) {
 		var handleTransforms = [];
 		for(var c=0; c<handlesFlatArray.length; c+=2) {
-   	  const handleTransform = new Matrix4();
-      handleTransform.transpose();
+			const handleTransform = new Matrix4();
+			handleTransform.transpose();
 			handleTransforms = handleTransforms.concat(handleTransform.toArray());
 		}
 		const uniforms: object = {
@@ -116,10 +116,11 @@ export default class SkinnedMesh {
 			uniforms: uniforms,
 			vertexShader: SkinnedMesh.vertexShader,
 			fragmentShader: SkinnedMesh.fragmentShader,
-      side: DoubleSide,
-			transparent: true
+			side: DoubleSide,
+			transparent: true,
+			depthWrite: false,
+			wireframe: true,
 		})
-		this.skinningMaterial.depthWrite = false;
 	}
 
 	private static vertexShader: string = `
@@ -147,10 +148,10 @@ export default class SkinnedMesh {
 		uniform sampler2D texture;
 		varying vec2 vUv;
 		void main() {
-			gl_FragColor = vec4(texture2D(texture, vUv).rgb, 1.0);
+			gl_FragColor = vec4(1.0,0.0,0.0,1.0);//texture2D(texture, vUv).rgb, 1.0);
 		}
 	`;
 	private mesh: Mesh;
-  private handlesFlatArray: Array<number>;
+	private handlesFlatArray: Array<number>;
 	private skinningMaterial: ShaderMaterial;
 } 

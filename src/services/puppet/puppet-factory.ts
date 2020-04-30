@@ -46,7 +46,7 @@ function createTexturedPlane(size, texturePath) {
 		side: DoubleSide,
 		map: anchorTexture,
 		transparent: true,
-		depthWrite: false,
+		depthWrite: false
 	});
 	const anchor = new Mesh(anchorGeometry, anchorMaterial);
 	anchor.rotateX(Math.PI);
@@ -121,8 +121,9 @@ function buildFromOptions(options) {
 	const geometry = new Geometry();
 	imageTexture.needsUpdate = true;
 	const texturedMaterial = new MeshBasicMaterial({
-		map: imageTexture,
-		transparent: true
+		//map: imageTexture,
+		transparent: true,
+		wireframe: true
 	});
 	texturedMaterial.depthWrite = false;
 
@@ -181,7 +182,7 @@ function buildFromOptions(options) {
 	// centerSphere.position.y = center.y;
 
 	const group = new Group();
-	//group.add(threeMesh);
+	group.add(threeMesh);
 	group.add(skin.getMesh());
 	group.add(selectionBox.boxHelper);
 	group.add(selectionBox.topAnchor);
@@ -206,7 +207,7 @@ function buildFromOptions(options) {
 		controlPoints,
 		vertsFlatArray,
 		facesFlatArray,
-    skin,
+		skin,
 		threeMesh,
 		selectionBox,
 		controlPointPlanes: controlPointPlanes,
