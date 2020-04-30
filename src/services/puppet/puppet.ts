@@ -5,6 +5,7 @@ import Recording from 'services/puppet/Recording';
 import { pointIsInsideTriangle } from 'services/util/math';
 import { clearObject } from 'services/util/threeUtil';
 import dranimate from '../dranimate/dranimate';
+import SkinnedMesh from '../skinning/skinned-mesh';
 import eventManager from '../eventManager/event-manager';
 import ControlPoint from './control-point';
 
@@ -26,6 +27,7 @@ class Puppet {
 	private controlPoints: any;
 	private vertsFlatArray: any;
 	private facesFlatArray: any;
+	private skin: SkinnedMesh;
 	private threeMesh: any;
 	private controlPointPlanes: THREE.Mesh[];
 	private group: any;
@@ -64,6 +66,7 @@ class Puppet {
 		this.controlPoints = puppetData.controlPoints;
 		this.vertsFlatArray = puppetData.vertsFlatArray;
 		this.facesFlatArray = puppetData.facesFlatArray;
+		this.skin = puppetData.skin;
 		this.threeMesh = puppetData.threeMesh;
 		this.controlPointPlanes = puppetData.controlPointPlanes;
 		this.group = puppetData.group;
@@ -80,7 +83,9 @@ class Puppet {
 		}
 		for(let i = 0; i < this.controlPoints.length; i++) {
 			const cpi = this.controlPoints[i];
+			console.log('CPI!', cpi);
 			ARAP.setControlPointPosition(this.arapMeshID, cpi, this.verts[cpi][0], this.verts[cpi][1]);
+			this.skin.updateHandle(i, this.verts[cpi][0], this.verts[cpi][1]);
 		}
 
 		this.incrementPosition(-puppetData.center.x, -puppetData.center.y);
@@ -191,7 +196,7 @@ class Puppet {
 	setControlPointPosition = (controlPointIndex, position) => {
 		this.needsUpdate = true;
 		ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], position.x, position.y);
-	
+		this.skin.updateHandle(controlPointIndex, position.x, position.y);
 		// NOTE: there still might be some unforseen problems with over recording
 		if (this.recording.isRecording()) {
 			const puppetCenter = this.getPuppetCenter2d();
@@ -222,6 +227,7 @@ class Puppet {
 		}
 	
 		// ROTATE PUPPET
+		/*
 		if (shouldRotate) {
 			const deltaRotation = this.current.rotation - this.previous.rotation;
 			this.previous.rotation = this.current.rotation;
@@ -236,8 +242,10 @@ class Puppet {
 				this.setControlPointPosition(index, point);
 			});
 		}
+		*/
 	
 		// TRANSLATE PUPPET
+		/*
 		if(shouldMoveXY && !dranimate.handTrackingEnabled) {
 			const puppetCenter = this.getPuppetCenter2d();
 			const xyDelta = new Vector2(dx, dy);
@@ -252,6 +260,7 @@ class Puppet {
 				this.setControlPointPosition(index, point);
 			});
 		}
+		*/
 	
 		if (this.playRecording) {
 			const recordingTimeStamp = targetTimestamp || performance.now();
@@ -281,17 +290,22 @@ class Puppet {
 			// UPDATE ARAP DEFORMER
 			ARAP.updateMeshDeformation(this.arapMeshID);
 			const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
-			const puppetCenter = this.getPuppetCenter2d();
+			//const puppetCenter = this.getPuppetCenter2d();
 			for (let i = 0; i < deformedVerts.length; i += 2) {
 				const vertex = this.threeMesh.geometry.vertices[i / 2];
-				const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
-					.sub(puppetCenter)
-					.multiplyScalar(this.getScale())
-					.add(puppetCenter);
+				//const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
+				//	.sub(puppetCenter)
+				//	.multiplyScalar(this.getScale())
+				//	.add(puppetCenter);
 	
-				vertex.x = point.x;
-				vertex.y = point.y;
+				//vertex.x = point.x;
+				//vertex.y = point.y;
+				vertex.x = deformedVerts[i];
+				vertex.y = deformedVerts[i+1];
 			}
+
+			// UPDATE SKIN
+			//this.skin.setTransform(this.getScale());	
 	
 			// UPDATE CONTROL POINT GRAPHICS
 			this.controlPoints.forEach((controlPoint, index) => {

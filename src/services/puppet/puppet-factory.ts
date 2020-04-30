@@ -22,6 +22,7 @@ import * as THREE from 'three';
 import Puppet from 'services/puppet/puppet';
 import generateUniqueId from 'services/util/uuid';
 import ControlPoint from 'services/puppet/control-point';
+import SkinnedMesh from 'services/skinning/skinned-mesh';
 
 // Temporary guard against this nasty guy: https://github.com/cmuartfab/dranimate-browser_archive/issues/1
 const errorMessage = 'Must load largest puppet first.'
@@ -102,25 +103,28 @@ function buildFromOptions(options) {
 		wireframeLinewidth: 1
 	});
 
-	/* Generate image material */
+	/* Create texture */
 	const canvas = document.createElement('canvas');
 	canvas.width  = imageNoBG.width;
 	canvas.height = imageNoBG.height;
 	const context = canvas.getContext('2d');
-	// canvas.getContext('2d');
 	context.drawImage(imageNoBG, 0, 0, imageNoBG.width, imageNoBG.height, 0, 0, canvas.width, canvas.height);
+	const imageTexture = new Texture(canvas);
+
+	/* Create puppet skin */
+	const skin = new SkinnedMesh(verts, faces, controlPoints, imageTexture);
+	
+	/* Create flat vertex array */
+	const vertsFlatArray = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
+	const facesFlatArray = faces.map(face => face);
 
 	const geometry = new Geometry();
-	const imageTexture = new Texture(canvas);
 	imageTexture.needsUpdate = true;
 	const texturedMaterial = new MeshBasicMaterial({
 		map: imageTexture,
 		transparent: true
 	});
 	texturedMaterial.depthWrite = false;
-
-	const vertsFlatArray = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
-	const facesFlatArray = faces.map(face => face);
 
 	// add geometry vertices
 	verts.map((vertex) => new Vector3(vertex[0], vertex[1], 0))
@@ -178,6 +182,7 @@ function buildFromOptions(options) {
 
 	const group = new Group();
 	group.add(threeMesh);
+	group.add(skin.getMesh());
 	group.add(selectionBox.boxHelper);
 	group.add(selectionBox.topAnchor);
 	group.add(selectionBox.rightAnchor);
@@ -201,6 +206,7 @@ function buildFromOptions(options) {
 		controlPoints,
 		vertsFlatArray,
 		facesFlatArray,
+    skin,
 		threeMesh,
 		selectionBox,
 		controlPointPlanes: controlPointPlanes,

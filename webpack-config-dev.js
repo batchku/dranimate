@@ -60,6 +60,14 @@ const webpackConfig = {
 						loader: 'sass-loader'
 					}
 				]
+			},
+			{
+				test: /dranimate-fast\.wasm$/,
+				type: "javascript/auto",
+				loader: "file-loader",
+				options: {
+					name: "wasm/dranimate-fast.wasm"
+				}
 			}
 		]
 	},
