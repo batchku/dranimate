@@ -227,7 +227,6 @@ class Puppet {
 		}
 	
 		// ROTATE PUPPET
-		/*
 		if (shouldRotate) {
 			const deltaRotation = this.current.rotation - this.previous.rotation;
 			this.previous.rotation = this.current.rotation;
@@ -242,10 +241,8 @@ class Puppet {
 				this.setControlPointPosition(index, point);
 			});
 		}
-		*/
 	
 		// TRANSLATE PUPPET
-		/*
 		if(shouldMoveXY && !dranimate.handTrackingEnabled) {
 			const puppetCenter = this.getPuppetCenter2d();
 			const xyDelta = new Vector2(dx, dy);
@@ -260,7 +257,6 @@ class Puppet {
 				this.setControlPointPosition(index, point);
 			});
 		}
-		*/
 	
 		if (this.playRecording) {
 			const recordingTimeStamp = targetTimestamp || performance.now();
@@ -290,18 +286,16 @@ class Puppet {
 			// UPDATE ARAP DEFORMER
 			ARAP.updateMeshDeformation(this.arapMeshID);
 			const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
-			//const puppetCenter = this.getPuppetCenter2d();
+			const puppetCenter = this.getPuppetCenter2d();
 			for (let i = 0; i < deformedVerts.length; i += 2) {
 				const vertex = this.threeMesh.geometry.vertices[i / 2];
-				//const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
-				//	.sub(puppetCenter)
-				//	.multiplyScalar(this.getScale())
-				//	.add(puppetCenter);
+				const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
+					.sub(puppetCenter)
+					.multiplyScalar(this.getScale())
+					.add(puppetCenter);
 	
-				//vertex.x = point.x;
-				//vertex.y = point.y;
-				vertex.x = deformedVerts[i];
-				vertex.y = deformedVerts[i+1];
+				vertex.x = point.x;
+				vertex.y = point.y;
 			}
 
 			// UPDATE SKIN

@@ -181,7 +181,7 @@ function buildFromOptions(options) {
 	// centerSphere.position.y = center.y;
 
 	const group = new Group();
-	group.add(threeMesh);
+	//group.add(threeMesh);
 	group.add(skin.getMesh());
 	group.add(selectionBox.boxHelper);
 	group.add(selectionBox.topAnchor);
@@ -217,7 +217,6 @@ function buildFromOptions(options) {
 }
 
 export default function requestPuppetCreation(options) {
-	console.log('requestPuppetCreation', options);
 	if (!mostFaces) {
 		mostFaces = options.faces.length;
 	}

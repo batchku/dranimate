@@ -3,6 +3,7 @@ import {
 	Texture,
 	Matrix4,
 	ShaderMaterial,
+  DoubleSide,
 	BufferGeometry,
 	Float32BufferAttribute
 } from 'three';
@@ -16,21 +17,20 @@ export default class SkinnedMesh {
 		/* Flat faces array */
 		const facesFlatArray: Array<number> = faces;
 		/* Create flat handle array */
-		const handlesFlatArray: Array<number> = []; 
+		this.handlesFlatArray = []; 
 		handles.forEach(cp => {
-			handlesFlatArray.push(vertsFlatArray[cp*2]);
-			handlesFlatArray.push(vertsFlatArray[cp*2+1]);
+			this.handlesFlatArray.push(vertsFlatArray[cp*2]);
+			this.handlesFlatArray.push(vertsFlatArray[cp*2+1]);
 		});
 		/* Create FAST shape */
-		const fastShape: any = FAST.createShape(vertsFlatArray, facesFlatArray, handlesFlatArray, 2);
+		const fastShape: any = FAST.createShape(vertsFlatArray, facesFlatArray, this.handlesFlatArray, 2);
 		/* Get skinning weights from FAST shape */
 		const weightsFlatArray: Array<number> = fastShape.getWeights();
-		console.log('Weights flat array: ', weightsFlatArray);
 		/* Promote 2D vertices to 3D */
 		const verts3DFlatArray: Array<number> = [];
-		for(var i=0; i<vertsFlatArray.length/2; i++) {
-			verts3DFlatArray.push(vertsFlatArray[i*2+0]);
-			verts3DFlatArray.push(vertsFlatArray[i*2+1]);
+		for(var i=0; i<vertsFlatArray.length; i+=2) {
+			verts3DFlatArray.push(vertsFlatArray[i]);
+			verts3DFlatArray.push(vertsFlatArray[i+1]);
 			verts3DFlatArray.push(0.0);
 		}
 		/* Split weights into an array per handle */
@@ -39,12 +39,12 @@ export default class SkinnedMesh {
 		const weights2: Array<number> = [];
 		const weights3: Array<number> = [];
 		const weights4: Array<number> = [];
-		for(var i=0; i<weightsFlatArray.length/5; i++) {
-			weights0.push(weightsFlatArray[i*5+0]);
-			weights1.push(weightsFlatArray[i*5+1]);
-			weights2.push(weightsFlatArray[i*5+2]);
-			weights3.push(weightsFlatArray[i*5+3]);
-			weights4.push(weightsFlatArray[i*5+4]);
+		for(var i=0; i<weightsFlatArray.length; i+=5) {
+			weights0.push(weightsFlatArray[i]);
+			weights1.push(weightsFlatArray[i+1]);
+			weights2.push(weightsFlatArray[i+2]);
+			weights3.push(weightsFlatArray[i+3]);
+			weights4.push(weightsFlatArray[i+4]);
 		}
 		/* Create UVs */
 		const uvs: Array<number> = [];
@@ -66,7 +66,8 @@ export default class SkinnedMesh {
 		geometry.setAttribute('weight4', new Float32BufferAttribute(weights4, 1));  
 		geometry.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
 		/* Create skinning material */
-		this.createMaterial(texture, handlesFlatArray);
+		this.createMaterial(texture, this.handlesFlatArray);
+    /* Create mesh */
 		this.mesh = new Mesh(geometry, this.skinningMaterial);
 	}
 	/* Get three.js mesh instance*/
@@ -75,8 +76,9 @@ export default class SkinnedMesh {
 	}
 	/* Call when handle position changed */
 	public updateHandle(index: number, x: number, y:number): void {
-		console.log('update handle', index, x, y);
-		const handleTransform = new Matrix4().makeTranslation(x, y, 0.0);
+    const originalX = this.handlesFlatArray[index*2+0];
+    const originalY = this.handlesFlatArray[index*2+1];
+		const handleTransform = new Matrix4().makeTranslation(x - originalX, y - originalY, 0.0);
 		//handleTransform.premultiply(new Matrix4().makeRotationZ(0.0));
 		handleTransform.transpose();
     // Testing temp
@@ -99,14 +101,11 @@ export default class SkinnedMesh {
 		this.skinningMaterial.uniforms.handleTransforms.value[index*16+15] = flat[15];
 	}
 	/* Create three.js material for updating skin */
-	private createMaterial(texture: object, handles: Array<number>) {
-		console.log('PuppetSkinning: createMaterial', texture);
+	private createMaterial(texture: object, handlesFlatArray: Array<number>) {
 		var handleTransforms = [];
-		for(var c=0; c<handles.length / 2; c++) {
-			console.log(handles[c*2+0], handles[c*2+1]);
-			const handleTransform = new Matrix4().makeTranslation(handles[c*2+0], handles[c*2+1], 0.0);
-			handleTransform.premultiply(new Matrix4().makeRotationZ(0.0));
-			handleTransform.transpose();
+		for(var c=0; c<handlesFlatArray.length; c+=2) {
+   	  const handleTransform = new Matrix4();
+      handleTransform.transpose();
 			handleTransforms = handleTransforms.concat(handleTransform.toArray());
 		}
 		const uniforms: object = {
@@ -117,6 +116,7 @@ export default class SkinnedMesh {
 			uniforms: uniforms,
 			vertexShader: SkinnedMesh.vertexShader,
 			fragmentShader: SkinnedMesh.fragmentShader,
+      side: DoubleSide,
 			transparent: true
 		})
 		this.skinningMaterial.depthWrite = false;
@@ -151,5 +151,6 @@ export default class SkinnedMesh {
 		}
 	`;
 	private mesh: Mesh;
+  private handlesFlatArray: Array<number>;
 	private skinningMaterial: ShaderMaterial;
 } 
