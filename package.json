@@ -47,7 +47,8 @@
     "react-dom": "^16.1.0",
     "stats.js": "^0.17.0",
     "three": "^0.115.0",
-    "uuid": "^7.0.3"
+    "uuid": "^7.0.3",
+    "dranimate-fast": "git+https://batchku@dev.azure.com/batchku/Dranimate/_git/Dranimate-FAST"
   },
   "repository": {
     "type": "git",
