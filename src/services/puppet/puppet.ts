@@ -176,6 +176,7 @@ class Puppet {
 		this.needsUpdate = true;
 		controlPoints.forEach(controlPoint => {
 			ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.position.x, controlPoint.position.y)
+			this.skin.updateHandle(controlPoint.cpi, controlPoint.position.x, controlPoint.position.y);
 		});
 	
 		if (this.recording.isRecording()) {
@@ -277,6 +278,7 @@ class Puppet {
 				this.needsUpdate = true;
 				absoluteControlPoints.forEach(controlPoint => {
 					ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.position.x, controlPoint.position.y)
+					this.skin.updateHandle(controlPoint.cpi, controlPoint.position.x, controlPoint.position.y);
 				});
 			});
 		}

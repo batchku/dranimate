@@ -8,7 +8,7 @@ import {
 	Float32BufferAttribute
 } from 'three';
 
-import FAST from 'dranimate-fast';
+import { Shape } from 'dranimate-fast'; 
 
 export default class SkinnedMesh {
 	constructor(verts: Array<Array<number>>, faces: Array<number>, handles: Array<number>, texture: Texture) {
@@ -23,7 +23,7 @@ export default class SkinnedMesh {
 			this.handlesFlatArray.push(vertsFlatArray[cp*2+1]);
 		});
 		/* Create FAST shape */
-		const fastShape: any = FAST.createShape(vertsFlatArray, facesFlatArray, this.handlesFlatArray, 2);
+		const fastShape = new Shape(vertsFlatArray, facesFlatArray, this.handlesFlatArray, 2);
 		/* Get skinning weights from FAST shape */
 		const weightsFlatArray: Array<number> = fastShape.getWeights();
 		/* Promote 2D vertices to 3D */
