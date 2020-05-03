@@ -182,8 +182,8 @@ function buildFromOptions(options) {
 	// centerSphere.position.y = center.y;
 
 	const group = new Group();
-	group.add(threeMesh);
 	group.add(skin.getMesh());
+	//group.add(threeMesh);
 	group.add(selectionBox.boxHelper);
 	group.add(selectionBox.topAnchor);
 	group.add(selectionBox.rightAnchor);

@@ -285,6 +285,7 @@ class Puppet {
 	
 		// DEFORM PUPPET WITH ARAP
 		if(this.needsUpdate) {
+      this.skin.update(); 
 			// UPDATE ARAP DEFORMER
 			ARAP.updateMeshDeformation(this.arapMeshID);
 			const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
