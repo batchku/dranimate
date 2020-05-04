@@ -183,7 +183,6 @@ function buildFromOptions(options) {
 
 	const group = new Group();
 	group.add(skin.getMesh());
-	//group.add(threeMesh);
 	group.add(selectionBox.boxHelper);
 	group.add(selectionBox.topAnchor);
 	group.add(selectionBox.rightAnchor);
@@ -208,7 +207,6 @@ function buildFromOptions(options) {
 		vertsFlatArray,
 		facesFlatArray,
 		skin,
-		threeMesh,
 		selectionBox,
 		controlPointPlanes: controlPointPlanes,
 		group,

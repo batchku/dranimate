@@ -17,8 +17,8 @@ export default class SkinnedMesh {
 		/* Flat faces array */
 		const facesFlatArray: Array<number> = faces;
 		/* Create flat handle array */
-		this.handlesFlatArray = []; 
-    this.handleTranslationsFlatArray = [];
+		this.handlesFlatArray = [];
+		this.handleTranslationsFlatArray = [];
 		handles.forEach(cp => {
 			this.handlesFlatArray.push(vertsFlatArray[cp*2]);
 			this.handlesFlatArray.push(vertsFlatArray[cp*2+1]);
@@ -77,43 +77,42 @@ export default class SkinnedMesh {
 	getMesh(): Mesh {
 		return this.mesh;
 	}
-  /* Update skinned mesh */
-  update(): void {
-    this.handleTransformsFlatArray = 
-      this.fastShape.update(this.handleTranslationsFlatArray);
-    //console.log('HANDLE TRANSFORMS: ', this.handleTransformsFlatArray);
-    for(var i=0; i<5; i++) {
-      const originalX = this.handlesFlatArray[i*2+0];
-      const originalY = this.handlesFlatArray[i*2+1];
-      const x = this.handleTranslationsFlatArray[i*2+0];
-      const y = this.handleTranslationsFlatArray[i*2+1];
-      //const handleTransform = (new Matrix4()).fromArray(this.handleTransformsFlatArray, i*12);
-      const handleTransform = new Matrix4().makeTranslation(x - originalX, y - originalY, 0.0);
-      handleTransform.premultiply(new Matrix4().makeRotationZ(0.0));
-      handleTransform.transpose();
-      const flat = handleTransform.toArray();
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+0] = flat[0];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+1] = flat[1];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+2] = flat[2];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+3] = flat[3];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+4] = flat[4];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+5] = flat[5];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+6] = flat[6];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+7] = flat[7];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+8] = flat[8];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+9] = flat[9];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+10] = flat[10];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+11] = flat[11];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+12] = flat[12];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+13] = flat[13];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+14] = flat[14];
-      this.skinningMaterial.uniforms.handleTransforms.value[i*16+15] = flat[15];
-    }
-  }
+	/* Update skinned mesh */
+	update(): void {
+		this.handleTransformsFlatArray = this.fastShape.update(this.handleTranslationsFlatArray);
+		//console.log('HANDLE TRANSFORMS: ', this.handleTransformsFlatArray);
+		for(var i=0; i<5; i++) {
+			const originalX = this.handlesFlatArray[i*2+0];
+			const originalY = this.handlesFlatArray[i*2+1];
+			const x = this.handleTranslationsFlatArray[i*2+0];
+			const y = this.handleTranslationsFlatArray[i*2+1];
+			//const handleTransform = (new Matrix4()).fromArray(this.handleTransformsFlatArray, i*12);
+			const handleTransform = new Matrix4().makeTranslation(x - originalX, y - originalY, 0.0);
+			handleTransform.premultiply(new Matrix4().makeRotationZ(0.0));
+			handleTransform.transpose();
+			const flat = handleTransform.toArray();
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+0] = flat[0];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+1] = flat[1];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+2] = flat[2];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+3] = flat[3];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+4] = flat[4];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+5] = flat[5];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+6] = flat[6];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+7] = flat[7];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+8] = flat[8];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+9] = flat[9];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+10] = flat[10];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+11] = flat[11];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+12] = flat[12];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+13] = flat[13];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+14] = flat[14];
+			this.skinningMaterial.uniforms.handleTransforms.value[i*16+15] = flat[15];
+		}
+	}
 	/* Call when handle position changed */
 	updateHandle(index: number, x: number, y:number): void {
-    this.handleTranslationsFlatArray[index*2+0] = x;
-    this.handleTranslationsFlatArray[index*2+1] = y;
+		this.handleTranslationsFlatArray[index*2+0] = x;
+		this.handleTranslationsFlatArray[index*2+1] = y;
 	}
 	/* Create three.js material for updating skin */
 	private createMaterial(texture: object, handlesFlatArray: Array<number>) {
@@ -170,5 +169,5 @@ export default class SkinnedMesh {
 	private handleTranslationsFlatArray: Array<number>;
 	private handleTransformsFlatArray: Array<number>;
 	private skinningMaterial: ShaderMaterial;
-  private fastShape;
+	private fastShape;
 } 
