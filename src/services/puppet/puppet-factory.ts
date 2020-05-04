@@ -102,6 +102,7 @@ function buildFromOptions(options) {
 	const context = canvas.getContext('2d');
 	context.drawImage(imageNoBG, 0, 0, imageNoBG.width, imageNoBG.height, 0, 0, canvas.width, canvas.height);
 	const imageTexture = new Texture(canvas);
+	imageTexture.needsUpdate = true;
 
 	/* Create puppet skin */
 	const skin = new SkinnedMesh(verts, faces, controlPoints, imageTexture);

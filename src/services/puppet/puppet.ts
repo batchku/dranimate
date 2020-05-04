@@ -272,24 +272,15 @@ class Puppet {
 		if(this.needsUpdate) {
 			// Update
 			this.skin.update();
+			// Get puppet center
+			const puppetCenter = this.getPuppetCenter2d();
+			// Update picking mesh
+			this.skin.updatePicking(puppetCenter, this.getScale());
 			// Scale 
 			//this.skin.setTransform(this.getScale());	
 			//ARAP.updateMeshDeformation(this.arapMeshID);
 			//const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
-			const puppetCenter = this.getPuppetCenter2d();
-			/*
-			for (let i = 0; i < deformedVerts.length; i += 2) {
-				const vertex = this.threeMesh.geometry.vertices[i / 2];
-				const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
-					.sub(puppetCenter)
-					.multiplyScalar(this.getScale())
-					.add(puppetCenter);
-	
-				vertex.x = point.x;
-				vertex.y = point.y;
-			}
-			*/
-	
+
 			// UPDATE CONTROL POINT GRAPHICS
 			this.controlPoints.forEach((controlPoint, index) => {
 				const vertex = pickingGeometry.vertices[controlPoint];

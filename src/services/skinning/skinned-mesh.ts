@@ -1,6 +1,7 @@
 import {
 	Mesh,
 	Texture,
+	Vector2,
 	Vector3,
 	Matrix4,
 	Face3,
@@ -32,7 +33,7 @@ export default class SkinnedMesh {
 		/* Create FAST shape */
 		this.fastShape = new Shape(this.vertsFlatArray, this.facesFlatArray, this.handlesFlatArray, 2);
 		/* Get skinning weights from FAST shape */
-		const weightsFlatArray: Array<number> = this.fastShape.getWeights();
+		this.weightsFlatArray = this.fastShape.getWeights();
 		/* Promote 2D vertices to 3D */
 		const verts3DFlatArray: Array<number> = [];
 		for(var i=0; i<this.vertsFlatArray.length; i+=2) {
@@ -46,12 +47,12 @@ export default class SkinnedMesh {
 		const weights2: Array<number> = [];
 		const weights3: Array<number> = [];
 		const weights4: Array<number> = [];
-		for(var i=0; i<weightsFlatArray.length; i+=5) {
-			weights0.push(weightsFlatArray[i]);
-			weights1.push(weightsFlatArray[i+1]);
-			weights2.push(weightsFlatArray[i+2]);
-			weights3.push(weightsFlatArray[i+3]);
-			weights4.push(weightsFlatArray[i+4]);
+		for(var i=0; i<this.weightsFlatArray.length; i+=5) {
+			weights0.push(this.weightsFlatArray[i]);
+			weights1.push(this.weightsFlatArray[i+1]);
+			weights2.push(this.weightsFlatArray[i+2]);
+			weights3.push(this.weightsFlatArray[i+3]);
+			weights4.push(this.weightsFlatArray[i+4]);
 		}
 		/* Create UVs */
 		const uvs: Array<number> = [];
@@ -62,6 +63,7 @@ export default class SkinnedMesh {
 			uvs.push(vert[0] / width);
 			uvs.push(1.0 - (vert[1] / height));
 		}
+		console.log('UVS', uvs);
 		/* Create geoemetry */
 		const geometry = new BufferGeometry();
 		geometry.setIndex(this.facesFlatArray);
@@ -85,18 +87,11 @@ export default class SkinnedMesh {
 			const f2 = this.facesFlatArray[i + 1];
 			const f3 = this.facesFlatArray[i + 2];
 			this.pickingGeometry.faces.push(new Face3(f1, f2, f3 ));
-			/*
-			pickingGeometry.faceVertexUvs[0].push( [
-				new Vector2(pickingGeometry.vertices[f1].x / texture.image.width, 1 - pickingGeometry.vertices[f1].y / texture.image.height),
-				new Vector2(pickingGeometry.vertices[f2].x / texture.image.width, 1 - pickingGeometry.vertices[f2].y / texture.image.height),
-				new Vector2(pickingGeometry.vertices[f3].x / texture.image.width, 1 - pickingGeometry.vertices[f3].y / texture.image.height)
-			]);
-			*/
 		}
 		/* Initial update */
 		this.update();
 		/* Initialise picking mesh */	
-		this.updatePicking();
+		this.updatePicking({x: 0.0, y: 0.0}, 1.0);
 	}
 	/* Get three.js mesh instance*/
 	getMesh(): Mesh {
@@ -143,8 +138,35 @@ export default class SkinnedMesh {
 		}
 	}
 	/* Update picking mesh */
-	updatePicking(): void {
-	
+	updatePicking(puppetCenter, scale): void {
+		console.log('UPDATE PICKING');
+		const pickingGeometry = this.getPickingGeometry();
+		for (let i = 0; i < this.vertsFlatArray.length; i += 2) {
+			const vertexX = this.vertsFlatArray[i+0];
+			const vertexY = this.vertsFlatArray[i+1];
+			// Calculate vertex skinned position
+			var skinnedX = vertexX;
+			var skinnedY = vertexY;
+			/*
+			for (let h = 0; h < 5; h++) {
+				const handleX = this.handlesFlatArray[h*2+0];
+				const handleY = this.handlesFlatArray[h*2+1];
+				const handleWeight = this.weightsFlatArray[(i/2)*5+h];
+				//console.log('WEIGHT', this.weightsFlatArray[(i/2)*5+h]);	
+				//console.log('H', h, handleX, handleY, handleWeight);
+				skinnedX += vertexX * handleX * handleWeight;
+				skinnedY += vertexY * handleY * handleWeight;
+			}
+			*/
+			// Recenter
+			const point = new Vector2(skinnedX, skinnedY)
+				.sub(puppetCenter)
+				.multiplyScalar(scale)
+				.add(puppetCenter);
+			const vertex = pickingGeometry.vertices[i / 2];
+			vertex.x = point.x;
+			vertex.y = point.y;
+		}
 	}
 	/* Call when handle position changed */
 	updateHandle(index: number, x: number, y:number): void {
@@ -184,7 +206,7 @@ export default class SkinnedMesh {
 		void main() {
 			vUv = uv;
 			vec4 pos = vec4(position, 1.0);
-			vec4 blendPosition;
+			vec4 blendPosition = vec4(0.0);
 			blendPosition += pos * handleTransforms[0] * weight0; 
 			blendPosition += pos * handleTransforms[1] * weight1; 
 			blendPosition += pos * handleTransforms[2] * weight2; 
@@ -203,6 +225,7 @@ export default class SkinnedMesh {
 	`;
 	private vertsFlatArray: Array<number>; 
 	private facesFlatArray: Array<number>;
+	private weightsFlatArray: Array<number>;
 	private mesh: Mesh;
 	private pickingMesh: Mesh;
 	private pickingGeometry: Geometry;
