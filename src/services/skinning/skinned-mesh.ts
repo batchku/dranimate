@@ -63,7 +63,6 @@ export default class SkinnedMesh {
 			uvs.push(vert[0] / width);
 			uvs.push(1.0 - (vert[1] / height));
 		}
-		console.log('UVS', uvs);
 		/* Create geoemetry */
 		const geometry = new BufferGeometry();
 		geometry.setIndex(this.facesFlatArray);
@@ -82,6 +81,7 @@ export default class SkinnedMesh {
 		this.pickingGeometry = new Geometry();
 		this.pickingMesh = new Mesh(this.pickingGeometry, new MeshBasicMaterial({wireframe: true}));
 		verts.map((vertex) => new Vector3(vertex[0], vertex[1], 0)).forEach(vertex => this.pickingGeometry.vertices.push(vertex));
+		//SKTODO
 		for(let i = 0; i < this.facesFlatArray.length; i+=3) {
 			const f1 = this.facesFlatArray[i];
 			const f2 = this.facesFlatArray[i + 1];
@@ -107,7 +107,7 @@ export default class SkinnedMesh {
 	}
 	/* Update skinned mesh */
 	update(): void {
-		this.handleTransformsFlatArray = this.fastShape.update(this.handleTranslationsFlatArray);
+		//this.handleTransformsFlatArray = this.fastShape.update(this.handleTranslationsFlatArray);
 		//console.log('HANDLE TRANSFORMS: ', this.handleTransformsFlatArray);
 		for(var i=0; i<5; i++) {
 			const originalX = this.handlesFlatArray[i*2+0];
@@ -139,7 +139,6 @@ export default class SkinnedMesh {
 	}
 	/* Update picking mesh */
 	updatePicking(puppetCenter, scale): void {
-		console.log('UPDATE PICKING');
 		const pickingGeometry = this.getPickingGeometry();
 		for (let i = 0; i < this.vertsFlatArray.length; i += 2) {
 			const vertexX = this.vertsFlatArray[i+0];
@@ -147,17 +146,17 @@ export default class SkinnedMesh {
 			// Calculate vertex skinned position
 			var skinnedX = vertexX;
 			var skinnedY = vertexY;
-			/*
 			for (let h = 0; h < 5; h++) {
-				const handleX = this.handlesFlatArray[h*2+0];
-				const handleY = this.handlesFlatArray[h*2+1];
+				const originalX = this.handlesFlatArray[h*2+0];
+				const originalY = this.handlesFlatArray[h*2+1];
+				const x = this.handleTranslationsFlatArray[h*2+0];
+				const y = this.handleTranslationsFlatArray[h*2+1];
 				const handleWeight = this.weightsFlatArray[(i/2)*5+h];
 				//console.log('WEIGHT', this.weightsFlatArray[(i/2)*5+h]);	
 				//console.log('H', h, handleX, handleY, handleWeight);
-				skinnedX += vertexX * handleX * handleWeight;
-				skinnedY += vertexY * handleY * handleWeight;
+				skinnedX += (x - originalX) * handleWeight;
+				skinnedY += (y - originalY) * handleWeight;
 			}
-			*/
 			// Recenter
 			const point = new Vector2(skinnedX, skinnedY)
 				.sub(puppetCenter)
@@ -167,6 +166,9 @@ export default class SkinnedMesh {
 			vertex.x = point.x;
 			vertex.y = point.y;
 		}
+		pickingGeometry.vertices[0].x = pickingGeometry.vertices[pickingGeometry.vertices.length-1].x;
+		pickingGeometry.vertices[0].y = pickingGeometry.vertices[pickingGeometry.vertices.length-1].y;
+		this.pickingGeometry.verticesNeedUpdate = true;
 	}
 	/* Call when handle position changed */
 	updateHandle(index: number, x: number, y:number): void {

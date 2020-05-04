@@ -290,13 +290,10 @@ class Puppet {
 			});
 	
 			// UPDATE MISC THREEJS
-			/*
-			this.threeMesh.geometry.dynamic = true;
-			this.threeMesh.geometry.verticesNeedUpdate = true;
+			//this.skin.pickingMesh.geometry.verticesNeedUpdate = true;
 			this.selectionBox.boxHelper.object.geometry.computeBoundingBox();
 			this.selectionBox.boxHelper.update();
 			this.selectionBox.boxHelper.scale.z = 1; // To make sure volume != 0 (this will cause that warning to show up)
-			*/
 			this.needsUpdate = false;
 	
 			this.updateSelectionBox();
