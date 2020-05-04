@@ -23,10 +23,6 @@ import generateUniqueId from 'services/util/uuid';
 import ControlPoint from 'services/puppet/control-point';
 import SkinnedMesh from 'services/skinning/skinned-mesh';
 
-// Temporary guard against this nasty guy: https://github.com/cmuartfab/dranimate-browser_archive/issues/1
-const errorMessage = 'Must load largest puppet first.'
-let mostFaces = 0;
-
 function createAnchor(size, color) {
 	const anchorGeometry = new SphereGeometry(size, 32, 32);
 	const anchorMaterial = new MeshBasicMaterial({color: color, depthWrite: false});
@@ -179,13 +175,6 @@ function buildFromOptions(options) {
 }
 
 export default function requestPuppetCreation(options) {
-	if (!mostFaces) {
-		mostFaces = options.faces.length;
-	}
-	if (options.faces.length > mostFaces) {
-		alert(errorMessage);
-		return false;
-	}
 
 	const puppetData = {
 		imageNoBG: options.imageNoBG,
