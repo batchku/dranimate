@@ -1,9 +1,13 @@
 import {
 	Mesh,
 	Texture,
+	Vector3,
 	Matrix4,
+	Face3,
+	MeshBasicMaterial,
 	ShaderMaterial,
 	DoubleSide,
+	Geometry,
 	BufferGeometry,
 	Float32BufferAttribute
 } from 'three';
@@ -13,27 +17,27 @@ import { Shape } from 'dranimate-fast';
 export default class SkinnedMesh {
 	constructor(verts: Array<Array<number>>, faces: Array<number>, handles: Array<number>, texture: Texture) {
 		/* Create flat vertex array */
-		const vertsFlatArray: Array<number> = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
+		this.vertsFlatArray = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
 		/* Flat faces array */
-		const facesFlatArray: Array<number> = faces;
+		this.facesFlatArray = faces;
 		/* Create flat handle array */
 		this.handlesFlatArray = [];
 		this.handleTranslationsFlatArray = [];
 		handles.forEach(cp => {
-			this.handlesFlatArray.push(vertsFlatArray[cp*2]);
-			this.handlesFlatArray.push(vertsFlatArray[cp*2+1]);
-			this.handleTranslationsFlatArray.push(vertsFlatArray[cp*2]);
-			this.handleTranslationsFlatArray.push(vertsFlatArray[cp*2+1]);
+			this.handlesFlatArray.push(this.vertsFlatArray[cp*2]);
+			this.handlesFlatArray.push(this.vertsFlatArray[cp*2+1]);
+			this.handleTranslationsFlatArray.push(this.vertsFlatArray[cp*2]);
+			this.handleTranslationsFlatArray.push(this.vertsFlatArray[cp*2+1]);
 		});
 		/* Create FAST shape */
-		this.fastShape = new Shape(vertsFlatArray, facesFlatArray, this.handlesFlatArray, 2);
+		this.fastShape = new Shape(this.vertsFlatArray, this.facesFlatArray, this.handlesFlatArray, 2);
 		/* Get skinning weights from FAST shape */
 		const weightsFlatArray: Array<number> = this.fastShape.getWeights();
 		/* Promote 2D vertices to 3D */
 		const verts3DFlatArray: Array<number> = [];
-		for(var i=0; i<vertsFlatArray.length; i+=2) {
-			verts3DFlatArray.push(vertsFlatArray[i]);
-			verts3DFlatArray.push(vertsFlatArray[i+1]);
+		for(var i=0; i<this.vertsFlatArray.length; i+=2) {
+			verts3DFlatArray.push(this.vertsFlatArray[i]);
+			verts3DFlatArray.push(this.vertsFlatArray[i+1]);
 			verts3DFlatArray.push(0.0);
 		}
 		/* Split weights into an array per handle */
@@ -60,7 +64,7 @@ export default class SkinnedMesh {
 		}
 		/* Create geoemetry */
 		const geometry = new BufferGeometry();
-		geometry.setIndex(facesFlatArray);
+		geometry.setIndex(this.facesFlatArray);
 		geometry.setAttribute('position', new Float32BufferAttribute(verts3DFlatArray, 3));  
 		geometry.setAttribute('weight0', new Float32BufferAttribute(weights0, 1));  
 		geometry.setAttribute('weight1', new Float32BufferAttribute(weights1, 1));  
@@ -72,10 +76,39 @@ export default class SkinnedMesh {
 		this.createMaterial(texture, this.handlesFlatArray);
 		/* Create mesh */
 		this.mesh = new Mesh(geometry, this.skinningMaterial);
+		/* Create cpu side picking mesh */
+		this.pickingGeometry = new Geometry();
+		this.pickingMesh = new Mesh(this.pickingGeometry, new MeshBasicMaterial({wireframe: true}));
+		verts.map((vertex) => new Vector3(vertex[0], vertex[1], 0)).forEach(vertex => this.pickingGeometry.vertices.push(vertex));
+		for(let i = 0; i < this.facesFlatArray.length; i+=3) {
+			const f1 = this.facesFlatArray[i];
+			const f2 = this.facesFlatArray[i + 1];
+			const f3 = this.facesFlatArray[i + 2];
+			this.pickingGeometry.faces.push(new Face3(f1, f2, f3 ));
+			/*
+			pickingGeometry.faceVertexUvs[0].push( [
+				new Vector2(pickingGeometry.vertices[f1].x / texture.image.width, 1 - pickingGeometry.vertices[f1].y / texture.image.height),
+				new Vector2(pickingGeometry.vertices[f2].x / texture.image.width, 1 - pickingGeometry.vertices[f2].y / texture.image.height),
+				new Vector2(pickingGeometry.vertices[f3].x / texture.image.width, 1 - pickingGeometry.vertices[f3].y / texture.image.height)
+			]);
+			*/
+		}
+		/* Initial update */
+		this.update();
+		/* Initialise picking mesh */	
+		this.updatePicking();
 	}
 	/* Get three.js mesh instance*/
 	getMesh(): Mesh {
 		return this.mesh;
+	}
+	/* Get three.js cpu side picking mesh instance*/
+	getPickingMesh(): Mesh {
+		return this.pickingMesh;
+	}
+	/* Get three.js cpu side picking mesh instance*/
+	getPickingGeometry(): Geometry {
+		return this.pickingGeometry;
 	}
 	/* Update skinned mesh */
 	update(): void {
@@ -108,6 +141,10 @@ export default class SkinnedMesh {
 			this.skinningMaterial.uniforms.handleTransforms.value[i*16+14] = flat[14];
 			this.skinningMaterial.uniforms.handleTransforms.value[i*16+15] = flat[15];
 		}
+	}
+	/* Update picking mesh */
+	updatePicking(): void {
+	
 	}
 	/* Call when handle position changed */
 	updateHandle(index: number, x: number, y:number): void {
@@ -164,7 +201,11 @@ export default class SkinnedMesh {
 			gl_FragColor = vec4(texture2D(texture, vUv).rgb, 1.0);
 		}
 	`;
+	private vertsFlatArray: Array<number>; 
+	private facesFlatArray: Array<number>;
 	private mesh: Mesh;
+	private pickingMesh: Mesh;
+	private pickingGeometry: Geometry;
 	private handlesFlatArray: Array<number>;
 	private handleTranslationsFlatArray: Array<number>;
 	private handleTransformsFlatArray: Array<number>;

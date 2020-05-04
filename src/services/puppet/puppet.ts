@@ -19,15 +19,12 @@ class Puppet {
 	private imageNoBG: any;
 	private controlPointPositions: ControlPoint[];
 	private backgroundRemovalData: any;
-	private wireframeMaterial: any;
-	private texturedMaterial: any;
 	private verts: any;
 	private faces: any;
 	private controlPoints: any;
 	private vertsFlatArray: any;
 	private facesFlatArray: any;
 	private skin: SkinnedMesh;
-	private threeMesh: any;
 	private controlPointPlanes: THREE.Mesh[];
 	private group: any;
 	private undeformedVertices: any;
@@ -59,14 +56,12 @@ class Puppet {
 		this.imageNoBG = puppetData.imageNoBG;
 		this.controlPointPositions = puppetData.controlPointPositions; // are these just unedited control points?
 		this.backgroundRemovalData = puppetData.backgroundRemovalData;
-		this.texturedMaterial = puppetData.texturedMaterial;
 		this.verts = puppetData.verts;
 		this.faces = puppetData.faces;
 		this.controlPoints = puppetData.controlPoints;
 		this.vertsFlatArray = puppetData.vertsFlatArray;
 		this.facesFlatArray = puppetData.facesFlatArray;
 		this.skin = puppetData.skin;
-		this.threeMesh = puppetData.threeMesh;
 		this.controlPointPlanes = puppetData.controlPointPlanes;
 		this.group = puppetData.group;
 		this.undeformedVertices = this.verts;
@@ -132,7 +127,7 @@ class Puppet {
 	}
 
 	setRenderWireframe = (shouldRender: boolean): void => {
-		this.threeMesh.material = shouldRender ? this.wireframeMaterial : this.texturedMaterial;
+		//SKTODO this.threeMesh.material = shouldRender ? this.wireframeMaterial : this.texturedMaterial;
 	}
 
 	setSelectionState = (isBeingDragged: boolean, x: number, y: number): void => {
@@ -215,14 +210,16 @@ class Puppet {
 			this.previous.scale = this.current.scale;
 			this.needsUpdate = true;
 		}
-	
+
+		const pickingGeometry = this.skin.getPickingGeometry();
+
 		// ROTATE PUPPET
 		if (shouldRotate) {
 			const deltaRotation = this.current.rotation - this.previous.rotation;
 			this.previous.rotation = this.current.rotation;
 			const puppetCenter = this.getPuppetCenter2d();
 			this.controlPoints.forEach((controlPoint, index) => {
-				const {x, y} = this.threeMesh.geometry.vertices[controlPoint];
+				const {x, y} = pickingGeometry.vertices[controlPoint];
 				const point = new Vector2(x, y)
 					.sub(puppetCenter)
 					.multiplyScalar(1 / this.getScale())
@@ -237,7 +234,7 @@ class Puppet {
 			const puppetCenter = this.getPuppetCenter2d();
 			const xyDelta = new Vector2(dx, dy);
 			this.controlPoints.forEach((controlPoint, index) => {
-				const position = this.threeMesh.geometry.vertices[controlPoint].clone();
+				const position = pickingGeometry.vertices[controlPoint].clone();
 				const vertexPosition = new Vector2(position.x, position.y);
 				const point = vertexPosition
 					.sub(puppetCenter)
@@ -271,7 +268,7 @@ class Puppet {
 			});
 		}
 	
-// Update puppet skin
+		// Update puppet skin
 		if(this.needsUpdate) {
 			// Update
 			this.skin.update();
@@ -295,7 +292,7 @@ class Puppet {
 	
 			// UPDATE CONTROL POINT GRAPHICS
 			this.controlPoints.forEach((controlPoint, index) => {
-				const vertex = this.threeMesh.geometry.vertices[controlPoint];
+				const vertex = pickingGeometry.vertices[controlPoint];
 				const controlPointSphere = this.controlPointPlanes[index];
 				controlPointSphere.position.x = vertex.x;
 				controlPointSphere.position.y = vertex.y;
@@ -375,8 +372,9 @@ class Puppet {
 
 	pointInsideMesh = (xUntransformed, yUntransformed) => {
 		const point = new Vector2(xUntransformed, yUntransformed)
-		const allFaces = this.threeMesh.geometry.faces;
-		const allVerts = this.threeMesh.geometry.vertices;
+		const pickingGeometry = this.skin.getPickingGeometry();
+		const allFaces = pickingGeometry.faces;
+		const allVerts = pickingGeometry.vertices;
 		for(let i = 0; i < allFaces.length; i++) {
 			const v1 = allVerts[allFaces[i].a];
 			const v2 = allVerts[allFaces[i].b];

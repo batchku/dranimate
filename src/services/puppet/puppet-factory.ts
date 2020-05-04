@@ -3,7 +3,6 @@ import {
 	BoxHelper,
 	Color,
 	Face3,
-	Geometry,
 	Group,
 	Mesh,
 	MeshBasicMaterial,
@@ -96,13 +95,6 @@ function buildFromOptions(options) {
 	const controlPoints = options.controlPoints;
 	const imageNoBG = options.imageNoBG;
 
-	/* Generate wireframe material */
-	const wireframeMaterial = new MeshBasicMaterial({
-		color: 0xFF0000,
-		wireframe: true,
-		wireframeLinewidth: 1
-	});
-
 	/* Create texture */
 	const canvas = document.createElement('canvas');
 	canvas.width  = imageNoBG.width;
@@ -118,50 +110,21 @@ function buildFromOptions(options) {
 	const vertsFlatArray = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
 	const facesFlatArray = faces.map(face => face);
 
-	const geometry = new Geometry();
-	imageTexture.needsUpdate = true;
-	const texturedMaterial = new MeshBasicMaterial({
-		//map: imageTexture,
-		transparent: true,
-		wireframe: true
-	});
-	texturedMaterial.depthWrite = false;
-
-	// add geometry vertices
-	verts.map((vertex) => new Vector3(vertex[0], vertex[1], 0))
-		.forEach(vertex => geometry.vertices.push(vertex));
-
-
-	for(let i = 0; i < facesFlatArray.length; i+=3) {
-		const f1 = facesFlatArray[i];
-		const f2 = facesFlatArray[i + 1];
-		const f3 = facesFlatArray[i + 2];
-		geometry.faces.push(new Face3(f1, f2, f3 ));
-		geometry.faceVertexUvs[0].push( [
-			new Vector2(geometry.vertices[f1].x / imageNoBG.width, 1 - geometry.vertices[f1].y / imageNoBG.height),
-			new Vector2(geometry.vertices[f2].x / imageNoBG.width, 1 - geometry.vertices[f2].y / imageNoBG.height),
-			new Vector2(geometry.vertices[f3].x / imageNoBG.width, 1 - geometry.vertices[f3].y / imageNoBG.height)
-		]);
-	}
-
-	// geometry.translate(-200, -200, 0);
-
-	const threeMesh = new Mesh(geometry, texturedMaterial);
-	// threeMesh.renderOrder = 1;
-	
-	const selectionBox = createPuppetSelectionBox(threeMesh);
+	const pickingMesh = skin.getPickingMesh();
+	const pickingGeometry = skin.getPickingGeometry();
+	const selectionBox = createPuppetSelectionBox(pickingMesh);
 
 	const box3 = new Box3();
 	box3.setFromObject(selectionBox.boxHelper);
 	const size = box3.getSize(new Vector3());
 	const halfSize = new Vector2(size.x, size.y).multiplyScalar(0.5);
-	const vertexSum = geometry.vertices.reduce((sum, vertex) => ({
+	const vertexSum = pickingGeometry.vertices.reduce((sum, vertex) => ({
 		x: sum.x + vertex.x,
 		y: sum.y + vertex.y
 	}), {x: 0, y: 0});
 	const center = new Vector2(
-		vertexSum.x / geometry.vertices.length,
-		vertexSum.y / geometry.vertices.length
+		vertexSum.x / pickingGeometry.vertices.length,
+		vertexSum.y / pickingGeometry.vertices.length
 	);
 
 	const controlPointPlanes = options.controlPointPositions.map((controlPoint: ControlPoint) => {
@@ -183,6 +146,7 @@ function buildFromOptions(options) {
 
 	const group = new Group();
 	group.add(skin.getMesh());
+	group.add(skin.getPickingMesh());
 	group.add(selectionBox.boxHelper);
 	group.add(selectionBox.topAnchor);
 	group.add(selectionBox.rightAnchor);
@@ -199,8 +163,6 @@ function buildFromOptions(options) {
 		image,
 		id,
 		name,
-		wireframeMaterial,
-		texturedMaterial,
 		verts,
 		faces,
 		controlPoints,
