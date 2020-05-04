@@ -4,8 +4,7 @@
   "description": "Dranimate web app",
   "scripts": {
     "build": "npm run clean && npm run build:webpack && npm run build:copy",
-    "build:copy": "npm run build:copy:arap; npm run build:copy:assets;",
-    "build:copy:arap": "mkdir dist/arap; cp src/arap/deform2d.js dist/arap/deform2d.js; cp src/arap/deform2d.wasm dist/arap/deform2d.wasm",
+    "build:copy": "npm run build:copy:assets;",
     "build:copy:assets": "mkdir dist/assets; cp -r src/assets dist; cp src/favicon.png dist/favicon.png",
     "build:webpack": "webpack --colors --progress --display-error-details --config webpack-config-dev.js",
     "clean": "rm -rf dist",
