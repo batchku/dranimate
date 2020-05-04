@@ -21,6 +21,7 @@
     "css-loader": "^0.28.7",
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.19.0",
+    "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.0.4",
     "node-sass": "^4.6.0",
     "sass-loader": "^6.0.6",
@@ -46,7 +47,8 @@
     "react-dom": "^16.1.0",
     "stats.js": "^0.17.0",
     "three": "^0.115.0",
-    "uuid": "^7.0.3"
+    "uuid": "^7.0.3",
+    "dranimate-fast": "git+https://batchku@dev.azure.com/batchku/Dranimate/_git/Dranimate-FAST"
   },
   "repository": {
     "type": "git",

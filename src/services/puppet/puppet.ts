@@ -1,10 +1,10 @@
 import { Vector2, Box3, Vector3, Raycaster, MeshBasicMaterial } from 'three';
-import ARAP from 'services/arap/arap';
 // import { PuppetRecording } from 'services/puppet/puppetRecording';
 import Recording from 'services/puppet/Recording';
 import { pointIsInsideTriangle } from 'services/util/math';
 import { clearObject } from 'services/util/threeUtil';
 import dranimate from '../dranimate/dranimate';
+import SkinnedMesh from '../skinning/skinned-mesh';
 import eventManager from '../eventManager/event-manager';
 import ControlPoint from './control-point';
 
@@ -19,14 +19,12 @@ class Puppet {
 	private imageNoBG: any;
 	private controlPointPositions: ControlPoint[];
 	private backgroundRemovalData: any;
-	private wireframeMaterial: any;
-	private texturedMaterial: any;
 	private verts: any;
 	private faces: any;
 	private controlPoints: any;
 	private vertsFlatArray: any;
 	private facesFlatArray: any;
-	private threeMesh: any;
+	private skin: SkinnedMesh;
 	private controlPointPlanes: THREE.Mesh[];
 	private group: any;
 	private undeformedVertices: any;
@@ -58,13 +56,12 @@ class Puppet {
 		this.imageNoBG = puppetData.imageNoBG;
 		this.controlPointPositions = puppetData.controlPointPositions; // are these just unedited control points?
 		this.backgroundRemovalData = puppetData.backgroundRemovalData;
-		this.texturedMaterial = puppetData.texturedMaterial;
 		this.verts = puppetData.verts;
 		this.faces = puppetData.faces;
 		this.controlPoints = puppetData.controlPoints;
 		this.vertsFlatArray = puppetData.vertsFlatArray;
 		this.facesFlatArray = puppetData.facesFlatArray;
-		this.threeMesh = puppetData.threeMesh;
+		this.skin = puppetData.skin;
 		this.controlPointPlanes = puppetData.controlPointPlanes;
 		this.group = puppetData.group;
 		this.undeformedVertices = this.verts;
@@ -72,15 +69,9 @@ class Puppet {
 		this.playRecording = false;
 		this.selectionBox = puppetData.selectionBox;
 
-		console.log('----Puppet.generateMesh from ', this.vertsFlatArray.length / 2);
-		this.arapMeshID = ARAP.createNewARAPMesh(this.vertsFlatArray, this.facesFlatArray);
-		/* Add control points */
-		for(let i = 0; i < this.controlPoints.length; i++) {
-			ARAP.addControlPoint(this.arapMeshID, this.controlPoints[i]);
-		}
 		for(let i = 0; i < this.controlPoints.length; i++) {
 			const cpi = this.controlPoints[i];
-			ARAP.setControlPointPosition(this.arapMeshID, cpi, this.verts[cpi][0], this.verts[cpi][1]);
+			this.skin.updateHandle(i, this.verts[cpi][0], this.verts[cpi][1]);
 		}
 
 		this.incrementPosition(-puppetData.center.x, -puppetData.center.y);
@@ -136,7 +127,7 @@ class Puppet {
 	}
 
 	setRenderWireframe = (shouldRender: boolean): void => {
-		this.threeMesh.material = shouldRender ? this.wireframeMaterial : this.texturedMaterial;
+		//SKTODO this.threeMesh.material = shouldRender ? this.wireframeMaterial : this.texturedMaterial;
 	}
 
 	setSelectionState = (isBeingDragged: boolean, x: number, y: number): void => {
@@ -170,7 +161,7 @@ class Puppet {
 	setControlPointPositions = (controlPoints): void => {
 		this.needsUpdate = true;
 		controlPoints.forEach(controlPoint => {
-			ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.position.x, controlPoint.position.y)
+			this.skin.updateHandle(controlPoint.cpi, controlPoint.position.x, controlPoint.position.y);
 		});
 	
 		if (this.recording.isRecording()) {
@@ -190,8 +181,7 @@ class Puppet {
 
 	setControlPointPosition = (controlPointIndex, position) => {
 		this.needsUpdate = true;
-		ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], position.x, position.y);
-	
+		this.skin.updateHandle(controlPointIndex, position.x, position.y);
 		// NOTE: there still might be some unforseen problems with over recording
 		if (this.recording.isRecording()) {
 			const puppetCenter = this.getPuppetCenter2d();
@@ -220,14 +210,16 @@ class Puppet {
 			this.previous.scale = this.current.scale;
 			this.needsUpdate = true;
 		}
-	
+
+		const pickingGeometry = this.skin.getPickingGeometry();
+
 		// ROTATE PUPPET
 		if (shouldRotate) {
 			const deltaRotation = this.current.rotation - this.previous.rotation;
 			this.previous.rotation = this.current.rotation;
 			const puppetCenter = this.getPuppetCenter2d();
 			this.controlPoints.forEach((controlPoint, index) => {
-				const {x, y} = this.threeMesh.geometry.vertices[controlPoint];
+				const {x, y} = pickingGeometry.vertices[controlPoint];
 				const point = new Vector2(x, y)
 					.sub(puppetCenter)
 					.multiplyScalar(1 / this.getScale())
@@ -242,7 +234,7 @@ class Puppet {
 			const puppetCenter = this.getPuppetCenter2d();
 			const xyDelta = new Vector2(dx, dy);
 			this.controlPoints.forEach((controlPoint, index) => {
-				const position = this.threeMesh.geometry.vertices[controlPoint].clone();
+				const position = pickingGeometry.vertices[controlPoint].clone();
 				const vertexPosition = new Vector2(position.x, position.y);
 				const point = vertexPosition
 					.sub(puppetCenter)
@@ -271,42 +263,40 @@ class Puppet {
 				// calling this.setControlPointPositions here will over record, look into simplifying this
 				this.needsUpdate = true;
 				absoluteControlPoints.forEach(controlPoint => {
-					ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.position.x, controlPoint.position.y)
+					this.skin.updateHandle(controlPoint.cpi, controlPoint.position.x, controlPoint.position.y);
 				});
 			});
 		}
 	
-		// DEFORM PUPPET WITH ARAP
+		// Update puppet skin
 		if(this.needsUpdate) {
-			// UPDATE ARAP DEFORMER
-			ARAP.updateMeshDeformation(this.arapMeshID);
-			const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
+			// Update
+			this.skin.update();
+			// Get puppet center
 			const puppetCenter = this.getPuppetCenter2d();
-			for (let i = 0; i < deformedVerts.length; i += 2) {
-				const vertex = this.threeMesh.geometry.vertices[i / 2];
-				const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
-					.sub(puppetCenter)
-					.multiplyScalar(this.getScale())
-					.add(puppetCenter);
-	
-				vertex.x = point.x;
-				vertex.y = point.y;
-			}
-	
+			// Update picking mesh
+			this.skin.updatePicking(puppetCenter, this.getScale());
+			// Scale 
+			//this.skin.setTransform(this.getScale());	
+			//ARAP.updateMeshDeformation(this.arapMeshID);
+			//const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
+
 			// UPDATE CONTROL POINT GRAPHICS
 			this.controlPoints.forEach((controlPoint, index) => {
-				const vertex = this.threeMesh.geometry.vertices[controlPoint];
+				const vertex = pickingGeometry.vertices[controlPoint];
 				const controlPointSphere = this.controlPointPlanes[index];
 				controlPointSphere.position.x = vertex.x;
 				controlPointSphere.position.y = vertex.y;
 			});
 	
 			// UPDATE MISC THREEJS
+			/*
 			this.threeMesh.geometry.dynamic = true;
 			this.threeMesh.geometry.verticesNeedUpdate = true;
 			this.selectionBox.boxHelper.object.geometry.computeBoundingBox();
 			this.selectionBox.boxHelper.update();
 			this.selectionBox.boxHelper.scale.z = 1; // To make sure volume != 0 (this will cause that warning to show up)
+			*/
 			this.needsUpdate = false;
 	
 			this.updateSelectionBox();
@@ -373,8 +363,9 @@ class Puppet {
 
 	pointInsideMesh = (xUntransformed, yUntransformed) => {
 		const point = new Vector2(xUntransformed, yUntransformed)
-		const allFaces = this.threeMesh.geometry.faces;
-		const allVerts = this.threeMesh.geometry.vertices;
+		const pickingGeometry = this.skin.getPickingGeometry();
+		const allFaces = pickingGeometry.faces;
+		const allVerts = pickingGeometry.vertices;
 		for(let i = 0; i < allFaces.length; i++) {
 			const v1 = allVerts[allFaces[i].a];
 			const v2 = allVerts[allFaces[i].b];
