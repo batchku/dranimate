@@ -107,8 +107,8 @@ function buildFromOptions(options) {
 	const vertsFlatArray = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
 	const facesFlatArray = faces.map(face => face);
 
-	const pickingMesh = skin.getPickingMesh();
-	const pickingGeometry = skin.getPickingGeometry();
+	const pickingMesh = skin.getProxyMesh();
+	const pickingGeometry = skin.getProxyGeometry();
 	const selectionBox = createPuppetSelectionBox(pickingMesh);
 
 	const box3 = new Box3();
@@ -143,7 +143,7 @@ function buildFromOptions(options) {
 
 	const group = new Group();
 	group.add(skin.getMesh());
-	//group.add(skin.getPickingMesh());
+	//group.add(skin.getProxyMesh());
 	group.add(selectionBox.boxHelper);
 	group.add(selectionBox.topAnchor);
 	group.add(selectionBox.rightAnchor);

@@ -211,7 +211,7 @@ class Puppet {
 			this.needsUpdate = true;
 		}
 
-		const pickingGeometry = this.skin.getPickingGeometry();
+		const proxyGeometry = this.skin.getProxyGeometry();
 
 		// ROTATE PUPPET
 		if (shouldRotate) {
@@ -219,7 +219,7 @@ class Puppet {
 			this.previous.rotation = this.current.rotation;
 			const puppetCenter = this.getPuppetCenter2d();
 			this.controlPoints.forEach((controlPoint, index) => {
-				const {x, y} = pickingGeometry.vertices[controlPoint];
+				const {x, y} = proxyGeometry.vertices[controlPoint];
 				const point = new Vector2(x, y)
 					.sub(puppetCenter)
 					.multiplyScalar(1 / this.getScale())
@@ -234,7 +234,7 @@ class Puppet {
 			const puppetCenter = this.getPuppetCenter2d();
 			const xyDelta = new Vector2(dx, dy);
 			this.controlPoints.forEach((controlPoint, index) => {
-				const position = pickingGeometry.vertices[controlPoint].clone();
+				const position = proxyGeometry.vertices[controlPoint].clone();
 				const vertexPosition = new Vector2(position.x, position.y);
 				const point = vertexPosition
 					.sub(puppetCenter)
@@ -270,33 +270,27 @@ class Puppet {
 	
 		// Update puppet skin
 		if(this.needsUpdate) {
+			const scale = this.getScale();
 			// Update
-			this.skin.update();
+			this.skin.update(scale);
 			// Get puppet center
 			const puppetCenter = this.getPuppetCenter2d();
-			// Update picking mesh
-			this.skin.updatePicking(puppetCenter, this.getScale());
-			// Scale 
-			//this.skin.setTransform(this.getScale());	
-			//ARAP.updateMeshDeformation(this.arapMeshID);
-			//const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
-
-			// UPDATE CONTROL POINT GRAPHICS
+			// Update proxy mesh
+			this.skin.updateProxy(puppetCenter, scale);
+			// Update control point graphics 
 			this.controlPoints.forEach((controlPoint, index) => {
-				const vertex = pickingGeometry.vertices[controlPoint];
+				const vertex = proxyGeometry.vertices[controlPoint];
 				const controlPointSphere = this.controlPointPlanes[index];
 				controlPointSphere.position.x = vertex.x;
 				controlPointSphere.position.y = vertex.y;
 			});
-	
-			// UPDATE MISC THREEJS
-			//this.skin.pickingMesh.geometry.verticesNeedUpdate = true;
+			// Update selection box
 			this.selectionBox.boxHelper.object.geometry.computeBoundingBox();
 			this.selectionBox.boxHelper.update();
 			this.selectionBox.boxHelper.scale.z = 1; // To make sure volume != 0 (this will cause that warning to show up)
-			this.needsUpdate = false;
-	
 			this.updateSelectionBox();
+			// Done
+			this.needsUpdate = false;
 		}
 	}
 
@@ -360,9 +354,9 @@ class Puppet {
 
 	pointInsideMesh = (xUntransformed, yUntransformed) => {
 		const point = new Vector2(xUntransformed, yUntransformed)
-		const pickingGeometry = this.skin.getPickingGeometry();
-		const allFaces = pickingGeometry.faces;
-		const allVerts = pickingGeometry.vertices;
+		const proxyGeometry = this.skin.getProxyGeometry();
+		const allFaces = proxyGeometry.faces;
+		const allVerts = proxyGeometry.vertices;
 		for(let i = 0; i < allFaces.length; i++) {
 			const v1 = allVerts[allFaces[i].a];
 			const v2 = allVerts[allFaces[i].b];

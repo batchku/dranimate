@@ -67,79 +67,107 @@ export default class SkinnedMesh {
 		const geometry = new BufferGeometry();
 		geometry.setIndex(this.facesFlatArray);
 		geometry.setAttribute('position', new Float32BufferAttribute(verts3DFlatArray, 3));  
-		geometry.setAttribute('weight0', new Float32BufferAttribute(weights0, 1));  
-		geometry.setAttribute('weight1', new Float32BufferAttribute(weights1, 1));  
-		geometry.setAttribute('weight2', new Float32BufferAttribute(weights2, 1));  
-		geometry.setAttribute('weight3', new Float32BufferAttribute(weights3, 1));  
-		geometry.setAttribute('weight4', new Float32BufferAttribute(weights4, 1));  
+		geometry.setAttribute('weight0', new Float32BufferAttribute(weights0, 1));
+		geometry.setAttribute('weight1', new Float32BufferAttribute(weights1, 1));
+		geometry.setAttribute('weight2', new Float32BufferAttribute(weights2, 1));
+		geometry.setAttribute('weight3', new Float32BufferAttribute(weights3, 1));
+		geometry.setAttribute('weight4', new Float32BufferAttribute(weights4, 1));
 		geometry.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
 		/* Create skinning material */
 		this.createMaterial(texture, this.handlesFlatArray);
 		/* Create mesh */
 		this.mesh = new Mesh(geometry, this.skinningMaterial);
-		/* Create cpu side picking mesh */
-		this.pickingGeometry = new Geometry();
-		this.pickingMesh = new Mesh(this.pickingGeometry, new MeshBasicMaterial({wireframe: true}));
-		verts.map((vertex) => new Vector3(vertex[0], vertex[1], 0)).forEach(vertex => this.pickingGeometry.vertices.push(vertex));
-		//SKTODO
-		for(let i = 0; i < this.facesFlatArray.length; i+=3) {
+		/* Create cpu side proxy mesh */
+		this.proxyGeometry = new Geometry();
+		this.proxyMesh = new Mesh(this.proxyGeometry, new MeshBasicMaterial({wireframe: true}));
+		verts.map((vertex) => new Vector3(vertex[0], vertex[1], 0)).forEach(vertex => this.proxyGeometry.vertices.push(vertex));
+		for(let i = 0; i < this.facesFlatArray.length-9; i+=3) {
 			const f1 = this.facesFlatArray[i];
 			const f2 = this.facesFlatArray[i + 1];
 			const f3 = this.facesFlatArray[i + 2];
-			this.pickingGeometry.faces.push(new Face3(f1, f2, f3 ));
+			this.proxyGeometry.faces.push(new Face3(f1, f2, f3));
 		}
 		/* Initial update */
-		this.update();
-		/* Initialise picking mesh */	
-		this.updatePicking({x: 0.0, y: 0.0}, 1.0);
+		this.update(1.0);
+		/* Initialise proxy mesh */	
+		this.updateProxy({x: 0.0, y: 0.0}, 1.0);
 	}
 	/* Get three.js mesh instance*/
 	getMesh(): Mesh {
 		return this.mesh;
 	}
-	/* Get three.js cpu side picking mesh instance*/
-	getPickingMesh(): Mesh {
-		return this.pickingMesh;
+	/* Get three.js cpu side proxy mesh instance*/
+	getProxyMesh(): Mesh {
+		return this.proxyMesh;
 	}
-	/* Get three.js cpu side picking mesh instance*/
-	getPickingGeometry(): Geometry {
-		return this.pickingGeometry;
+	/* Get three.js cpu side proxy mesh instance*/
+	getProxyGeometry(): Geometry {
+		return this.proxyGeometry;
 	}
 	/* Update skinned mesh */
-	update(): void {
+	update(scale): void {
+		const numHandles = this.handlesFlatArray.length / 2;
+		// Update scale
+		this.mesh.scale.set(scale, scale, 1.0);
 		//this.handleTransformsFlatArray = this.fastShape.update(this.handleTranslationsFlatArray);
 		//console.log('HANDLE TRANSFORMS: ', this.handleTransformsFlatArray);
-		for(var i=0; i<5; i++) {
-			const originalX = this.handlesFlatArray[i*2+0];
-			const originalY = this.handlesFlatArray[i*2+1];
-			const x = this.handleTranslationsFlatArray[i*2+0];
-			const y = this.handleTranslationsFlatArray[i*2+1];
-			//const handleTransform = (new Matrix4()).fromArray(this.handleTransformsFlatArray, i*12);
-			const handleTransform = new Matrix4().makeTranslation(x - originalX, y - originalY, 0.0);
-			handleTransform.premultiply(new Matrix4().makeRotationZ(0.0));
-			handleTransform.transpose();
+		//console.log('----');
+		var centerOfGravityX = 0.0;
+		var centerOfGravityY = 0.0;
+		for(var h=0; h<5; h++) {
+			centerOfGravityX += this.handleTranslationsFlatArray[h*2+0];
+			centerOfGravityY += this.handleTranslationsFlatArray[h*2+1];
+		}
+		centerOfGravityX /= 5;
+		centerOfGravityY /= 5;
+		var centerOfGravityOrigX = 0.0;
+		var centerOfGravityOrigY = 0.0;
+		for(var h=0; h<5; h++) {
+			centerOfGravityOrigX += this.handlesFlatArray[h*2+0];
+			centerOfGravityOrigY += this.handlesFlatArray[h*2+1];
+		}
+		centerOfGravityOrigX /= 5;
+		centerOfGravityOrigY /= 5;
+		var averageHandleRotation = 0.0;
+		const handleDampers = []; 
+		for(var h=0; h<5; h++) {
+			const originalX = this.handlesFlatArray[h*2+0];
+			const originalY = this.handlesFlatArray[h*2+1];
+			const x = this.handleTranslationsFlatArray[h*2+0];
+			const y = this.handleTranslationsFlatArray[h*2+1];
+			const xFromCenter = x - centerOfGravityX;
+			const yFromCenter = y - centerOfGravityY;
+			const origXFromCenter = originalX - centerOfGravityOrigX;
+			const origYFromCenter = originalY - centerOfGravityOrigY;
+			const dot = origXFromCenter*xFromCenter + origYFromCenter*yFromCenter; // dot product between [x1, y1] and [x2, y2]
+			const det = origXFromCenter*yFromCenter - origYFromCenter*xFromCenter; // determinant
+			const zRotation = Math.atan2(det, dot); 
+			const distanceFromCenter = Math.min(Math.sqrt(xFromCenter*xFromCenter+yFromCenter*yFromCenter)*0.01, 1.0);
+			handleDampers.push({
+				distanceFromCenter,
+				zRotation
+			});
+			averageHandleRotation += zRotation * Math.min(((distanceFromCenter * distanceFromCenter - 0.8)), 1.0);
+		}
+		averageHandleRotation /= numHandles;
+		console.log('av rot', averageHandleRotation);
+		for(var h=0; h<5; h++) {
+			const { distanceFromCenter } = handleDampers[h];
+			const { zRotation } = handleDampers[h];
+			const followFactor = distanceFromCenter;
+			const finalRotation = lerp(0.0, zRotation, followFactor); 
+			console.log(h, 'finalRot', finalRotation * 360 / (2*3.1415), zRotation * 360 / (2*3.1415), followFactor);
+			const handleTransform = this.buildHandleTransform(h, finalRotation);
 			const flat = handleTransform.toArray();
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+0] = flat[0];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+1] = flat[1];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+2] = flat[2];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+3] = flat[3];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+4] = flat[4];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+5] = flat[5];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+6] = flat[6];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+7] = flat[7];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+8] = flat[8];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+9] = flat[9];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+10] = flat[10];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+11] = flat[11];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+12] = flat[12];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+13] = flat[13];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+14] = flat[14];
-			this.skinningMaterial.uniforms.handleTransforms.value[i*16+15] = flat[15];
+			// Update shader transform uniforms
+			for(var t=0; t<16; t++) {
+				this.skinningMaterial.uniforms.handleTransforms.value[h*16+t] = flat[t];
+			}
 		}
 	}
-	/* Update picking mesh */
-	updatePicking(puppetCenter, scale): void {
-		const pickingGeometry = this.getPickingGeometry();
+	/* Update proxy mesh */
+	updateProxy(puppetCenter, scale): void {
+		const proxyGeometry = this.getProxyGeometry();
 		for (let i = 0; i < this.vertsFlatArray.length; i += 2) {
 			const vertexX = this.vertsFlatArray[i+0];
 			const vertexY = this.vertsFlatArray[i+1];
@@ -158,22 +186,39 @@ export default class SkinnedMesh {
 				skinnedY += (y - originalY) * handleWeight;
 			}
 			// Recenter
+			// SKTODO: Remove
 			const point = new Vector2(skinnedX, skinnedY)
 				.sub(puppetCenter)
 				.multiplyScalar(scale)
 				.add(puppetCenter);
-			const vertex = pickingGeometry.vertices[i / 2];
+			const vertex = proxyGeometry.vertices[i / 2];
 			vertex.x = point.x;
 			vertex.y = point.y;
 		}
-		pickingGeometry.vertices[0].x = pickingGeometry.vertices[pickingGeometry.vertices.length-1].x;
-		pickingGeometry.vertices[0].y = pickingGeometry.vertices[pickingGeometry.vertices.length-1].y;
-		this.pickingGeometry.verticesNeedUpdate = true;
+		proxyGeometry.vertices[0].x = proxyGeometry.vertices[proxyGeometry.vertices.length-1].x;
+		proxyGeometry.vertices[0].y = proxyGeometry.vertices[proxyGeometry.vertices.length-1].y;
+		this.proxyGeometry.verticesNeedUpdate = true;
 	}
 	/* Call when handle position changed */
 	updateHandle(index: number, x: number, y:number): void {
 		this.handleTranslationsFlatArray[index*2+0] = x;
 		this.handleTranslationsFlatArray[index*2+1] = y;
+	}
+	private buildHandleTransform(h: number, zRotation: number): Matrix4 {
+		const originalX = this.handlesFlatArray[h*2+0];
+		const originalY = this.handlesFlatArray[h*2+1];
+		const x = this.handleTranslationsFlatArray[h*2+0];
+		const y = this.handleTranslationsFlatArray[h*2+1];
+		// Transform vertex into handle space
+		const handleTransform = new Matrix4().makeTranslation(-originalX, -originalY, 0.0);
+		// Rotate vertex around handle
+		handleTransform.premultiply(new Matrix4().makeRotationZ(zRotation));
+		// Transform vertex back into model space
+		handleTransform.premultiply(new Matrix4().makeTranslation(originalX, originalY, 0.0));
+		// Translate vertex toward handle
+		handleTransform.premultiply(new Matrix4().makeTranslation(x-originalX, y-originalY, 0.0));
+		handleTransform.transpose();
+		return handleTransform;
 	}
 	/* Create three.js material for updating skin */
 	private createMaterial(texture: object, handlesFlatArray: Array<number>) {
@@ -208,13 +253,12 @@ export default class SkinnedMesh {
 		void main() {
 			vUv = uv;
 			vec4 pos = vec4(position, 1.0);
-			vec4 blendPosition = vec4(0.0);
-			blendPosition += pos * handleTransforms[0] * weight0; 
-			blendPosition += pos * handleTransforms[1] * weight1; 
-			blendPosition += pos * handleTransforms[2] * weight2; 
-			blendPosition += pos * handleTransforms[3] * weight3; 
-			blendPosition += pos * handleTransforms[4] * weight4; 
-			vec4 modelViewPosition = modelViewMatrix * blendPosition;
+			mat4 skinTransform = handleTransforms[0] * weight0; 
+			skinTransform += handleTransforms[1] * weight1; 
+			skinTransform += handleTransforms[2] * weight2; 
+			skinTransform += handleTransforms[3] * weight3; 
+			skinTransform += handleTransforms[4] * weight4; 
+			vec4 modelViewPosition = modelViewMatrix * (pos * skinTransform);
 			gl_Position = projectionMatrix * modelViewPosition;
 		}
 	`;
@@ -229,11 +273,17 @@ export default class SkinnedMesh {
 	private facesFlatArray: Array<number>;
 	private weightsFlatArray: Array<number>;
 	private mesh: Mesh;
-	private pickingMesh: Mesh;
-	private pickingGeometry: Geometry;
+	private proxyMesh: Mesh;
+	private proxyGeometry: Geometry;
 	private handlesFlatArray: Array<number>;
 	private handleTranslationsFlatArray: Array<number>;
 	private handleTransformsFlatArray: Array<number>;
 	private skinningMaterial: ShaderMaterial;
 	private fastShape;
 } 
+
+function lerp(value1, value2, amount) {
+	amount = amount < 0 ? 0 : amount;
+	amount = amount > 1 ? 1 : amount;
+	return value1 + (value2 - value1) * amount;
+}
