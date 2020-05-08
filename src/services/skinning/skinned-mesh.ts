@@ -5,8 +5,10 @@ import {
 	Vector3,
 	Matrix4,
 	Face3,
+	Line,
 	MeshBasicMaterial,
 	ShaderMaterial,
+	LineBasicMaterial,
 	DoubleSide,
 	Geometry,
 	BufferGeometry,
@@ -96,6 +98,37 @@ export default class SkinnedMesh {
 	getMesh(): Mesh {
 		return this.mesh;
 	}
+	updateDebugLines(scene) {
+		if(!this.debugLines) {
+			this.debugLines = [];
+			const numHandles = this.handlesFlatArray.length / 2;
+			for(var h=0; h<numHandles; h++) {
+				var points = [];
+				points.push( new Vector3( 0, 0, 0 ) );
+				points.push( new Vector3( 0, 0, 0 ) );
+				var material = new LineBasicMaterial( { color: 0xffffff } );
+				var geometry = new BufferGeometry().setFromPoints( points );
+				var line = new Line( geometry, material );
+				this.debugLines.push(line);
+				scene.add(line);
+			}
+		} else {
+			const numHandles = this.handlesFlatArray.length / 2;
+			for(var h=0; h<numHandles; h++) {
+				const line = this.debugLines[h];
+				const pos = new Vector3(this.handleTranslationsFlatArray[h*2+0],  this.handleTranslationsFlatArray[h*2+1], 0);
+				const endPos = pos.clone();
+				const points = [];
+				const angle = this.currentAngles[h];
+				endPos.add(new Vector3(Math.sin(angle) * 60, -Math.cos(angle) * 60, 0));
+				points.push(pos);
+				points.push(endPos);
+				line.geometry.setFromPoints( points );
+				console.log('ENDPOS', endPos);
+        line.geometry.verticesNeedUpdate = true;
+			}
+		}
+	}
 	/* Get three.js cpu side proxy mesh instance*/
 	getProxyMesh(): Mesh {
 		return this.proxyMesh;
@@ -104,6 +137,25 @@ export default class SkinnedMesh {
 	getProxyGeometry(): Geometry {
 		return this.proxyGeometry;
 	}
+	getRelaxedAngles(inputFlatArray) {
+		const result = [];
+		const inputFlatArrayWithGravity = inputFlatArray.slice(); 
+		inputFlatArrayWithGravity.push(0);
+		inputFlatArrayWithGravity.push(500);
+		const numHandles = inputFlatArrayWithGravity.length / 2;
+		for(var h=0; h<numHandles; h++) {
+			var pos = new Vector2(inputFlatArrayWithGravity[h*2+0],  inputFlatArrayWithGravity[h*2+1]);
+			var acc = new Vector2();
+			for(var l=0; l<numHandles; l++) {
+				if(l == h) continue;
+				var posDash = new Vector2(inputFlatArrayWithGravity[l*2+0],  inputFlatArrayWithGravity[l*2+1]);
+				acc.sub(posDash.sub(pos));
+			}
+			const relaxedAngle = Math.atan2(acc.x, -acc.y);// + (2*3.14159)) % (2*3.14159); 
+			result.push(relaxedAngle);
+		}
+		return result;
+	}
 	/* Update skinned mesh */
 	update(scale): void {
 		const numHandles = this.handlesFlatArray.length / 2;
@@ -111,53 +163,46 @@ export default class SkinnedMesh {
 		this.mesh.scale.set(scale, scale, 1.0);
 		//this.handleTransformsFlatArray = this.fastShape.update(this.handleTranslationsFlatArray);
 		//console.log('HANDLE TRANSFORMS: ', this.handleTransformsFlatArray);
-		//console.log('----');
-		var centerOfGravityX = 0.0;
-		var centerOfGravityY = 0.0;
-		for(var h=0; h<5; h++) {
-			centerOfGravityX += this.handleTranslationsFlatArray[h*2+0];
-			centerOfGravityY += this.handleTranslationsFlatArray[h*2+1];
+		this.relaxedAngles = this.getRelaxedAngles(this.handlesFlatArray);
+		this.currentAngles = this.getRelaxedAngles(this.handleTranslationsFlatArray); 
+		this.deltaAngles = []; 
+		for(var h=0; h<numHandles; h++) {
+			this.deltaAngles.push(this.currentAngles[h] - this.relaxedAngles[h]);
 		}
-		centerOfGravityX /= 5;
-		centerOfGravityY /= 5;
-		var centerOfGravityOrigX = 0.0;
-		var centerOfGravityOrigY = 0.0;
-		for(var h=0; h<5; h++) {
-			centerOfGravityOrigX += this.handlesFlatArray[h*2+0];
-			centerOfGravityOrigY += this.handlesFlatArray[h*2+1];
+		/*
+		for(var h=0; h<numHandles; h++) {
+			const hOrigX = this.handlesFlatArray[h*2+0];
+			const hOrigY = this.handlesFlatArray[h*2+1];
+			const hX = this.handleTranslationsFlatArray[h*2+0];
+			const hY = this.handleTranslationsFlatArray[h*2+1];
+			const hRot = this.handleRotations[h]; 
+			const happyX = Math.sin(hRot) * 1.0;
+			const happyY = Math.cos(hRot) * 1.0;
+			var rotationalForce = 0.0;
+			for(var oh=0; oh<numHandles; oh++) {
+				if(oh !== h) {
+					const ohOrigX = this.handlesFlatArray[oh*2+0];
+					const ohOrigY = this.handlesFlatArray[oh*2+1];
+					const ohX = this.handleTranslationsFlatArray[oh*2+0];
+					const ohY = this.handleTranslationsFlatArray[oh*2+1];
+					const toOtherOrigX = ohOrigX - hOrigX; 
+					const toOtherOrigY = ohOrigY - hOrigY; 
+					const toOtherX = ohX - hX; 
+					const toOtherY = ohY - hY; 
+					const idealAngle = angleBetween(toOtherOrigX, toOtherOrigY, 0.0, -1.0); 
+					const currentAngle = angleBetween(toOtherX, toOtherY, happyX, happyY); 
+					const f = (idealAngle - currentAngle) / 20.0;
+					rotationalForce += f; 
+					if(h==0 && oh==1) {
+						console.log('R1 adding force', f, 'currentAngle', currentAngle, 'idealAngle', idealAngle);
+					}
+				}			
+			}
+			this.handleRotations[h] += rotationalForce;
 		}
-		centerOfGravityOrigX /= 5;
-		centerOfGravityOrigY /= 5;
-		var averageHandleRotation = 0.0;
-		const handleDampers = []; 
-		for(var h=0; h<5; h++) {
-			const originalX = this.handlesFlatArray[h*2+0];
-			const originalY = this.handlesFlatArray[h*2+1];
-			const x = this.handleTranslationsFlatArray[h*2+0];
-			const y = this.handleTranslationsFlatArray[h*2+1];
-			const xFromCenter = x - centerOfGravityX;
-			const yFromCenter = y - centerOfGravityY;
-			const origXFromCenter = originalX - centerOfGravityOrigX;
-			const origYFromCenter = originalY - centerOfGravityOrigY;
-			const dot = origXFromCenter*xFromCenter + origYFromCenter*yFromCenter; // dot product between [x1, y1] and [x2, y2]
-			const det = origXFromCenter*yFromCenter - origYFromCenter*xFromCenter; // determinant
-			const zRotation = Math.atan2(det, dot); 
-			const distanceFromCenter = Math.min(Math.sqrt(xFromCenter*xFromCenter+yFromCenter*yFromCenter)*0.01, 1.0);
-			handleDampers.push({
-				distanceFromCenter,
-				zRotation
-			});
-			averageHandleRotation += zRotation * Math.min(((distanceFromCenter * distanceFromCenter - 0.8)), 1.0);
-		}
-		averageHandleRotation /= numHandles;
-		console.log('av rot', averageHandleRotation);
-		for(var h=0; h<5; h++) {
-			const { distanceFromCenter } = handleDampers[h];
-			const { zRotation } = handleDampers[h];
-			const followFactor = distanceFromCenter;
-			const finalRotation = lerp(0.0, zRotation, followFactor); 
-			console.log(h, 'finalRot', finalRotation * 360 / (2*3.1415), zRotation * 360 / (2*3.1415), followFactor);
-			const handleTransform = this.buildHandleTransform(h, finalRotation);
+		*/
+		for(var h=0; h<numHandles; h++) {
+			const handleTransform = this.buildHandleTransform(h, this.deltaAngles[h]);
 			const flat = handleTransform.toArray();
 			// Update shader transform uniforms
 			for(var t=0; t<16; t++) {
@@ -167,6 +212,7 @@ export default class SkinnedMesh {
 	}
 	/* Update proxy mesh */
 	updateProxy(puppetCenter, scale): void {
+		const numHandles = this.handlesFlatArray.length / 2;
 		const proxyGeometry = this.getProxyGeometry();
 		for (let i = 0; i < this.vertsFlatArray.length; i += 2) {
 			const vertexX = this.vertsFlatArray[i+0];
@@ -174,7 +220,7 @@ export default class SkinnedMesh {
 			// Calculate vertex skinned position
 			var skinnedX = vertexX;
 			var skinnedY = vertexY;
-			for (let h = 0; h < 5; h++) {
+			for (let h = 0; h < numHandles; h++) {
 				const originalX = this.handlesFlatArray[h*2+0];
 				const originalY = this.handlesFlatArray[h*2+1];
 				const x = this.handleTranslationsFlatArray[h*2+0];
@@ -279,6 +325,10 @@ export default class SkinnedMesh {
 	private handleTranslationsFlatArray: Array<number>;
 	private handleTransformsFlatArray: Array<number>;
 	private skinningMaterial: ShaderMaterial;
+	private relaxedAngles: Array<number>;
+	private currentAngles: Array<number>;
+	private deltaAngles: Array<number>;
+	private debugLines;
 	private fastShape;
 } 
 
@@ -287,3 +337,28 @@ function lerp(value1, value2, amount) {
 	amount = amount > 1 ? 1 : amount;
 	return value1 + (value2 - value1) * amount;
 }
+
+function angleBetween(x1, x2, y1, y2) {
+	const dot = x1*x2 + y1*y2; // dot product between [x1, y1] and [x2, y2]
+	const det = x1*y2 + y1*x2; // determinant
+	return (Math.atan2(det, dot));// + (2*3.14159)) % (2*3.14159); 
+}
+				/*
+				if(h==0) {
+					console.log('R1 finalRot', finalRotation * 360 / (2*3.1415));
+				}
+				if(h==1) {
+					console.log('R2 finalRot', finalRotation * 360 / (2*3.1415));
+				}
+				*/
+				/*
+				const xFromCenter = x - centerOfGravityX;
+				const yFromCenter = y - centerOfGravityY;
+				const origXFromCenter = originalX - centerOfGravityOrigX;
+				const origYFromCenter = originalY - centerOfGravityOrigY;
+				const dot = origXFromCenter*xFromCenter + origYFromCenter*yFromCenter; // dot product between [x1, y1] and [x2, y2]
+				const det = origXFromCenter*yFromCenter - origYFromCenter*xFromCenter; // determinant
+				const zRotation = Math.atan2(det, dot); 
+				const distanceFromCenter = Math.min(Math.sqrt(xFromCenter*xFromCenter+yFromCenter*yFromCenter)*0.01, 1.0);
+				*/
+

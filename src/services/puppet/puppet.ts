@@ -292,6 +292,9 @@ class Puppet {
 			// Done
 			this.needsUpdate = false;
 		}
+
+		this.skin.updateDebugLines(this.scene);
+
 	}
 
 	updateSelectionBox = () => {
@@ -385,6 +388,11 @@ class Puppet {
 		}
 		return false;
 	}
+
+	setScene(scene) {
+		this.scene = scene;	
+	}
+	private scene;
 }
 
 export default Puppet;

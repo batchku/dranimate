@@ -393,6 +393,7 @@ class Dranimate {
 		if(matchingIndex > -1) {
 			this.removePuppetByIndex(matchingIndex);
 		}
+		p.setScene(this.scene);	
 		this.puppets.push(p);
 		this.scene.add(p.group);
 
