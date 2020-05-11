@@ -77,6 +77,8 @@ class Puppet {
 		//this.arapMeshID = ARAP.createNewARAPMesh(this.vertsFlatArray, this.facesFlatArray);
 
 		/* Create FAST shape */
+		console.log('VERTS', this.verts);
+		console.log('CPS', this.controlPoints);
 		this.fastShape = new Shape(this.vertsFlatArray, this.facesFlatArray, 2);
 		for(let i = 0; i < this.controlPoints.length; i++) {
 			this.fastShape.addControlPoint();
@@ -179,7 +181,7 @@ class Puppet {
 		});
     */
     for(var i=0; i<controlPoints.length; i++) {
-      this.fastShape.setControlPointPosition(i, controlPoints[i].position.x, controlPoints[i].position.y);
+    	this.fastShape.setControlPointPosition(i, controlPoints[i].position.x, controlPoints[i].position.y);
     }
 	
 		if (this.recording.isRecording()) {
@@ -288,9 +290,9 @@ class Puppet {
 	
 		// DEFORM PUPPET WITH FAST 
 		if(this.needsUpdate) {
-      // Update FAST shape
-      const deformedVerts = this.fastShape.update();
-      console.log('deformed verts', deformedVerts);
+			// Update FAST shape
+			const deformedVerts = this.fastShape.update();
+			console.log('deformed verts', deformedVerts);
 
 			// UPDATE ARAP DEFORMER
 			//ARAP.updateMeshDeformation(this.arapMeshID);
@@ -303,13 +305,11 @@ class Puppet {
 					.sub(puppetCenter)
 					.multiplyScalar(this.getScale())
 					.add(puppetCenter);
-        if(i !== deformedVerts.length-9) {
-          vertex.x = point.x;
-          vertex.y = point.y;
-        } else {
-          vertex.x = -50.0;
-          vertex.y = -50.0;
-        }
+				vertex.x = point.x;
+				vertex.y = point.y;
+				if(point.y === 0) {
+					console.log('zero!', i/3);
+				}
 			}
 	
 			// UPDATE CONTROL POINT GRAPHICS

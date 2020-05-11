@@ -114,9 +114,9 @@ function buildFromOptions(options) {
 	const imageTexture = new Texture(canvas);
 	imageTexture.needsUpdate = true;
 	const texturedMaterial = new MeshBasicMaterial({
-		map: null,//imageTexture,
+		map: imageTexture,
 		transparent: true,
-    wireframe: true
+    //wireframe: true
 	});
 	texturedMaterial.depthWrite = false;
 
