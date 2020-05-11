@@ -3,6 +3,7 @@ import {
 	BoxHelper,
 	Color,
 	Face3,
+	Geometry,
 	Group,
 	Mesh,
 	MeshBasicMaterial,
@@ -21,7 +22,10 @@ import * as THREE from 'three';
 import Puppet from 'services/puppet/puppet';
 import generateUniqueId from 'services/util/uuid';
 import ControlPoint from 'services/puppet/control-point';
-import SkinnedMesh from 'services/skinning/skinned-mesh';
+
+// Temporary guard against this nasty guy: https://github.com/cmuartfab/dranimate-browser_archive/issues/1
+const errorMessage = 'Must load largest puppet first.'
+let mostFaces = 0;
 
 function createAnchor(size, color) {
 	const anchorGeometry = new SphereGeometry(size, 32, 32);
@@ -41,7 +45,7 @@ function createTexturedPlane(size, texturePath) {
 		side: DoubleSide,
 		map: anchorTexture,
 		transparent: true,
-		depthWrite: false
+		depthWrite: false,
 	});
 	const anchor = new Mesh(anchorGeometry, anchorMaterial);
 	anchor.rotateX(Math.PI);
@@ -91,37 +95,72 @@ function buildFromOptions(options) {
 	const controlPoints = options.controlPoints;
 	const imageNoBG = options.imageNoBG;
 
-	/* Create texture */
+	/* Generate wireframe material */
+	const wireframeMaterial = new MeshBasicMaterial({
+		color: 0xFF0000,
+		wireframe: true,
+		wireframeLinewidth: 1
+	});
+
+	/* Generate image material */
 	const canvas = document.createElement('canvas');
 	canvas.width  = imageNoBG.width;
 	canvas.height = imageNoBG.height;
 	const context = canvas.getContext('2d');
+	// canvas.getContext('2d');
 	context.drawImage(imageNoBG, 0, 0, imageNoBG.width, imageNoBG.height, 0, 0, canvas.width, canvas.height);
+
+	const geometry = new Geometry();
 	const imageTexture = new Texture(canvas);
 	imageTexture.needsUpdate = true;
+	const texturedMaterial = new MeshBasicMaterial({
+		map: null,//imageTexture,
+		transparent: true,
+    wireframe: true
+	});
+	texturedMaterial.depthWrite = false;
 
-	/* Create puppet skin */
-	const skin = new SkinnedMesh(verts, faces, controlPoints, imageTexture);
-	
-	/* Create flat vertex array */
 	const vertsFlatArray = verts.reduce((flatArray, vert) => flatArray.concat(vert[0], vert[1]), []);
 	const facesFlatArray = faces.map(face => face);
 
-	const pickingMesh = skin.getProxyMesh();
-	const pickingGeometry = skin.getProxyGeometry();
-	const selectionBox = createPuppetSelectionBox(pickingMesh);
+	// add geometry vertices
+	verts.map((vertex) => new Vector3(vertex[0], vertex[1], 0))
+		.forEach(vertex => geometry.vertices.push(vertex));
+
+
+	for(let i = 0; i < facesFlatArray.length; i+=3) {
+		const f1 = facesFlatArray[i];
+		const f2 = facesFlatArray[i + 1];
+		const f3 = facesFlatArray[i + 2];
+		geometry.faces.push(new Face3(f1, f2, f3 ));
+		geometry.faceVertexUvs[0].push( [
+			new Vector2(geometry.vertices[f1].x / imageNoBG.width, 1 - geometry.vertices[f1].y / imageNoBG.height),
+			new Vector2(geometry.vertices[f2].x / imageNoBG.width, 1 - geometry.vertices[f2].y / imageNoBG.height),
+			new Vector2(geometry.vertices[f3].x / imageNoBG.width, 1 - geometry.vertices[f3].y / imageNoBG.height)
+		]);
+	}
+
+  console.log('V Length', geometry.vertices.length);
+  console.log('F Length', geometry.faces.length);
+
+	// geometry.translate(-200, -200, 0);
+
+	const threeMesh = new Mesh(geometry, texturedMaterial);
+	// threeMesh.renderOrder = 1;
+	
+	const selectionBox = createPuppetSelectionBox(threeMesh);
 
 	const box3 = new Box3();
 	box3.setFromObject(selectionBox.boxHelper);
 	const size = box3.getSize(new Vector3());
 	const halfSize = new Vector2(size.x, size.y).multiplyScalar(0.5);
-	const vertexSum = pickingGeometry.vertices.reduce((sum, vertex) => ({
+	const vertexSum = geometry.vertices.reduce((sum, vertex) => ({
 		x: sum.x + vertex.x,
 		y: sum.y + vertex.y
 	}), {x: 0, y: 0});
 	const center = new Vector2(
-		vertexSum.x / pickingGeometry.vertices.length,
-		vertexSum.y / pickingGeometry.vertices.length
+		vertexSum.x / geometry.vertices.length,
+		vertexSum.y / geometry.vertices.length
 	);
 
 	const controlPointPlanes = options.controlPointPositions.map((controlPoint: ControlPoint) => {
@@ -142,8 +181,7 @@ function buildFromOptions(options) {
 	// centerSphere.position.y = center.y;
 
 	const group = new Group();
-	group.add(skin.getMesh());
-	//group.add(skin.getProxyMesh());
+	group.add(threeMesh);
 	group.add(selectionBox.boxHelper);
 	group.add(selectionBox.topAnchor);
 	group.add(selectionBox.rightAnchor);
@@ -160,12 +198,14 @@ function buildFromOptions(options) {
 		image,
 		id,
 		name,
+		wireframeMaterial,
+		texturedMaterial,
 		verts,
 		faces,
 		controlPoints,
 		vertsFlatArray,
 		facesFlatArray,
-		skin,
+		threeMesh,
 		selectionBox,
 		controlPointPlanes: controlPointPlanes,
 		group,
@@ -175,6 +215,14 @@ function buildFromOptions(options) {
 }
 
 export default function requestPuppetCreation(options) {
+	console.log('requestPuppetCreation', options);
+	if (!mostFaces) {
+		mostFaces = options.faces.length;
+	}
+	if (options.faces.length > mostFaces) {
+		alert(errorMessage);
+		return false;
+	}
 
 	const puppetData = {
 		imageNoBG: options.imageNoBG,

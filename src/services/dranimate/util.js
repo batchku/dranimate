@@ -4,7 +4,7 @@ function getPuppetAndControlPointFromPostion(puppets, x, y, distanceThreshold, z
   let activeControlPoint;
   for(var p = 0; p < puppets.length; p++) { // WHY LOOP OVER ALL PUPPETS?
     const puppet = puppets[p];
-    const verts = puppet.skin.getProxyGeometry().vertices;
+    const verts = puppet.threeMesh.geometry.vertices;
     const controlPoints = puppet.controlPoints;
 
     const closeControlPointIndex = controlPoints.findIndex((controlPoint, index) => {
