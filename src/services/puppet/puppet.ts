@@ -73,15 +73,10 @@ class Puppet {
 		this.playRecording = false;
 		this.selectionBox = puppetData.selectionBox;
 
-		console.log('----Puppet.generateMesh from ', this.vertsFlatArray.length / 2);
-		//this.arapMeshID = ARAP.createNewARAPMesh(this.vertsFlatArray, this.facesFlatArray);
-
 		/* Create FAST shape */
-		console.log('VERTS', this.verts);
-		console.log('CPS', this.controlPoints);
 		this.fastShape = new Shape(this.vertsFlatArray, this.facesFlatArray, 2);
 		for(let i = 0; i < this.controlPoints.length; i++) {
-			this.fastShape.addControlPoint();
+			this.fastShape.addControlPoint(this.controlPoints[i]);
 		}
 		for(let i = 0; i < this.controlPoints.length; i++) {
 			const cpi = this.controlPoints[i];
@@ -175,14 +170,9 @@ class Puppet {
 
 	setControlPointPositions = (controlPoints): void => {
 		this.needsUpdate = true;
-    /*
-		controlPoints.forEach(controlPoint => {
-			ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.position.x, controlPoint.position.y)
-		});
-    */
-    for(var i=0; i<controlPoints.length; i++) {
-    	this.fastShape.setControlPointPosition(i, controlPoints[i].position.x, controlPoints[i].position.y);
-    }
+		for(var i=0; i<controlPoints.length; i++) {
+			this.fastShape.setControlPointPosition(i, controlPoints[i].position.x, controlPoints[i].position.y);
+		}
 	
 		if (this.recording.isRecording()) {
 			const puppetCenter = this.getPuppetCenter2d();
@@ -201,8 +191,7 @@ class Puppet {
 
 	setControlPointPosition = (controlPointIndex, position) => {
 		this.needsUpdate = true;
-		//ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPointIndex], position.x, position.y);
-    this.fastShape.setControlPointPosition(controlPointIndex, position.x, position.y);
+		this.fastShape.setControlPointPosition(controlPointIndex, position.x, position.y);
  
 		// NOTE: there still might be some unforseen problems with over recording
 		if (this.recording.isRecording()) {
@@ -282,8 +271,9 @@ class Puppet {
 				});
 				// calling this.setControlPointPositions here will over record, look into simplifying this
 				this.needsUpdate = true;
-				absoluteControlPoints.forEach(controlPoint => {
-					//ARAP.setControlPointPosition(this.arapMeshID, this.controlPoints[controlPoint.cpi], controlPoint.position.x, controlPoint.position.y)
+				absoluteControlPoints.forEach((controlPoint, i) => {
+					console.log('CP', controlPoint, i);
+					this.fastShape.setControlPointPosition(i, controlPoint.position.x, controlPoint.position.y);
 				});
 			});
 		}
@@ -292,11 +282,7 @@ class Puppet {
 		if(this.needsUpdate) {
 			// Update FAST shape
 			const deformedVerts = this.fastShape.update();
-			console.log('deformed verts', deformedVerts);
-
-			// UPDATE ARAP DEFORMER
-			//ARAP.updateMeshDeformation(this.arapMeshID);
-			//const deformedVerts = ARAP.getDeformedVertices(this.arapMeshID, this.vertsFlatArray.length);
+			//console.log('deformed verts', deformedVerts);
 
 			const puppetCenter = this.getPuppetCenter2d();
 			for (let i = 0; i < deformedVerts.length; i += 3) {
@@ -307,9 +293,6 @@ class Puppet {
 					.add(puppetCenter);
 				vertex.x = point.x;
 				vertex.y = point.y;
-				if(point.y === 0) {
-					console.log('zero!', i/3);
-				}
 			}
 	
 			// UPDATE CONTROL POINT GRAPHICS

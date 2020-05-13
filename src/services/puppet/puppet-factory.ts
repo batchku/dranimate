@@ -23,10 +23,6 @@ import Puppet from 'services/puppet/puppet';
 import generateUniqueId from 'services/util/uuid';
 import ControlPoint from 'services/puppet/control-point';
 
-// Temporary guard against this nasty guy: https://github.com/cmuartfab/dranimate-browser_archive/issues/1
-const errorMessage = 'Must load largest puppet first.'
-let mostFaces = 0;
-
 function createAnchor(size, color) {
 	const anchorGeometry = new SphereGeometry(size, 32, 32);
 	const anchorMaterial = new MeshBasicMaterial({color: color, depthWrite: false});
@@ -116,7 +112,7 @@ function buildFromOptions(options) {
 	const texturedMaterial = new MeshBasicMaterial({
 		map: imageTexture,
 		transparent: true,
-    //wireframe: true
+    wireframe: false 
 	});
 	texturedMaterial.depthWrite = false;
 
@@ -216,14 +212,6 @@ function buildFromOptions(options) {
 
 export default function requestPuppetCreation(options) {
 	console.log('requestPuppetCreation', options);
-	if (!mostFaces) {
-		mostFaces = options.faces.length;
-	}
-	if (options.faces.length > mostFaces) {
-		alert(errorMessage);
-		return false;
-	}
-
 	const puppetData = {
 		imageNoBG: options.imageNoBG,
 		controlPointPositions: options.controlPointPositions,
