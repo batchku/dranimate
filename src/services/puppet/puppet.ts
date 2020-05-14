@@ -271,9 +271,10 @@ class Puppet {
 				});
 				// calling this.setControlPointPositions here will over record, look into simplifying this
 				this.needsUpdate = true;
-				absoluteControlPoints.forEach((controlPoint, i) => {
-					this.fastShape.setControlPointPosition(i, controlPoint.position.x, controlPoint.position.y);
-				});
+				for(var i=0; i<absoluteControlPoints.length; i++) {
+					const controlPoint = absoluteControlPoints[i];
+					this.fastShape.setControlPointPosition(controlPoint.cpi, controlPoint.position.x, controlPoint.position.y);
+				}
 			});
 		}
 	
