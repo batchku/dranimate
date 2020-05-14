@@ -19,7 +19,7 @@ class AddPuppet extends React.Component {
 	}
 
 	private onAddPuppet = (): void => {
-		eventManager.emit('on-add-puppet');
+		eventManager.emit('on-add-puppet', {});
 	}
 }
 

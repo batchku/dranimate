@@ -66,11 +66,11 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 	}
 
 	public componentWillUnmount = (): void => {
-		eventManager.emit('puppet-editor-closed');
+		eventManager.emit('puppet-editor-closed', {});
 	}
 
 	public componentDidMount = (): void => {
-		eventManager.emit('puppet-editor-opened');
+		eventManager.emit('puppet-editor-opened', {});
 	}
 
 	private onClose = (): void => {

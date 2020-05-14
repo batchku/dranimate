@@ -42,7 +42,7 @@ class WelcomeMessage extends React.Component<{}, WelcomeMessageState> {
 	}
 
 	private onAddPuppet = (): void => {
-		eventManager.emit('on-add-puppet');
+		eventManager.emit('on-add-puppet', {});
 	}
 
 	private close = (): void => {
