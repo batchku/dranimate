@@ -46,6 +46,8 @@ class Stage extends React.Component<{}, StageState> {
 	private onCloseLoaderEventId: string;
 	private onEditPuppetEventId = uuid();
 
+	private videoElementRef = React.createRef<HTMLVideoElement>();
+
 	constructor(props: {}) {
 		super(props);
 
@@ -62,8 +64,10 @@ class Stage extends React.Component<{}, StageState> {
 		};
 	}
 
-	public componentDidMount = (): void => {
-		dranimate.setup(this.dranimateStageContainer, 'dranimate-canvas-background');
+	public componentDidMount = async (): Promise<void> => {
+		await dranimate.getCameraFeed(this.videoElementRef.current);
+
+		dranimate.setup(this.dranimateStageContainer, 'dranimate-canvas-background', this.videoElementRef.current);
 
 		this.onAddPuppetEventId = eventManager.on('on-add-puppet', this.onFabClick);
 		this.onOpenLoaderEventId = eventManager.on('open-loader', this.openLoader);
@@ -241,6 +245,18 @@ class Stage extends React.Component<{}, StageState> {
 		return (
 			<div className='stage'>
 				<video style={{display: 'none', position: 'fixed'}} id="video" width={'auto'} height={'auto'} playsInline></video>
+				<video
+					id='live-feed'
+					ref={this.videoElementRef}
+					autoPlay
+					playsInline
+					muted
+					style={{
+						width: '100px',
+						height: '100px',
+						opacity: 0
+					}}
+				/>
 				<div
 					className='dranimateCanvas'
 					onMouseDown={this.onMouseDown}

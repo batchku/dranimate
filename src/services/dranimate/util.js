@@ -7,6 +7,10 @@ function getPuppetAndControlPointFromPostion(puppets, x, y, distanceThreshold, z
     const verts = puppet.threeMesh.geometry.vertices;
     const controlPoints = puppet.controlPoints;
 
+    if (puppet.type === 'livedraw') {
+      continue;
+    }
+
     const closeControlPointIndex = controlPoints.findIndex((controlPoint, index) => {
       const mouseVector = new Vector2(x, y)
         // .multiplyScalar(1 / puppet.getScale())

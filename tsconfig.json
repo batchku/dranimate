@@ -9,7 +9,15 @@
 		"outDir": "dist",
 		"baseUrl": "src",
 		"allowJs": true,
-		"allowSyntheticDefaultImports": true
+		"allowSyntheticDefaultImports": true,
+		"lib": [
+			"dom",
+			"dom.iterable",
+			"esnext"
+		],
+		"typeRoots": [
+			"./src/types"
+		]
 	},
 	"exclude": [
 		"dist",

@@ -174,7 +174,45 @@ class Dranimate {
 		});
 	}
 
-	setup = async (canvasContainer, cssClass) => {
+	getCameraFeed = async (videoElement) => {
+		if (navigator.mediaDevices.getUserMedia) {
+			try {
+				const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+				videoElement.srcObject = stream;
+			}
+			catch (e) {
+				alert('Something went wrong - couldn\'t get webcam feed');
+			}
+		}
+	}
+
+	setup = async (canvasContainer, cssClass, videoElement) => {
+		/**
+		 * Initialize livedraw camera feed scene
+		*/
+		this.liveFeedScene = new THREE.Scene();
+		this.liveFeedCamera = new THREE.OrthographicCamera(-50, 50, 50, -50, 0.1, 1000);
+		this.liveFeedRenderTarget = new THREE.WebGLRenderTarget(100, 100, {
+			depthBuffer: false,
+		});
+		const texture = new THREE.VideoTexture(videoElement);
+
+		const geometry = new THREE.PlaneBufferGeometry(100, 100, 1, 1);
+		const material = new THREE.MeshBasicMaterial({
+			map: texture
+		});
+
+		const cameraFeedPlane = new THREE.Mesh(geometry, material);
+		this.liveFeedScene.add(cameraFeedPlane);
+
+		this.liveFeedCamera.position.set(0, 0, 0);
+		this.liveFeedCamera.lookAt(new THREE.Vector3(1, 0, 0));
+
+		cameraFeedPlane.position.set(10, 0, 0);
+		cameraFeedPlane.lookAt(new THREE.Vector3(0, 0, 0));
+		////
+
 		/* Initialize THREE canvas and scene */
 		const halfWidth = window.innerWidth / 2;
 		const halfHeight = window.innerHeight / 2;
@@ -544,6 +582,19 @@ class Dranimate {
 		if (this.handTrackingEnabled) {
 			this.handTrackingService.trackAsync();
 		}
+
+		this.renderer.setRenderTarget(this.liveFeedRenderTarget);
+		this.renderer.render(this.liveFeedScene, this.liveFeedCamera);
+
+		this.puppets.forEach((puppet) => {
+			if (puppet.isRecording) {
+				const capturedFrame = new THREE.DataTexture(new Uint8Array(4 * 100 * 100), 100, 100);
+				this.renderer.copyFramebufferToTexture(new THREE.Vector2(0, 0), capturedFrame, 0);
+				puppet.frames.push(capturedFrame);
+			}
+		});
+
+		this.renderer.setRenderTarget(null);
 
 		this.renderer.render(this.scene, this.camera);
 		this.gifRecording.setFrame(performance.now());

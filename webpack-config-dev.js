@@ -69,7 +69,11 @@ const webpackConfig = {
 				options: {
 					name: "wasm/dranimate-fast.wasm"
 				}
-			}
+			},
+			{
+				test: /\.(vert|frag)$/,
+				use: 'raw-loader',
+			},
 		]
 	},
 

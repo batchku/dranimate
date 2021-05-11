@@ -7,11 +7,9 @@ import { clearObject } from 'services/util/threeUtil';
 import dranimate from '../dranimate/dranimate';
 import eventManager from '../eventManager/event-manager';
 import ControlPoint from './control-point';
+import BasePuppet from './base-puppet';
 
-class Puppet {
-	private current: any;
-	private previous: any;
-	private selectionState: any;
+class Puppet extends BasePuppet {
 	private name: string;
 	private id: string;
 	private recording = new Recording();
@@ -26,31 +24,22 @@ class Puppet {
 	private controlPoints: any;
 	private vertsFlatArray: any;
 	private facesFlatArray: any;
-	private threeMesh: any;
-	private controlPointPlanes: THREE.Mesh[];
 	private group: any;
 	private undeformedVertices: any;
-	private needsUpdate: boolean;
 	private playRecording: boolean;
-	private selectionBox: any;
+	private controlPointPlanes: THREE.Mesh[];
+
 	private arapMeshID: any;
   private fastShape: Shape;
 
 	constructor(puppetData) {
+		super();
+
 		this.current = {
 			position: new Vector2(0, 0),
 			center: puppetData.center.clone(),
 			rotation: 0,
 			scale: 1,
-		};
-		this.previous = {
-			position: this.current.position.clone(),
-			scale: this.current.scale,
-			rotation: this.current.rotation
-		};
-		this.selectionState = {
-			isBeingDragged: false,
-			lastPosition: new Vector2(0, 0)
 		};
 		this.name = puppetData.name;
 		this.id = puppetData.id;
@@ -69,7 +58,6 @@ class Puppet {
 		this.controlPointPlanes = puppetData.controlPointPlanes;
 		this.group = puppetData.group;
 		this.undeformedVertices = this.verts;
-		this.needsUpdate = true;
 		this.playRecording = false;
 		this.selectionBox = puppetData.selectionBox;
 
@@ -85,18 +73,6 @@ class Puppet {
 		this.fastShape.precompute();
 
 		this.incrementPosition(-puppetData.center.x, -puppetData.center.y);
-	}
-
-	incrementPosition = (x, y): void => {
-		const position = new Vector2(x, y);
-		const delta = position.clone()
-			.sub(this.selectionState.lastPosition)
-			.multiplyScalar(1 / this.getScale())
-		this.current.center.add(
-			position.clone().sub(this.selectionState.lastPosition)
-		);
-		this.current.position.add(delta);
-		this.selectionState.lastPosition = position;
 	}
 
 	setName = (name: string): void => {
@@ -140,14 +116,6 @@ class Puppet {
 		this.threeMesh.material = shouldRender ? this.wireframeMaterial : this.texturedMaterial;
 	}
 
-	setSelectionState = (isBeingDragged: boolean, x: number, y: number): void => {
-		this.selectionState.isBeingDragged = isBeingDragged;
-		if (isBeingDragged) {
-			this.selectionState.lastPosition.x = x;
-			this.selectionState.lastPosition.y = y;
-		}
-	}
-
 	startRecording = (): void => {
 		this.recording.start(performance.now());
 	}
@@ -170,7 +138,7 @@ class Puppet {
 
 	setControlPointPositions = (controlPoints): void => {
 		this.needsUpdate = true;
-		for(var i=0; i<controlPoints.length; i++) {
+		for(let i=0; i<controlPoints.length; i++) {
 			this.fastShape.setControlPointPosition(i, controlPoints[i].position.x, controlPoints[i].position.y);
 		}
 	
@@ -228,7 +196,7 @@ class Puppet {
 			this.previous.rotation = this.current.rotation;
 			const puppetCenter = this.getPuppetCenter2d();
 			this.controlPoints.forEach((controlPoint, index) => {
-				const {x, y} = this.threeMesh.geometry.vertices[controlPoint];
+				const {x, y} = (this.threeMesh.geometry as THREE.Geometry).vertices[controlPoint];
 				const point = new Vector2(x, y)
 					.sub(puppetCenter)
 					.multiplyScalar(1 / this.getScale())
@@ -243,7 +211,7 @@ class Puppet {
 			const puppetCenter = this.getPuppetCenter2d();
 			const xyDelta = new Vector2(dx, dy);
 			this.controlPoints.forEach((controlPoint, index) => {
-				const position = this.threeMesh.geometry.vertices[controlPoint].clone();
+				const position = (this.threeMesh.geometry as THREE.Geometry).vertices[controlPoint].clone();
 				const vertexPosition = new Vector2(position.x, position.y);
 				const point = vertexPosition
 					.sub(puppetCenter)
@@ -271,7 +239,7 @@ class Puppet {
 				});
 				// calling this.setControlPointPositions here will over record, look into simplifying this
 				this.needsUpdate = true;
-				for(var i=0; i<absoluteControlPoints.length; i++) {
+				for(let i=0; i<absoluteControlPoints.length; i++) {
 					const controlPoint = absoluteControlPoints[i];
 					this.fastShape.setControlPointPosition(controlPoint.cpi, controlPoint.position.x, controlPoint.position.y);
 				}
@@ -286,7 +254,7 @@ class Puppet {
 
 			const puppetCenter = this.getPuppetCenter2d();
 			for (let i = 0; i < deformedVerts.length; i += 3) {
-				const vertex = this.threeMesh.geometry.vertices[i / 3];
+				const vertex = (this.threeMesh.geometry as THREE.Geometry).vertices[i / 3];
 				const point = new Vector2(deformedVerts[i], deformedVerts[i + 1])
 					.sub(puppetCenter)
 					.multiplyScalar(this.getScale())
@@ -297,15 +265,15 @@ class Puppet {
 	
 			// UPDATE CONTROL POINT GRAPHICS
 			this.controlPoints.forEach((controlPoint, index) => {
-				const vertex = this.threeMesh.geometry.vertices[controlPoint];
+				const vertex = (this.threeMesh.geometry as THREE.Geometry).vertices[controlPoint];
 				const controlPointSphere = this.controlPointPlanes[index];
 				controlPointSphere.position.x = vertex.x;
 				controlPointSphere.position.y = vertex.y;
 			});
 	
 			// UPDATE MISC THREEJS
-			this.threeMesh.geometry.dynamic = true;
-			this.threeMesh.geometry.verticesNeedUpdate = true;
+			(this.threeMesh.geometry as any).dynamic = true;
+			(this.threeMesh.geometry as THREE.Geometry).verticesNeedUpdate = true;
 			this.selectionBox.boxHelper.object.geometry.computeBoundingBox();
 			this.selectionBox.boxHelper.update();
 			this.selectionBox.boxHelper.scale.z = 1; // To make sure volume != 0 (this will cause that warning to show up)
@@ -355,6 +323,21 @@ class Puppet {
 		clearObject(this.group);
 	}
 
+	pointInsideMesh = (xUntransformed, yUntransformed) => {
+		const point = new Vector2(xUntransformed, yUntransformed)
+		const allFaces = (this.threeMesh.geometry as THREE.Geometry).faces;
+		const allVerts = (this.threeMesh.geometry as THREE.Geometry).vertices;
+		for(let i = 0; i < allFaces.length; i++) {
+			const v1 = allVerts[allFaces[i].a];
+			const v2 = allVerts[allFaces[i].b];
+			const v3 = allVerts[allFaces[i].c];
+			if (pointIsInsideTriangle(point.x, point.y, v1, v2, v3)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	setSelectionGUIVisible = (visible) => {
 		this.selectionBox.boxHelper.visible = visible;
 		this.selectionBox.topLeftAnchor.visible = visible;
@@ -371,39 +354,6 @@ class Puppet {
 			selected: visible,
 			hasRecording: this.hasRecording(),
 		});
-	}
-
-	pointInsideMesh = (xUntransformed, yUntransformed) => {
-		const point = new Vector2(xUntransformed, yUntransformed)
-		const allFaces = this.threeMesh.geometry.faces;
-		const allVerts = this.threeMesh.geometry.vertices;
-		for(let i = 0; i < allFaces.length; i++) {
-			const v1 = allVerts[allFaces[i].a];
-			const v2 = allVerts[allFaces[i].b];
-			const v3 = allVerts[allFaces[i].c];
-			if (pointIsInsideTriangle(point.x, point.y, v1, v2, v3)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	pointOnRotateAnchor = (x, y) => {
-		const raycaster = new Raycaster(new Vector3(x, y, 100), new Vector3(0, 0, -1));
-		const intersects = raycaster.intersectObject(this.selectionBox.topLeftAnchor);
-		if (intersects.length > 0) {
-			return true;
-		}
-		return false;
-	}
-
-	pointOnScaleAnchor = (x, y) => {
-		const raycaster = new Raycaster(new Vector3(x, y, 100), new Vector3(0, 0, -1));
-		const intersects = raycaster.intersectObject(this.selectionBox.bottomRightAnchor);
-		if (intersects.length > 0) {
-			return true;
-		}
-		return false;
 	}
 }
 

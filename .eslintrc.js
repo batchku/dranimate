@@ -17,4 +17,8 @@ module.exports = {
 			'./tsconfig.json'
 		]
 	},
+	rules: {
+		'@typescript-eslint/unbound-method': 'off',
+		"no-undef": 'off'
+	}
 };

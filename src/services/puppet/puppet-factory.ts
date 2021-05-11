@@ -14,7 +14,8 @@ import {
 	Vector3,
 	PlaneGeometry,
 	DoubleSide,
-	TextureLoader
+	TextureLoader,
+	MeshNormalMaterial
 } from 'three';
 
 import * as THREE from 'three';
@@ -22,6 +23,11 @@ import * as THREE from 'three';
 import Puppet from 'services/puppet/puppet';
 import generateUniqueId from 'services/util/uuid';
 import ControlPoint from 'services/puppet/control-point';
+import LivedrawPuppet from './livedraw-puppet';
+
+import vert from './../../shaders/livedraw.vert';
+import frag from './../../shaders/livedraw.frag';
+import dranimate from 'services/dranimate/dranimate';
 
 function createAnchor(size, color) {
 	const anchorGeometry = new SphereGeometry(size, 32, 32);
@@ -219,4 +225,62 @@ export default function requestPuppetCreation(options) {
 		...buildFromOptions(options)
 	};
 	return new Puppet(puppetData);
+}
+
+function createLivedrawMaterial(colorMap?: THREE.Texture): THREE.ShaderMaterial {
+	return new THREE.ShaderMaterial({
+		vertexShader: vert,
+		fragmentShader: frag,
+		side: THREE.DoubleSide,
+		uniforms: {
+			thresh: { value: 0.5 },
+			softness: { value: 1.0 },
+			invert: { value: 1.0 },
+			opacity: { value: 1.0 },
+			tex0: { value: colorMap || new THREE.Texture() },
+			maskTex: { value: new THREE.Texture() }
+		},
+		defines: {
+			USE_OPACITY: 'true',
+		},
+		extensions: {
+			derivatives: true,
+		},
+		name: 'livedraw-shader-material',
+		transparent: true,
+	})
+}
+
+export function createLivedrawPuppet(): LivedrawPuppet {
+	const puppet = new LivedrawPuppet();
+
+	const geometry = new THREE.PlaneGeometry(100, 100);
+	const material = createLivedrawMaterial(dranimate.liveFeedRenderTarget.texture);
+
+	// const material = new THREE.MeshBasicMaterial({color: 0xffff00, side: THREE.DoubleSide});
+
+	const plane = new THREE.Mesh(geometry, material);
+	plane.position.set(0, 0, 0);
+	plane.rotateX(Math.PI);
+	// plane.lookAt(new THREE.Vector3(0, 0, -1));
+
+	const selectionBox = createPuppetSelectionBox(plane);
+
+	const group = new Group();
+	group.add(plane);
+	group.add(selectionBox.boxHelper);
+	group.add(selectionBox.topAnchor);
+	group.add(selectionBox.rightAnchor);
+	group.add(selectionBox.bottomAnchor);
+	group.add(selectionBox.leftAnchor);
+	group.add(selectionBox.topLeftAnchor);
+	group.add(selectionBox.bottomRightAnchor);
+	group.add(selectionBox.topRightAnchor);
+	group.add(selectionBox.bottomLeftAnchor);
+
+	puppet.group = group;
+	puppet.threeMesh = plane;
+	puppet.selectionBox = selectionBox;
+
+	return puppet;
 }
