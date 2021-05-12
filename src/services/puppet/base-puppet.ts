@@ -34,7 +34,7 @@ export default abstract class BasePuppet {
 		this.needsUpdate = true;
 	}
 
-	pointInsideMesh = (xUntransformed, yUntransformed) => {
+	pointInsideMesh = (xUntransformed, yUntransformed, clientX?: number, clientY?: number): boolean => {
 		const point = new THREE.Vector2(xUntransformed, yUntransformed);
 		const allFaces = (this.threeMesh.geometry as THREE.Geometry).faces;
 		const allVerts = (this.threeMesh.geometry as THREE.Geometry).vertices;
@@ -69,8 +69,20 @@ export default abstract class BasePuppet {
 		this.selectionState.lastPosition = position;
 	}
 
+	setScale = (scale: number): void => {
+		this.current.scale = scale;
+	}
+
 	getScale = (): number => {
 		return this.current.scale;
+	}
+
+	getRotation = (): number => {
+		return this.current.rotation;
+	}
+
+	setRotation = (rotation: number): void => {
+		this.current.rotation = rotation;
 	}
 
 	getPuppetCenter2d = (): THREE.Vector2 => {

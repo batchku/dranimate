@@ -5,6 +5,7 @@ import eventManager from 'services/eventManager/event-manager';
 import BasePuppet from './base-puppet'
 import { clearObject } from 'services/util/threeUtil';
 import dranimate from 'services/dranimate/dranimate';
+import generateUniqueId from 'services/util/uuid';
 
 export default class LivedrawPuppet extends BasePuppet {
 	public group: THREE.Group;
@@ -14,6 +15,7 @@ export default class LivedrawPuppet extends BasePuppet {
 	public frames: any[] = [];
 	public currentFrame = 0;
 	public playbackDirection = 1;
+	public id = generateUniqueId();
 
 	constructor() {
 		super();
@@ -33,13 +35,16 @@ export default class LivedrawPuppet extends BasePuppet {
 		// SCALE PUPPET
 		if (shouldScale) {
 			this.previous.scale = this.current.scale;
-			this.needsUpdate = true;
+			
+			this.threeMesh.scale.set(this.current.scale, this.current.scale, this.current.scale);
 		}
 	
 		// ROTATE PUPPET
 		if (shouldRotate) {
 			const deltaRotation = this.current.rotation - this.previous.rotation;
 			this.previous.rotation = this.current.rotation;
+
+			this.threeMesh.rotateZ(-deltaRotation);
 		}
 	
 		// TRANSLATE PUPPET
@@ -47,7 +52,7 @@ export default class LivedrawPuppet extends BasePuppet {
 			const puppetCenter = this.getPuppetCenter2d();
 			const xyDelta = new THREE.Vector2(dx, dy);
 
-			this.threeMesh.position.add(new THREE.Vector3(xyDelta.x, xyDelta.y, 0));
+			this.threeMesh.position.add(new THREE.Vector3(xyDelta.x * this.threeMesh.scale.x, xyDelta.y * this.threeMesh.scale.y, 0));
 		}
 	
 		// UPDATE MISC THREEJS
@@ -116,17 +121,23 @@ export default class LivedrawPuppet extends BasePuppet {
 		});
 	}
 
-	pointInsideMesh = (xUntransformed, yUntransformed) => {
-		const point = new THREE.Vector2(xUntransformed, yUntransformed);
-		const center = this.getPuppetCenter2d();
+	pointInsideMesh = (xUntransformed: number, yUntransformed: number, clientX: number, clientY: number) => {
+		const mousePosition = new THREE.Vector3();
+		mousePosition.x = (clientX / window.innerWidth) * 2 - 1;
+		mousePosition.y = - ((clientY - 96) / window.innerHeight) * 2 + 1;
 
-		if (point.x > (center.x - 50) && point.x < center.x + 50 && point.y > center.y - 50 && point.y < center.y + 50) {
+		const raycaster = new THREE.Raycaster();
+		raycaster.setFromCamera(mousePosition, dranimate.camera);
+
+		// calculate objects intersecting the picking ray
+		const intersects = raycaster.intersectObject(this.threeMesh);
+
+		if (intersects[0]) {
 			return true;
 		}
 		else {
 			return false;
 		}
-		
 	}
 
 	cleanup = () => {

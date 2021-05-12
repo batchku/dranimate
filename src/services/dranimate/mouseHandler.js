@@ -66,7 +66,7 @@ export default class DranimateMouseHandler {
 		this.puppetRotationData.rotatingPuppet = false;
 		this.puppetScaleData.scalingPuppet = false;
 		for (let i = puppets.length - 1; i >= 0; i--) {
-			if (puppets[i].pointInsideMesh(this.mouseRelative.x, this.mouseRelative.y)) {
+			if (puppets[i].pointInsideMesh(this.mouseRelative.x, this.mouseRelative.y, event.clientX, event.clientY)) {
 				this.selectedPuppet = puppets[i];
 				break;
 			}

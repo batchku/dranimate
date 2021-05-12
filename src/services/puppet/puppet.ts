@@ -87,22 +87,6 @@ class Puppet extends BasePuppet {
 		return this.id;
 	}
 
-	setScale = (scale: number): void => {
-		this.current.scale = scale;
-	}
-
-	getScale = (): number => {
-		return this.current.scale;
-	}
-
-	setRotation = (rotation: number): void => {
-		this.current.rotation = rotation;
-	}
-
-	getRotation = (): number => {
-		return this.current.rotation;
-	}
-
 	hasRecording = (): boolean => {
 		return this.recording.hasRecording();
 	}
