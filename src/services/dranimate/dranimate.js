@@ -119,7 +119,7 @@ class Dranimate {
 			});
 
 			const selectedPuppet = this.getSelectedPuppet();
-			if (selectedPuppet) {
+			if (selectedPuppet && selectedPuppet.type !== 'livedraw') {
 				if (!this[`${partName}-4`]) {
 					return;
 				}
@@ -180,6 +180,13 @@ class Dranimate {
 				const stream = await navigator.mediaDevices.getUserMedia({ video: true });
 
 				videoElement.srcObject = stream;
+
+				const videoTracks = stream.getVideoTracks();
+				if (videoTracks[0]) {
+					const videoSettings = videoTracks[0].getSettings();
+					
+					this.liveFeedAspectRatio = videoSettings.aspectRatio;
+				}
 			}
 			catch (e) {
 				alert('Something went wrong - couldn\'t get webcam feed');
@@ -192,13 +199,13 @@ class Dranimate {
 		 * Initialize livedraw camera feed scene
 		*/
 		this.liveFeedScene = new THREE.Scene();
-		this.liveFeedCamera = new THREE.OrthographicCamera(-50, 50, 50, -50, 0.1, 1000);
-		this.liveFeedRenderTarget = new THREE.WebGLRenderTarget(100, 100, {
+		this.liveFeedCamera = new THREE.OrthographicCamera(-256, 256, 256, -256, 0.1, 1000);
+		this.liveFeedRenderTarget = new THREE.WebGLRenderTarget(512, 512, {
 			depthBuffer: false,
 		});
 		const texture = new THREE.VideoTexture(videoElement);
 
-		const geometry = new THREE.PlaneBufferGeometry(100, 100, 1, 1);
+		const geometry = new THREE.PlaneBufferGeometry(512, 512, 1, 1);
 		const material = new THREE.MeshBasicMaterial({
 			map: texture
 		});
@@ -335,7 +342,7 @@ class Dranimate {
 	calibratePuppet = () => {
 		const selectedPuppet = this.getSelectedPuppet();
 		// Don't do anything in case there is no selected puppet
-		if (!selectedPuppet) {
+		if (!selectedPuppet || selectedPuppet.type === 'livedraw') {
 			return;
 		}
 
@@ -588,7 +595,7 @@ class Dranimate {
 
 		this.puppets.forEach((puppet) => {
 			if (puppet.isRecording) {
-				const capturedFrame = new THREE.DataTexture(new Uint8Array(4 * 100 * 100), 100, 100);
+				const capturedFrame = new THREE.DataTexture(new Uint8Array(4 * 512 * 512), 512, 512);
 				this.renderer.copyFramebufferToTexture(new THREE.Vector2(0, 0), capturedFrame, 0);
 				puppet.frames.push(capturedFrame);
 			}

@@ -254,7 +254,7 @@ function createLivedrawMaterial(colorMap?: THREE.Texture): THREE.ShaderMaterial 
 export function createLivedrawPuppet(): LivedrawPuppet {
 	const puppet = new LivedrawPuppet();
 
-	const geometry = new THREE.PlaneGeometry(100, 100);
+	const geometry = new THREE.PlaneGeometry(100 * dranimate.liveFeedAspectRatio, 100);
 	const material = createLivedrawMaterial(dranimate.liveFeedRenderTarget.texture);
 
 	// const material = new THREE.MeshBasicMaterial({color: 0xffff00, side: THREE.DoubleSide});
