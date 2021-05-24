@@ -251,7 +251,7 @@ function createLivedrawMaterial(colorMap?: THREE.Texture): THREE.ShaderMaterial 
 	})
 }
 
-export function createLivedrawPuppet(): LivedrawPuppet {
+export function createLiveVideoPuppet(): LivedrawPuppet {
 	const puppet = new LivedrawPuppet();
 
 	const geometry = new THREE.PlaneGeometry(100 * dranimate.liveFeedAspectRatio, 100);

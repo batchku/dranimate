@@ -7,7 +7,7 @@ import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 import eventManager from 'services/eventManager/event-manager';
 
 import './add-puppet.scss';
-import { createLivedrawPuppet } from 'services/puppet/puppet-factory';
+import { createLiveVideoPuppet } from 'services/puppet/puppet-factory';
 import dranimate from 'services/dranimate/dranimate';
 
 interface AddPuppetState {
@@ -72,7 +72,7 @@ class AddPuppet extends React.Component<{}, AddPuppetState> {
 	}
 
 	private onAddLivedrawPuppet = (): void => {
-		const puppet = createLivedrawPuppet();
+		const puppet = createLiveVideoPuppet();
 
 		dranimate.addPuppet(puppet);
 	}

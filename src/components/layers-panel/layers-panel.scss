@@ -1,0 +1,16 @@
+.layers-panel-container {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	bottom: 0px;
+	min-width: 260px;
+	max-width: 350px;
+}
+
+.layers-panel-header {
+	display: flex;
+	align-items: center;
+	height: 48px;
+	justify-content: space-between;
+	padding: 14px 16px 14px 16px;
+}

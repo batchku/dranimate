@@ -8,19 +8,19 @@ import dranimate from 'services/dranimate/dranimate';
 import generateUniqueId from 'services/util/uuid';
 
 export default class LivedrawPuppet extends BasePuppet {
-	public group: THREE.Group;
 	public type: string;
 	public isRecording: boolean;
 	public playing: boolean;
 	public frames: any[] = [];
 	public currentFrame = 0;
 	public playbackDirection = 1;
-	public id = generateUniqueId();
 
 	constructor() {
 		super();
 
 		this.type = 'livedraw';
+
+		this.id = generateUniqueId();
 	}
 
 	public update(): void {

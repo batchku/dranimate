@@ -19,6 +19,7 @@ module.exports = {
 	},
 	rules: {
 		'@typescript-eslint/unbound-method': 'off',
-		"no-undef": 'off'
+		"no-undef": 'off',
+		"react/prop-types": "off"
 	}
 };

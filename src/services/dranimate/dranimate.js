@@ -302,6 +302,12 @@ class Dranimate {
 		this.animate();
 	}
 
+	getPuppetWithId = (id) => {
+		return this.puppets.find((puppet) => {
+			return puppet.id === id;
+		});
+	}
+
 	onMouseWheel = (event) => {
 		let d = ((typeof e.wheelDelta != "undefined")?(-e.wheelDelta):e.detail);
 		d *= 0.01;

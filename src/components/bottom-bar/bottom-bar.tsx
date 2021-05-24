@@ -48,7 +48,6 @@ class BottomBar extends React.Component<{}, BottomBarState> {
 						/>
 					</div>
 				</div>
-				<AddPuppet />
 			</div>
 		);
 	}

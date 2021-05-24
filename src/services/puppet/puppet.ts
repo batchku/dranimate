@@ -11,7 +11,6 @@ import BasePuppet from './base-puppet';
 
 class Puppet extends BasePuppet {
 	private name: string;
-	private id: string;
 	private recording = new Recording();
 	private image: any;
 	private imageNoBG: any;
@@ -24,7 +23,6 @@ class Puppet extends BasePuppet {
 	private controlPoints: any;
 	private vertsFlatArray: any;
 	private facesFlatArray: any;
-	private group: any;
 	private undeformedVertices: any;
 	private playRecording: boolean;
 	private controlPointPlanes: THREE.Mesh[];

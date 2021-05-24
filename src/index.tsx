@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 
 import '../config/firebase';
 import 'firebase/auth';
@@ -11,19 +12,21 @@ import ThemeProvider from '@material-ui/styles/ThemeProvider';
 
 import App from './components/app/app';
 
+import { store } from './redux/store';
+
 import './index.scss';
 
 const theme = createMuiTheme({
 	palette: {
-		primary: {
-			main: '#4a72e2',
-		}
+		type: 'dark'
 	}
 });
 
 ReactDOM.render(
 	<ThemeProvider theme={theme}>
-		<App />
+		<Provider store={store}>
+			<App />
+		</Provider>
 	</ThemeProvider>,
 	document.getElementById('root')
 );

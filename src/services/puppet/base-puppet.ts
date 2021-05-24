@@ -2,15 +2,15 @@ import * as THREE from 'three';
 
 import { pointIsInsideTriangle } from "services/util/math";
 
-import eventManager from 'services/eventManager/event-manager';
-
 export default abstract class BasePuppet {
+	public id: string;
 	public threeMesh: THREE.Mesh;
 	public selectionState: any;
 	public selectionBox: any;
 	public current: any;
 	public previous: any;
 	public needsUpdate: boolean;
+	public group: THREE.Group;
 
 	constructor() {
 		this.selectionState = {
@@ -32,6 +32,10 @@ export default abstract class BasePuppet {
 		};
 
 		this.needsUpdate = true;
+	}
+
+	setVisible = (value: boolean): void => {
+		this.group.visible = value;
 	}
 
 	pointInsideMesh = (xUntransformed, yUntransformed, clientX?: number, clientY?: number): boolean => {
