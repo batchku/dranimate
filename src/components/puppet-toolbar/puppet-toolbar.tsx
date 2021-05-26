@@ -36,6 +36,8 @@ class PuppetToolbar extends React.Component<{}, PuppetToolbarState> {
 			userSignedIn: false,
 			recordStep: 0,
 		};
+
+		this.onKeyDown = this.onKeyDown.bind(this);
 	}
 
 	public componentDidMount = (): void => {
@@ -47,11 +49,15 @@ class PuppetToolbar extends React.Component<{}, PuppetToolbarState> {
 			callback: this.onUserSignedId,
 			id: this._userSignedInEventId,
 		});
+
+		addEventListener('keydown', this.onKeyDown);
 	}
 
 	public componentWillUnmount = (): void => {
 		puppetSelectedEvent.unsubscribe(this._puppetSelectedEventId);
 		userSignedInEvent.unsubscribe(this._userSignedInEventId);
+
+		removeEventListener('keydown', this.onKeyDown);
 	}
 
 	public render = (): JSX.Element => {
@@ -102,13 +108,9 @@ class PuppetToolbar extends React.Component<{}, PuppetToolbarState> {
 
 	private onRecordPuppetToggle = (): void => {
 		if (this.state.recordStep > 0) {
-			this.setState({
-				recordStep: 0,
-			});
 			if (this._recordIntervalHandle) {
 				window.clearInterval(this._recordIntervalHandle);
 			}
-
 			if (this.state.recordStep === 4) {
 				dranimate.setRecording(false);
 				dranimate.getSelectedPuppet().playRecording = true;
@@ -117,6 +119,9 @@ class PuppetToolbar extends React.Component<{}, PuppetToolbarState> {
 					duration: 8,
 				});
 			}
+			this.setState({
+				recordStep: 0,
+			});
 			return;
 		}
 
@@ -158,6 +163,12 @@ class PuppetToolbar extends React.Component<{}, PuppetToolbarState> {
 		this.setState({
 			userSignedIn: Boolean(data.user),
 		});
+	}
+
+	private onKeyDown = (event: KeyboardEvent): void => {
+		if (event.key === 'r') {
+			this.onRecordPuppetToggle();
+		}
 	}
 }
 export default PuppetToolbar;
