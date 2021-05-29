@@ -1,0 +1,16 @@
+.inspect-panel-container {
+	position: fixed;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	min-width: 260px;
+	max-width: 350px;
+}
+
+.inspect-panel-header {
+	display: flex;
+	align-items: center;
+	height: 48px;
+	justify-content: space-between;
+	padding: 0px 16px 0px 16px;
+}

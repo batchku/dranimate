@@ -14,6 +14,10 @@ export default class LivedrawPuppet extends BasePuppet {
 	public frames: any[] = [];
 	public currentFrame = 0;
 	public playbackDirection = 1;
+	public opacity = 1;
+	public invert = 1;
+	public softness = 1;
+	public threshold = 0.5;
 
 	constructor() {
 		super();
@@ -151,5 +155,45 @@ export default class LivedrawPuppet extends BasePuppet {
 	stopRecording = (): void => {
 		this.isRecording = false;
 		this.playing = true;
+	}
+
+	setOpacity = (opacity: number): void => {
+		this.opacity = opacity;
+
+		const material = this.threeMesh.material;
+
+		if (material instanceof THREE.ShaderMaterial) {
+			material.uniforms.opacity.value = this.opacity;
+		}
+	}
+
+	setInvert = (invert: number): void => {
+		this.invert = invert;
+
+		const material = this.threeMesh.material;
+
+		if (material instanceof THREE.ShaderMaterial) {
+			material.uniforms.invert.value = this.invert;
+		}
+	}
+
+	setSoftness = (softness: number): void => {
+		this.softness = softness;
+
+		const material = this.threeMesh.material;
+
+		if (material instanceof THREE.ShaderMaterial) {
+			material.uniforms.softness.value = this.softness;
+		}
+	}
+
+	setThreshold = (threshold: number): void => {
+		this.threshold = threshold;
+
+		const material = this.threeMesh.material;
+
+		if (material instanceof THREE.ShaderMaterial) {
+			material.uniforms.thresh.value = this.threshold;
+		}
 	}
 }

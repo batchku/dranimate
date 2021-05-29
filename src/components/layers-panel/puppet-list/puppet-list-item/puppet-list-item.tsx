@@ -13,10 +13,10 @@ import PersonIcon from '@material-ui/icons/Person';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-import { PuppetData, setSelected, deletePuppet } from '../../../../redux/reducers/puppets';
-import { useAppDispatch } from '../../../../redux/hooks';
+import HiddenIcon from 'icons/hidden-icon';
 
-import dranimate from 'services/dranimate/dranimate';
+import { PuppetData, setSelected, deletePuppet, setVisible } from '../../../../redux/reducers/puppets';
+import { useAppDispatch } from '../../../../redux/hooks';
 
 interface PuppetListItemProps {
 	puppet: PuppetData;
@@ -30,9 +30,10 @@ const PuppetListItem: FC<PuppetListItemProps> = ({puppet}) => {
 	const [menuOpen, setMenuOpen] = useState(false);
 
 	const onHidePuppet = (): void => {
-		const targetPuppet = dranimate.getPuppetWithId(puppet.id);
-
-		targetPuppet.setVisible(!targetPuppet.group.visible);
+		dispach(setVisible({
+			puppetId: puppet.id,
+			visible: !puppet.visible
+		}));
 	}
 
 	const onSelectPuppet = (): void => {
@@ -89,10 +90,20 @@ const PuppetListItem: FC<PuppetListItemProps> = ({puppet}) => {
 			{puppet.selected &&
 			<ListItemSecondaryAction>
 				<IconButton edge="end" onClick={onHidePuppet}>
-					<VisibilityOutlinedIcon />
+					{puppet.visible && <VisibilityOutlinedIcon />}
+					{!puppet.visible && <HiddenIcon fill='#c6c6c6' opacity='0.4' />}
 				</IconButton>
 				<IconButton edge="end" onClick={onMenuOpen} ref={menuButtonRef}>
 					<MoreHorizIcon />
+				</IconButton>
+			</ListItemSecondaryAction>}
+			{!puppet.selected && !puppet.visible &&
+			<ListItemSecondaryAction>
+				<IconButton edge="end" onClick={onHidePuppet}>
+					<HiddenIcon fill='#c6c6c6' opacity='0.4' />
+				</IconButton>
+				<IconButton edge="end" disabled={true}>
+					<HiddenIcon fill='#fff' opacity='0' />
 				</IconButton>
 			</ListItemSecondaryAction>}
 		</ListItem>

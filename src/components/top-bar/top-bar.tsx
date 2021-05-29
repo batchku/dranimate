@@ -42,7 +42,6 @@ class TopBar extends React.Component<{}, TopBarState> {
 		return (
 			<div className='top-bar-container'>
 				<Logo />
-				<PuppetToolbar />
 				{this.state.userSignedIn ? <ProfileImage user={this.state.user} /> : <SignIn />}
 			</div>
 		);

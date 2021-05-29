@@ -268,10 +268,6 @@ class Stage extends React.Component<{}, StageState> {
 						this.dranimateStageContainer = input;
 					}}
 				/>
-				<WelcomeMessage />
-				<RightBar />
-				<BottomBar />
-				<TopBar />
 				<input
 					type='file'
 					ref={(input): void => {

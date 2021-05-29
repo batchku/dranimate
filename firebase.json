@@ -1,6 +1,6 @@
 {
   "hosting": [{
-    "target": "dranimate",
+    "site": "dranimate",
     "public": "dist",
     "ignore": [
       "firebase.json",
@@ -14,7 +14,7 @@
       }
     ]
   }, {
-    "target": "dranimate-stage",
+    "site": "dranimate-stage",
     "public": "dist",
     "ignore": [
       "firebase.json",
