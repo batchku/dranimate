@@ -24,8 +24,9 @@ class Puppet extends BasePuppet {
 	private vertsFlatArray: any;
 	private facesFlatArray: any;
 	private undeformedVertices: any;
-	private playRecording: boolean;
+	private playing: boolean;
 	private controlPointPlanes: THREE.Mesh[];
+	public type = 'puppet';
 
 	private arapMeshID: any;
   private fastShape: Shape;
@@ -41,6 +42,7 @@ class Puppet extends BasePuppet {
 		};
 		this.name = puppetData.name;
 		this.id = puppetData.id;
+		this.type = ''
 
 		this.image = puppetData.image;
 		this.imageNoBG = puppetData.imageNoBG;
@@ -56,7 +58,7 @@ class Puppet extends BasePuppet {
 		this.controlPointPlanes = puppetData.controlPointPlanes;
 		this.group = puppetData.group;
 		this.undeformedVertices = this.verts;
-		this.playRecording = false;
+		this.playing = false;
 		this.selectionBox = puppetData.selectionBox;
 
 		/* Create FAST shape */
@@ -204,7 +206,7 @@ class Puppet extends BasePuppet {
 			});
 		}
 	
-		if (this.playRecording) {
+		if (this.playing) {
 			const recordingTimeStamp = targetTimestamp || performance.now();
 	
 			const recordedFrames = this.recording.getCurrentFrame(recordingTimeStamp);

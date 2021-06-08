@@ -113,7 +113,7 @@ class PuppetToolbar extends React.Component<{}, PuppetToolbarState> {
 			}
 			if (this.state.recordStep === 4) {
 				dranimate.setRecording(false);
-				dranimate.getSelectedPuppet().playRecording = true;
+				dranimate.getSelectedPuppet().playing = true;
 				showToastEvent.emit({
 					text: 'Animation recording finished. Your puppet will keep playing the recording on loop.',
 					duration: 8,

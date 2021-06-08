@@ -122,6 +122,10 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 				if (puppet) {
 					dranimate.addPuppet(puppet);
 					return this.savePuppetAsync(puppet).then(() => {
+						dranimate.puppetAddedCallbacks.forEach((callback) => {
+							callback(puppet);
+						});
+
 						this.onClose();
 					});
 				}

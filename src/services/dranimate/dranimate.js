@@ -28,6 +28,7 @@ class Dranimate {
 		this.scene;
 		this.renderer;
 		this.puppets = [];
+		this.puppetAddedCallbacks = [];
 
 		this.zoom = 1.0;
 		this.panHandler = new PanHandler();

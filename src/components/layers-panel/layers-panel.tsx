@@ -12,8 +12,12 @@ import PuppetList from './puppet-list/puppet-list';
 
 import eventManager from '../../services/eventManager/event-manager';
 
+import dranimate from 'services/dranimate/dranimate';
+
 import { useAppDispatch } from '../../redux/hooks';
-import { addLiveVideo } from '../../redux/reducers/puppets';
+import { addLiveVideo, addPuppet } from '../../redux/reducers/puppets';
+
+import Puppet from 'services/puppet/puppet';
 
 import './layers-panel.scss';
 
@@ -23,6 +27,11 @@ const LayersPanel = (): JSX.Element => {
 	const addPuppetButtonRef = useRef<HTMLButtonElement>(null);
 
 	const [addPuppetMenuOpen, setAddPuppetMenuOpen] = useState(false);
+
+	// Callback workaround - replace with redux state once UI for puppet editor is updated
+	const puppetAddedCallback = (puppet: Puppet): void => {
+		dispatch(addPuppet(puppet));
+	}
 
 	const openAddPuppetMenu = (): void => {
 		setAddPuppetMenuOpen(true);
@@ -36,6 +45,11 @@ const LayersPanel = (): JSX.Element => {
 		eventManager.emit('on-add-puppet', {
 			puppetType: 'standard'
 		});
+
+		// Callback workaround - replace with redux state once UI for puppet editor is updated
+		if (dranimate.puppetAddedCallbacks.length === 0) {
+			dranimate.puppetAddedCallbacks.push(puppetAddedCallback);
+		}
 
 		onCloseAddPuppetMenu();
 	}

@@ -3,8 +3,7 @@
 	right: 0px;
 	top: 0px;
 	bottom: 0px;
-	min-width: 260px;
-	max-width: 350px;
+	width: 260px;
 }
 
 .inspect-panel-header {
@@ -12,5 +11,14 @@
 	align-items: center;
 	height: 48px;
 	justify-content: space-between;
+	align-items: center;
 	padding: 0px 16px 0px 16px;
+}
+
+.toggle-panel-container {
+	position: absolute;
+	left: -64px;
+	top: 16px;
+	width: 32px;
+	height: 32px;
 }

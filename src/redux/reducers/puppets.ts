@@ -5,6 +5,8 @@ import { RootState } from "../store";
 import { createLiveVideoPuppet } from "services/puppet/puppet-factory";
 import dranimate from "services/dranimate/dranimate";
 
+import Puppet from "services/puppet/puppet";
+
 export interface PuppetData {
 	id: string;
 	name: string;
@@ -12,6 +14,7 @@ export interface PuppetData {
 	selected: boolean;
 	hasRecording: boolean;
 	playing: boolean;
+	type: string;
 	opacity?: number;
 	invert?: number;
 	softness?: number;
@@ -51,8 +54,16 @@ export const puppetsSlice = createSlice({
 	name: 'puppets-slice',
 	initialState,
 	reducers: {
-		addPuppet: (state) => {
-			// state.puppets.push = action.payload;
+		addPuppet: (state, action: PayloadAction<Puppet>): void => {
+			state.data.push({
+				name: action.payload.getName(),
+				id: action.payload.id,
+				visible: true,
+				selected: false,
+				hasRecording: false,
+				playing: false,
+				type: 'puppet'
+			});
 		},
 		addLiveVideo: (state): void => {
 			const puppet = createLiveVideoPuppet();
@@ -68,6 +79,7 @@ export const puppetsSlice = createSlice({
 				invert: 1,
 				softness: 1,
 				threshold: 0.5,
+				type: 'livedraw-puppet'
 			});
 			
 			dranimate.addPuppet(puppet);
@@ -158,12 +170,7 @@ export const puppetsSlice = createSlice({
 			const puppet = dranimate.getPuppetWithId(action.payload.puppetId);
 
 			if (!action.payload.hasRecording) {
-				puppet.frames = [];
-				puppet.playing = false;
-				puppet.playbackDirection = 1;
-				puppet.currentFrame = 0;
-		
-				puppet.threeMesh.material.uniforms.tex0.value = dranimate.liveFeedRenderTarget.texture;
+				puppet.clearRecording();
 			}
 			if (action.payload.hasRecording) {
 				puppet.playing = true;

@@ -27,6 +27,17 @@ export default class LivedrawPuppet extends BasePuppet {
 		this.id = generateUniqueId();
 	}
 
+	public clearRecording(): void {
+		this.frames = [];
+		this.playing = false;
+		this.playbackDirection = 1;
+		this.currentFrame = 0;
+
+		if (this.threeMesh.material instanceof THREE.ShaderMaterial) {
+			this.threeMesh.material.uniforms.tex0.value = dranimate.liveFeedRenderTarget.texture;
+		}
+	}
+
 	public update(): void {
 		const dx = this.current.position.x - this.previous.position.x;
 		const dy = this.current.position.y - this.previous.position.y;

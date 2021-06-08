@@ -64,7 +64,7 @@ class PuppetRecorderToolbar extends Component {
 		this.setState({
 			puppetPlaying: enabled
 		}, () => {
-			dranimate.getSelectedPuppet().playRecording = this.state.puppetPlaying;
+			dranimate.getSelectedPuppet().playing = this.state.puppetPlaying;
 		});
 	}
 
