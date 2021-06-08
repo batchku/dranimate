@@ -195,6 +195,12 @@ class ImageEditorService {
 		this.panHandler.setPanEnabled(this.selectState === SELECT_STATE.PAN);
 	}
 
+	toggleSelectState = (): void => {
+		const result = this.selectState === SELECT_STATE.SELECT ? SELECT_STATE.DESELECT : SELECT_STATE.SELECT;
+
+		this.setSelectState(result);
+	}
+
 	setMouseState = (state): void => {
 		this.mouseState = state;
 	}

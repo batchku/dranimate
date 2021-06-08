@@ -8,43 +8,32 @@ interface ToggleButtonProps {
 	leftIconNameInactive: string;
 	rightIconNameActive: string;
 	rightIconNameInactive: string;
+	leftActive: boolean;
 	onLeftSelected: () => void;
 	onRightSelected: () => void;
 }
 
-interface ToggleButtonState {
-	leftSelected: boolean;
-}
-
-class ToggleButton extends React.Component<ToggleButtonProps, ToggleButtonState> {
-	constructor(props: ToggleButtonProps) {
-		super(props);
-
-		this.state = {
-			leftSelected: true
-		};
-	}
-
+class ToggleButton extends React.Component<ToggleButtonProps, {}> {
 	public render = (): JSX.Element => {
 		return (
 			<div className='toggle-button-container'>
 				<div
 					style={{
-						backgroundColor: this.state.leftSelected ? '#FFFFFF' : ''
+						backgroundColor: this.props.leftActive ? '#FFFFFF' : ''
 					}}
 					className='toggle-button-left-container'
 					onClick={this.onLeftItemSelected}
 				>
-					{this.state.leftSelected && <img src={`./assets/${this.props.leftIconNameActive}`} />}
-					{!this.state.leftSelected && <img src={`./assets/${this.props.leftIconNameInactive}`} />}
+					{this.props.leftActive && <img src={`./assets/${this.props.leftIconNameActive}`} />}
+					{!this.props.leftActive && <img src={`./assets/${this.props.leftIconNameInactive}`} />}
 				</div>
 				<div
-					style={{backgroundColor: this.state.leftSelected ? '' : '#FFFFFF'}}
+					style={{backgroundColor: this.props.leftActive ? '' : '#FFFFFF'}}
 					className='toggle-button-right-container'
 					onClick={this.onRightItemSelected}
 				>
-					{this.state.leftSelected && <img src={`./assets/${this.props.rightIconNameInactive}`} />}
-					{!this.state.leftSelected && <img src={`./assets/${this.props.rightIconNameActive}`} />}
+					{this.props.leftActive && <img src={`./assets/${this.props.rightIconNameInactive}`} />}
+					{!this.props.leftActive && <img src={`./assets/${this.props.rightIconNameActive}`} />}
 				</div>
 			</div>
 		);

@@ -20,14 +20,13 @@ interface ImageEditorProps {
 }
 
 interface ImageEditorState {
-	eraseDraw: boolean;
-	selector: string;
 	threshold: number;
 	loaderIsVisible: boolean;
 	step: number;
 	toolOptionsVisible: boolean;
 	canGoToNextStep: boolean;
 	exitPromptOpen: boolean;
+	brushActive: boolean;
 }
 
 class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
@@ -38,15 +37,17 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 		super(props);
 
 		this.state = {
-			eraseDraw: true,
-			selector: 'SELECT',
 			threshold: 30,
 			loaderIsVisible: false,
 			step: 0,
 			toolOptionsVisible: true,
 			canGoToNextStep: false,
 			exitPromptOpen: false,
+			brushActive: true,
 		};
+
+		this.onKeyDown = this.onKeyDown.bind(this);
+		this.onKeyUp = this.onKeyUp.bind(this);
 	}
 
 	public componentDidMount(): void {
@@ -56,6 +57,33 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 		this._imageEditorService.init(this._canvasElement, this.props.imageSrc, this.props.backgroundRemovalData)
 			.then(() => this.runSlic())
 			.catch(error => console.log('error', error));
+
+		window.addEventListener('keydown', this.onKeyDown);
+		window.addEventListener('keyup', this.onKeyUp);
+	}
+
+	private onKeyDown(event: KeyboardEvent): void {
+		if (event.key === 'Shift') {
+			this._imageEditorService.toggleSelectState();
+			this.setState((prevState) => {
+				return {
+					...prevState,
+					brushActive: !prevState.brushActive
+				}
+			});
+		}
+	}
+
+	private onKeyUp(event: KeyboardEvent): void {
+		if (event.key === 'Shift') {
+			this._imageEditorService.toggleSelectState();
+			this.setState((prevState) => {
+				return {
+					...prevState,
+					brushActive: !prevState.brushActive
+				}
+			});
+		}
 	}
 
 	private runSlic = (): void => {
@@ -147,6 +175,7 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 									leftIconNameInactive='brush-inactive.svg'
 									rightIconNameActive='eraser-active.svg'
 									rightIconNameInactive='eraser-inactive.svg'
+									leftActive={this.state.brushActive}
 									onLeftSelected={this.onActivateBrush}
 									onRightSelected={this.onActivateEraser}
 								/>
@@ -212,10 +241,16 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 
 	private onActivateBrush = (): void => {
 		this._imageEditorService.setSelectState('SELECT');
+		this.setState({
+			brushActive: true
+		});
 	}
 
 	private onActivateEraser = (): void => {
 		this._imageEditorService.setSelectState('DESELECT');
+		this.setState({
+			brushActive: false
+		});
 	}
 
 	private showToolOptions = (): void => {
