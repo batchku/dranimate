@@ -230,7 +230,7 @@ class Dranimate {
 		this.scene = new THREE.Scene();
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 		this.renderer.setPixelRatio(window.devicePixelRatio);
-		this.renderer.setClearColor(0xFFFFFF, 0);
+		this.renderer.setClearColor(0x1a1a1a, 1);
 		canvasContainer.appendChild(this.renderer.domElement);
 		this.camera.position.x = 0;
 		this.camera.position.y = 0;
@@ -255,6 +255,16 @@ class Dranimate {
 		this.backgroundColorMesh = new THREE.Mesh(backgroundGeometry.clone(), backgroundColorMaterial);
 		this.backgroundColorMesh.visible = false;
 		this.scene.add(this.backgroundColorMesh);
+
+		//// Initialize virtual canvas surface
+		const virtualCanvasGeometry = new THREE.PlaneGeometry(800, 600);
+		const virtualCanvasMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
+
+		const virtualCanvasMesh = new THREE.Mesh(virtualCanvasGeometry, virtualCanvasMaterial);
+		virtualCanvasMesh.rotateX(Math.PI);
+
+		this.scene.add(virtualCanvasMesh);
+		////
 
 		const backgroundImageMaterial = new THREE.MeshBasicMaterial({side: THREE.BackSide, transparent: true});
 		this.backgroundImageMesh = new THREE.Mesh(backgroundGeometry.clone(), backgroundImageMaterial);
