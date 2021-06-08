@@ -228,6 +228,8 @@ export default function requestPuppetCreation(options) {
 }
 
 function createLivedrawMaterial(colorMap?: THREE.Texture): THREE.ShaderMaterial {
+	const texture = new THREE.TextureLoader().load('/assets/img_mask_1080a.png');
+
 	return new THREE.ShaderMaterial({
 		vertexShader: vert,
 		fragmentShader: frag,
@@ -238,7 +240,7 @@ function createLivedrawMaterial(colorMap?: THREE.Texture): THREE.ShaderMaterial 
 			invert: { value: 1.0 },
 			opacity: { value: 1.0 },
 			tex0: { value: colorMap || new THREE.Texture() },
-			maskTex: { value: new THREE.Texture() }
+			maskTex: { value: texture }
 		},
 		defines: {
 			USE_OPACITY: 'true',
@@ -257,12 +259,9 @@ export function createLiveVideoPuppet(): LivedrawPuppet {
 	const geometry = new THREE.PlaneGeometry(100 * dranimate.liveFeedAspectRatio, 100);
 	const material = createLivedrawMaterial(dranimate.liveFeedRenderTarget.texture);
 
-	// const material = new THREE.MeshBasicMaterial({color: 0xffff00, side: THREE.DoubleSide});
-
 	const plane = new THREE.Mesh(geometry, material);
 	plane.position.set(0, 0, 0);
 	plane.rotateX(Math.PI);
-	// plane.lookAt(new THREE.Vector3(0, 0, -1));
 
 	const selectionBox = createPuppetSelectionBox(plane);
 

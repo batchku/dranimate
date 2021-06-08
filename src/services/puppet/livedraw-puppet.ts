@@ -139,7 +139,7 @@ export default class LivedrawPuppet extends BasePuppet {
 	pointInsideMesh = (xUntransformed: number, yUntransformed: number, clientX: number, clientY: number) => {
 		const mousePosition = new THREE.Vector3();
 		mousePosition.x = (clientX / window.innerWidth) * 2 - 1;
-		mousePosition.y = - ((clientY - 96) / window.innerHeight) * 2 + 1;
+		mousePosition.y = - (clientY / window.innerHeight) * 2 + 1;
 
 		const raycaster = new THREE.Raycaster();
 		raycaster.setFromCamera(mousePosition, dranimate.camera);
