@@ -3,8 +3,7 @@
 	left: 0px;
 	top: 0px;
 	bottom: 0px;
-	min-width: 260px;
-	max-width: 350px;
+	width: 260px;
 }
 
 .layers-panel-header {
@@ -13,4 +12,16 @@
 	height: 48px;
 	justify-content: space-between;
 	padding: 14px 16px 14px 16px;
+}
+
+.header-actions-container {
+	display: flex;
+}
+
+.toggle-layers-panel-container {
+	position: absolute;
+	right: -64px;
+	top: 16px;
+	width: 48px;
+	height: 48px;
 }
