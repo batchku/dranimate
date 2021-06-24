@@ -37,6 +37,9 @@ export const projectSlice = createSlice({
 	name: 'project-slice',
 	initialState,
 	reducers: {
+		setName: (state, action: PayloadAction<string>): void => {
+			state.data.name = action.payload;
+		},
 		setCanvasSize: (state, action: PayloadAction<CanvasSizeData>): void => {
 			dranimate.setCanvasSize(action.payload.x, action.payload.y);
 
@@ -50,7 +53,11 @@ export const projectSlice = createSlice({
 	}
 });
 
-export const { setCanvasSize, setBackgroundColor } = projectSlice.actions;
+export const {
+	setCanvasSize,
+	setBackgroundColor,
+	setName
+} = projectSlice.actions;
 
 export const selectProjectName = (state: RootState): string => state.project.data.name;
 export const selectCanvasSize = (state: RootState): CanvasSizeData => state.project.data.canvasSize;
