@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 
 import List from '@material-ui/core/List';
 
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { selectPuppets, setSelected } from '../../../redux/reducers/puppets'
+import { useAppDispatch, useAppSelector } from '../../../redux-util/hooks';
+import { selectPuppets, setSelected } from '../../../redux-util/reducers/puppets'
 
 import dranimate from 'services/dranimate/dranimate';
 import generateUniqueId from 'services/util/uuid';

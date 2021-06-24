@@ -159,7 +159,7 @@ class Puppet extends BasePuppet {
 		}
 	}
 
-	update = (elapsedTime, targetTimestamp) => {
+	update = (elapsedTime?: number, targetTimestamp?: number) => {
 		const dx = this.current.position.x - this.previous.position.x;
 		const dy = this.current.position.y - this.previous.position.y;
 		const shouldMoveXY = dx !== 0 || dy !== 0;
@@ -265,6 +265,36 @@ class Puppet extends BasePuppet {
 	
 			this.updateSelectionBox();
 		}
+	}
+
+	renderFrame = (frame: number) => {
+		if (!this.recording.recordings.length) {
+			return;
+		}
+
+		const recordedFrames = this.recording.recordings[0].controlPointFrames;
+
+		const clampedFrame = frame % recordedFrames.length;
+		const targetFrameData = recordedFrames[clampedFrame];
+
+		const puppetCenter = this.getPuppetCenter2d();
+		const absoluteControlPoints = targetFrameData.controlPoints.map((controlPoint) => {
+			const point = controlPoint.position.clone()
+				.add(puppetCenter)
+				.rotateAround(puppetCenter, this.getRotation());
+			return {
+				cpi: controlPoint.cpi,
+				position: point
+			};
+		});
+		// calling this.setControlPointPositions here will over record, look into simplifying this
+		this.needsUpdate = true;
+		for(let i=0; i<absoluteControlPoints.length; i++) {
+			const controlPoint = absoluteControlPoints[i];
+			this.fastShape.setControlPointPosition(controlPoint.cpi, controlPoint.position.x, controlPoint.position.y);
+		}
+		
+		this.update();
 	}
 
 	updateSelectionBox = () => {

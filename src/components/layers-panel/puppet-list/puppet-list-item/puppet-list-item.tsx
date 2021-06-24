@@ -15,8 +15,8 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import HiddenIcon from 'icons/hidden-icon';
 
-import { PuppetData, setSelected, deletePuppet, setVisible } from '../../../../redux/reducers/puppets';
-import { useAppDispatch } from '../../../../redux/hooks';
+import { PuppetData, setSelected, deletePuppet, setVisible } from '../../../../redux-util/reducers/puppets';
+import { useAppDispatch } from '../../../../redux-util/hooks';
 
 interface PuppetListItemProps {
 	puppet: PuppetData;

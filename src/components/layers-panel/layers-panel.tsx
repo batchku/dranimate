@@ -16,8 +16,8 @@ import eventManager from '../../services/eventManager/event-manager';
 
 import dranimate from 'services/dranimate/dranimate';
 
-import { useAppDispatch } from '../../redux/hooks';
-import { addLiveVideo, addPuppet } from '../../redux/reducers/puppets';
+import { useAppDispatch } from '../../redux-util/hooks';
+import { addLiveVideo, addPuppet } from '../../redux-util/reducers/puppets';
 
 import Puppet from 'services/puppet/puppet';
 
@@ -83,6 +83,7 @@ const LayersPanel = (): JSX.Element => {
 					<LayersIcon fill='#FFFFFF' opacity='0.9' />
 				</IconButton>
 			</div>}
+			<Divider orientation='horizontal'/>
 			<div className='layers-panel-header'>
 				<Typography>
 					Layers

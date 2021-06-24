@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 
 import FilterIcon from 'icons/filter-icon';
 import CloseIcon from 'icons/close-icon';
@@ -10,8 +11,8 @@ import CloseIcon from 'icons/close-icon';
 import LiveVideoInspect from './live-video-inspect/live-video-inspect';
 import PuppetInspect from './puppet-inspect/puppet-inspect';
 
-import { useAppSelector } from '../../redux/hooks';
-import { selectActivePuppet } from '../../redux/reducers/puppets';
+import { useAppSelector } from '../../redux-util/hooks';
+import { selectActivePuppet } from '../../redux-util/reducers/puppets';
 
 import './inspect-panel.scss';
 
@@ -38,6 +39,7 @@ const InspectPanel = (): JSX.Element => {
 					<FilterIcon fill='#FFFFFF' opacity='0.9' />
 				</IconButton>
 			</div>}
+			<Divider orientation='horizontal'/>
 			{!activePuppet &&
 			<>
 				<div className='inspect-panel-header'>

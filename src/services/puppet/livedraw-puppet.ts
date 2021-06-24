@@ -93,6 +93,14 @@ export default class LivedrawPuppet extends BasePuppet {
 		this.updateSelectionBox();
 	}
 
+	renderFrame = (frame: number) => {
+		const clampedFrame = frame % this.frames.length;
+
+		if (this.threeMesh.material instanceof THREE.ShaderMaterial) {
+			this.threeMesh.material.uniforms.tex0.value = this.frames[clampedFrame];
+		}
+	}
+
 	updateSelectionBox = () => {
 		const boundingBox = new THREE.Box3();
 		boundingBox.setFromObject(this.selectionBox.boxHelper.object);

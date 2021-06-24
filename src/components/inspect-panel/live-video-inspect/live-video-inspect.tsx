@@ -5,8 +5,8 @@ import Slider from '@material-ui/core/Slider';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 
-import { selectActivePuppet, setOpacity, setInvert, setSoftness, setThreshold, setHasRecording, setPlaying } from '../../../redux/reducers/puppets';
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { selectActivePuppet, setOpacity, setInvert, setSoftness, setThreshold, setHasRecording, setPlaying } from '../../../redux-util/reducers/puppets';
+import { useAppDispatch, useAppSelector } from '../../../redux-util/hooks';
 
 import dranimate from 'services/dranimate/dranimate';
 import showToastEvent from 'services/eventManager/show-toast-event';
@@ -126,8 +126,6 @@ const LiveVideoInspect: FC<{}> = (): JSX.Element => {
 
 	return (
 		<>
-			<Divider variant='fullWidth' orientation='horizontal' />
-
 			<div className='inspect-panel-header'>
 				<Typography>
 					Color

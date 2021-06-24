@@ -25,6 +25,11 @@ class Dranimate {
 	constructor() {
 		this.container;
 		this.camera;
+
+		this.exportCamera = new THREE.OrthographicCamera(-400, 400, -300, 300, 0.1, 1000);
+		this.exportCamera.position.set(0, 0, 1000);
+		this.exportCamera.lookAt(new THREE.Vector3(0, 0, 0));
+
 		this.scene;
 		this.renderer;
 		this.puppets = [];
@@ -51,6 +56,8 @@ class Dranimate {
 		this.backgroundColorMesh;
 		this.backgroundImageMesh;
 		this.backgroundWidthHeightRatio = 1;
+
+		this.virtualCanvasMesh = null;
 
 		this.handParts = [
 			'thumb-1', 'thumb-2', 'thumb-3', 'thumb-4',
@@ -257,13 +264,14 @@ class Dranimate {
 		this.scene.add(this.backgroundColorMesh);
 
 		//// Initialize virtual canvas surface
-		const virtualCanvasGeometry = new THREE.PlaneGeometry(800, 600);
+		const virtualCanvasGeometry = new THREE.PlaneGeometry(1, 1);
 		const virtualCanvasMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
 
-		const virtualCanvasMesh = new THREE.Mesh(virtualCanvasGeometry, virtualCanvasMaterial);
-		virtualCanvasMesh.rotateX(Math.PI);
+		this.virtualCanvasMesh = new THREE.Mesh(virtualCanvasGeometry, virtualCanvasMaterial);
+		this.virtualCanvasMesh.rotateX(Math.PI);
+		this.virtualCanvasMesh.scale.set(640, 640, 1);
 
-		this.scene.add(virtualCanvasMesh);
+		this.scene.add(this.virtualCanvasMesh);
 		////
 
 		const backgroundImageMaterial = new THREE.MeshBasicMaterial({side: THREE.BackSide, transparent: true});
@@ -624,7 +632,17 @@ class Dranimate {
 		this.gifRecording.setFrame(performance.now());
 		// stats.end();
 	}
-};
+
+	setCanvasSize = (x, y) => {
+		this.virtualCanvasMesh.scale.set(x, y, 1);
+	}
+
+	setBackgroundColor = (color) => {
+		if (this.virtualCanvasMesh.material instanceof THREE.MeshBasicMaterial) {
+			this.virtualCanvasMesh.material.color.setHex(color);
+		}
+	}
+}
 
 const dranimate = new Dranimate();
 export default dranimate;

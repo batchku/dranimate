@@ -12,8 +12,8 @@ import Switch from '@material-ui/core/Switch';
 
 import dranimate from 'services/dranimate/dranimate';
 
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { selectActivePuppet, setHasRecording, setPlaying } from '../../../redux/reducers/puppets';
+import { useAppDispatch, useAppSelector } from '../../../redux-util/hooks';
+import { selectActivePuppet, setHasRecording, setPlaying } from '../../../redux-util/reducers/puppets';
 
 import showToastEvent from 'services/eventManager/show-toast-event';
 
@@ -127,8 +127,6 @@ const PuppetInspect = (): JSX.Element => {
 
 	return (
 		<>
-			<Divider variant='fullWidth' orientation='horizontal' />
-
 			<div className='inspect-panel-header'>
 				<Typography>
 					Setup

@@ -23,10 +23,11 @@ const webpackConfig = {
 		extensions: ['.ts', '.tsx', '.js', '.jsx'],
 		modules: [path.resolve(__dirname, 'node_modules')],
 		alias: {
-			components: path.resolve(__dirname, 'src/components/'),
-			services: path.resolve(__dirname, 'src/services/'),
-			styles: path.resolve(__dirname, 'src/styles/'),
-			icons: path.resolve(__dirname, 'src/icons'),
+			'components': path.resolve(__dirname, 'src/components/'),
+			'redux-util': path.resolve(__dirname, 'src/redux-util/'),
+			'services': path.resolve(__dirname, 'src/services/'),
+			'styles': path.resolve(__dirname, 'src/styles/'),
+			'icons': path.resolve(__dirname, 'src/icons'),
 		}
 	},
 	devtool: 'source-map',

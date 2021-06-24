@@ -12,7 +12,7 @@ import ThemeProvider from '@material-ui/styles/ThemeProvider';
 
 import App from './components/app/app';
 
-import { store } from './redux/store';
+import { store } from './redux-util/store';
 
 import './index.scss';
 

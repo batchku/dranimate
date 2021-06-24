@@ -12,6 +12,7 @@
     "dev": "webpack-dev-server --inline --colors --progress --content-base src --config webpack-config-dev.js"
   },
   "devDependencies": {
+    "@types/gif.js": "^0.2.1",
     "@types/react": "^16.9.32",
     "@types/react-dom": "^16.9.6",
     "@types/uuid": "^7.0.2",
@@ -52,6 +53,7 @@
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
     "react-redux": "^7.2.4",
+    "redux": "^4.1.0",
     "stats.js": "^0.17.0",
     "three": "^0.115.0",
     "uuid": "^7.0.3"
