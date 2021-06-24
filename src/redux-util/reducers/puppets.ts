@@ -195,10 +195,18 @@ export const puppetsSlice = createSlice({
 				puppetUiData.playing = action.payload.playing;
 			}
 		},
+		setName: (state, action: PayloadAction<{name: string, puppetId: string}>): void => {
+			const puppetUiData = state.data.find((statePuppet) => {
+				return statePuppet.id === action.payload.puppetId;
+			});
+			if (puppetUiData) {
+				puppetUiData.name = action.payload.name;
+			}
+		},
 	}
 });
 
-export const { addPuppet, addLiveVideo, setVisible, setSelected, deletePuppet, setOpacity, setInvert, setSoftness, setThreshold, setHasRecording, setPlaying } = puppetsSlice.actions;
+export const { addPuppet, addLiveVideo, setVisible, setSelected, deletePuppet, setOpacity, setInvert, setSoftness, setThreshold, setHasRecording, setPlaying, setName } = puppetsSlice.actions;
 
 export const selectPuppets = (state: RootState): PuppetData[] => state.puppets.data;
 export const selectActivePuppet = (state: RootState): PuppetData => {

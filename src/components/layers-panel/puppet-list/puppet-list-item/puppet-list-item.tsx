@@ -18,26 +18,29 @@ import HiddenIcon from 'icons/hidden-icon';
 import { PuppetData, setSelected, deletePuppet, setVisible } from '../../../../redux-util/reducers/puppets';
 import { useAppDispatch } from '../../../../redux-util/hooks';
 
+import RenamePuppetDialog from './rename-puppet-dialog/rename-puppet-dialog';
+
 interface PuppetListItemProps {
 	puppet: PuppetData;
 }
 
 const PuppetListItem: FC<PuppetListItemProps> = ({puppet}) => {
-	const dispach = useAppDispatch();
+	const dispatch = useAppDispatch();
 
 	const menuButtonRef = useRef<HTMLButtonElement>(null);
 
 	const [menuOpen, setMenuOpen] = useState(false);
+	const [renameDialogOpen, setRenameDialogOpen] = useState(false);
 
 	const onHidePuppet = (): void => {
-		dispach(setVisible({
+		dispatch(setVisible({
 			puppetId: puppet.id,
 			visible: !puppet.visible
 		}));
 	}
 
 	const onSelectPuppet = (): void => {
-		dispach(setSelected({
+		dispatch(setSelected({
 			puppetId: puppet.id,
 			selected: true,
 		}));
@@ -54,9 +57,17 @@ const PuppetListItem: FC<PuppetListItemProps> = ({puppet}) => {
 	}
 
 	const onDeletePuppet = (): void => {
-		dispach(deletePuppet(puppet.id));
+		dispatch(deletePuppet(puppet.id));
 
 		onMenuClose();
+	}
+
+	const onOpenRenameDialog = (): void => {
+		setRenameDialogOpen(true);
+	}
+
+	const onCloseRenameDialog = (): void => {
+		setRenameDialogOpen(false);
 	}
 
 	return (
@@ -85,6 +96,7 @@ const PuppetListItem: FC<PuppetListItemProps> = ({puppet}) => {
 					horizontal: 'right'
 				}}
 			>
+				<MenuItem onClick={onOpenRenameDialog}>Rename</MenuItem>
 				<MenuItem onClick={onDeletePuppet}>Delete</MenuItem>
 			</Menu>
 			{puppet.selected &&
@@ -106,6 +118,7 @@ const PuppetListItem: FC<PuppetListItemProps> = ({puppet}) => {
 					<HiddenIcon fill='#fff' opacity='0' />
 				</IconButton>
 			</ListItemSecondaryAction>}
+			<RenamePuppetDialog open={renameDialogOpen} onClose={onCloseRenameDialog} puppet={puppet} />
 		</ListItem>
 	)
 }
