@@ -215,7 +215,7 @@ class ImageEditorService {
 
 	doSLICOnImage = (threshold): void => {
 		console.log('SLIC Start', performance.now());
-		const regionSize = threshold || 30;
+		const regionSize = threshold || 15;
 
 		this.originalImageData = getImageDataFromImage(this.image, this.dummyCanvas.width, this.dummyCanvas.height);
 		this.slic = new SLIC(this.originalImageData, { method: 'slic', regionSize });

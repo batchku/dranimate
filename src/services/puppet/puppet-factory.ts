@@ -240,7 +240,8 @@ function createLivedrawMaterial(colorMap?: THREE.Texture): THREE.ShaderMaterial 
 			invert: { value: 1.0 },
 			opacity: { value: 1.0 },
 			tex0: { value: colorMap || new THREE.Texture() },
-			maskTex: { value: texture }
+			maskTex: { value: texture },
+			disabled: { value: false }
 		},
 		defines: {
 			USE_OPACITY: 'true',

@@ -15,6 +15,7 @@ export interface PuppetData {
 	hasRecording: boolean;
 	playing: boolean;
 	type: string;
+	disableEffects?: boolean;
 	opacity?: number;
 	invert?: number;
 	softness?: number;
@@ -62,7 +63,7 @@ export const puppetsSlice = createSlice({
 				selected: false,
 				hasRecording: false,
 				playing: false,
-				type: 'puppet'
+				type: 'puppet',
 			});
 		},
 		addLiveVideo: (state): void => {
@@ -79,7 +80,8 @@ export const puppetsSlice = createSlice({
 				invert: 1,
 				softness: 1,
 				threshold: 0.5,
-				type: 'livedraw-puppet'
+				type: 'livedraw-puppet',
+				disableEffects: false,
 			});
 			
 			dranimate.addPuppet(puppet);
@@ -166,6 +168,17 @@ export const puppetsSlice = createSlice({
 				puppetUiData.threshold = action.payload.value;
 			}
 		},
+		setDisableEffects: (state, action: PayloadAction<{disabled: boolean; puppetId: string}>): void => {
+			const puppet = dranimate.getPuppetWithId(action.payload.puppetId);
+			puppet.setDisableEffects(action.payload.disabled);
+
+			const puppetUiData = state.data.find((statePuppet) => {
+				return statePuppet.id === action.payload.puppetId;
+			});
+			if (puppetUiData) {
+				puppetUiData.disableEffects = action.payload.disabled;
+			}
+		},
 		setHasRecording: (state, action: PayloadAction<SetPuppetHasVideoPayload>): void => {
 			const puppet = dranimate.getPuppetWithId(action.payload.puppetId);
 
@@ -195,7 +208,7 @@ export const puppetsSlice = createSlice({
 				puppetUiData.playing = action.payload.playing;
 			}
 		},
-		setName: (state, action: PayloadAction<{name: string, puppetId: string}>): void => {
+		setName: (state, action: PayloadAction<{name: string; puppetId: string}>): void => {
 			const puppetUiData = state.data.find((statePuppet) => {
 				return statePuppet.id === action.payload.puppetId;
 			});
@@ -206,7 +219,21 @@ export const puppetsSlice = createSlice({
 	}
 });
 
-export const { addPuppet, addLiveVideo, setVisible, setSelected, deletePuppet, setOpacity, setInvert, setSoftness, setThreshold, setHasRecording, setPlaying, setName } = puppetsSlice.actions;
+export const {
+	addPuppet,
+	addLiveVideo,
+	setVisible,
+	setSelected,
+	deletePuppet,
+	setOpacity,
+	setInvert,
+	setSoftness,
+	setThreshold,
+	setHasRecording,
+	setPlaying,
+	setName,
+	setDisableEffects
+} = puppetsSlice.actions;
 
 export const selectPuppets = (state: RootState): PuppetData[] => state.puppets.data;
 export const selectActivePuppet = (state: RootState): PuppetData => {

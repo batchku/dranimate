@@ -37,7 +37,7 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 		super(props);
 
 		this.state = {
-			threshold: 30,
+			threshold: 15,
 			loaderIsVisible: false,
 			step: 0,
 			toolOptionsVisible: true,

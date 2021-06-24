@@ -18,6 +18,7 @@ export default class LivedrawPuppet extends BasePuppet {
 	public invert = 1;
 	public softness = 1;
 	public threshold = 0.5;
+	public disableEffects = false;
 
 	constructor() {
 		super();
@@ -210,9 +211,17 @@ export default class LivedrawPuppet extends BasePuppet {
 		this.threshold = threshold;
 
 		const material = this.threeMesh.material;
-
 		if (material instanceof THREE.ShaderMaterial) {
 			material.uniforms.thresh.value = this.threshold;
+		}
+	}
+
+	setDisableEffects = (disabled: boolean): void => {
+		this.disableEffects = disabled;
+
+		const material = this.threeMesh.material;
+		if (material instanceof THREE.ShaderMaterial) {
+			material.uniforms.disabled.value = this.disableEffects;
 		}
 	}
 }

@@ -4,8 +4,9 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import Checkbox from '@material-ui/core/Checkbox';
 
-import { selectActivePuppet, setOpacity, setInvert, setSoftness, setThreshold, setHasRecording, setPlaying } from '../../../redux-util/reducers/puppets';
+import { selectActivePuppet, setOpacity, setInvert, setSoftness, setThreshold, setHasRecording, setPlaying, setDisableEffects } from '../../../redux-util/reducers/puppets';
 import { useAppDispatch, useAppSelector } from '../../../redux-util/hooks';
 
 import dranimate from 'services/dranimate/dranimate';
@@ -52,6 +53,13 @@ const LiveVideoInspect: FC<{}> = (): JSX.Element => {
 		dispach(setThreshold({
 			puppetId: activePuppet.id,
 			value: value,
+		}));
+	}
+
+	const onEffectsDisabledChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+		dispach(setDisableEffects({
+			puppetId: activePuppet.id,
+			disabled: event.target.checked,
 		}));
 	}
 
@@ -154,6 +162,15 @@ const LiveVideoInspect: FC<{}> = (): JSX.Element => {
 					Threshold
 				</Typography>
 				<Slider value={activePuppet.threshold} onChange={onThresholdChange} style={{width: '100px'}} min={0} max={1} step={0.01}/>
+			</div>
+			<div className='inspect-row'>
+				<Typography variant='body2'>
+					Disable effects
+				</Typography>
+				<Checkbox
+					value={activePuppet.disableEffects}
+					onChange={onEffectsDisabledChange}
+				/>
 			</div>
 
 			<Divider variant='fullWidth' orientation='horizontal' />

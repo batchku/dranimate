@@ -7,6 +7,7 @@ uniform float thresh;
 uniform float softness;
 uniform float invert;
 uniform float opacity;
+uniform bool disabled;
 
 varying vec2 texCoordVarying;
 
@@ -14,6 +15,11 @@ void main()
 {
 	// Get color value from
 	vec3 src = texture2D(tex0, texCoordVarying).rgb;
+
+	if (disabled) {
+		gl_FragColor = vec4(src.r, src.g, src.b, 1.0);
+		return;
+	}
 
 	// Thresholding
 	float fValue = src.r * 0.29 + src.g * 0.6 + src.b * 0.11;

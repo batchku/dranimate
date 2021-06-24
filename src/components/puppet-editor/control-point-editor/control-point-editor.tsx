@@ -281,6 +281,11 @@ class ControlPointEditor extends React.Component<ControlPointEditorProps, Contro
 		this._controlPointService.onMouseDown(this.state.currentFingerToMap, this.getFingerLabel(this.state.currentFingerToMap));
 
 		const controlPoints = this._controlPointService.getControlPoints();
+		if (controlPoints.length === 1) {
+			this.setState({
+				toolOptionsVisible: false
+			});
+		}
 		this.setState({
 			canGoToNextStep: controlPoints.length > 0,
 		});

@@ -33,6 +33,7 @@ const availableCanvasColors = [
 	{name: 'Red', value: 0xff0000},
 	{name: 'Green', value: 0x00ff00},
 	{name: 'Blue', value: 0x0000ff},
+	{name: 'White', value: 0xffffff}
 ];
 
 interface ProjectPropertiesProps {
@@ -94,6 +95,7 @@ const ProjectProperties: FC<ProjectPropertiesProps> = (props) => {
 						value={`${canvasSize.x}x${canvasSize.y}`}
 						onChange={onCanvasSizeChanged}
 						label="Select a frame"
+						defaultValue={'Custom'}
 					>
 						{availableCanvasSizes.map((size) => {
 							return (
