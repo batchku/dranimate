@@ -11,36 +11,38 @@ import CloseIcon from 'icons/close-icon';
 import LiveVideoInspect from './live-video-inspect/live-video-inspect';
 import PuppetInspect from './puppet-inspect/puppet-inspect';
 
-import { useAppSelector } from '../../redux-util/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux-util/hooks';
 import { selectActivePuppet } from '../../redux-util/reducers/puppets';
+import { selectInspectPanelOpen, setInspectPanelOpen } from 'redux-util/reducers/ui';
 
 import './inspect-panel.scss';
 
 const InspectPanel = (): JSX.Element => {
-	const activePuppet = useAppSelector(selectActivePuppet);
+	const dispatch = useAppDispatch();
 
-	const [open, setOpen] = useState(false);
+	const activePuppet = useAppSelector(selectActivePuppet);
+	const open = useAppSelector(selectInspectPanelOpen);
 
 	const onSetOpen = (): void => {
-		setOpen(true);
+		dispatch(setInspectPanelOpen(true));
 	}
 
 	const onSetClosed = (): void => {
-		setOpen(false);
+		dispatch(setInspectPanelOpen(false));
 	}
 
 	return (
 		<Paper square className='inspect-panel-container' style={{
-			transform: open || activePuppet ? 'translateX(0px)' : 'translateX(100%)'
+			transform: open ? 'translateX(0px)' : 'translateX(100%)'
 		}}>
-			{!open && !activePuppet &&
+			{!open &&
 			<div className='toggle-panel-container'>
 				<IconButton onClick={onSetOpen}>
 					<FilterIcon fill='#FFFFFF' opacity='0.9' />
 				</IconButton>
 			</div>}
 			<Divider orientation='horizontal'/>
-			{!activePuppet &&
+			{open && !activePuppet &&
 			<>
 				<div className='inspect-panel-header'>
 					<Typography>
@@ -56,8 +58,8 @@ const InspectPanel = (): JSX.Element => {
 					</Typography>
 				</div>
 			</>}
-			{activePuppet?.type === 'puppet' && <PuppetInspect />}
-			{activePuppet?.type === 'livedraw-puppet' && <LiveVideoInspect />}
+			{activePuppet?.type === 'puppet' && open && <PuppetInspect onClose={onSetClosed} />}
+			{activePuppet?.type === 'livedraw-puppet' && open && <LiveVideoInspect onClose={onSetClosed} />}
 		</Paper>
 	);
 }

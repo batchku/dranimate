@@ -16,11 +16,16 @@ import PlayIcon from '../../../icons/play-icon';
 import PauseIcon from 'icons/pause-icon';
 import DeleteIcon from 'icons/delete-icon';
 import StopIcon from 'icons/stop-icon';
+import CloseIcon from 'icons/close-icon';
 
 import './live-video-inspect.scss';
 
-const LiveVideoInspect: FC<{}> = (): JSX.Element => {
-	const dispach = useAppDispatch();
+interface LiveVideoInspectProps {
+	onClose: () => void;
+}
+
+const LiveVideoInspect: FC<LiveVideoInspectProps> = (props): JSX.Element => {
+	const dispatch = useAppDispatch();
 
 	const activePuppet = useAppSelector(selectActivePuppet);
 
@@ -29,35 +34,35 @@ const LiveVideoInspect: FC<{}> = (): JSX.Element => {
 	const recordIntervalHandle = useRef<number>();
 
 	const onOpacityChange = (event: React.ChangeEvent, value: number): void => {
-		dispach(setOpacity({
+		dispatch(setOpacity({
 			puppetId: activePuppet.id,
 			value: value,
 		}));
 	}
 
 	const onInvertChange = (event: React.ChangeEvent, value: number): void => {
-		dispach(setInvert({
+		dispatch(setInvert({
 			puppetId: activePuppet.id,
 			value: value,
 		}));
 	}
 
 	const onSoftnessChange = (event: React.ChangeEvent, value: number): void => {
-		dispach(setSoftness({
+		dispatch(setSoftness({
 			puppetId: activePuppet.id,
 			value: value,
 		}));
 	}
 
 	const onThresholdChange = (event: React.ChangeEvent, value: number): void => {
-		dispach(setThreshold({
+		dispatch(setThreshold({
 			puppetId: activePuppet.id,
 			value: value,
 		}));
 	}
 
 	const onEffectsDisabledChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-		dispach(setDisableEffects({
+		dispatch(setDisableEffects({
 			puppetId: activePuppet.id,
 			disabled: event.target.checked,
 		}));
@@ -75,7 +80,7 @@ const LiveVideoInspect: FC<{}> = (): JSX.Element => {
 			if (recordStep === 4) {
 				dranimate.setRecording(false);
 				dranimate.getSelectedPuppet().playing = true;
-				dispach(setHasRecording({
+				dispatch(setHasRecording({
 					puppetId: activePuppet.id,
 					hasRecording: true
 				}));
@@ -91,13 +96,13 @@ const LiveVideoInspect: FC<{}> = (): JSX.Element => {
 		setRecordStep(recordStep + 1);
 
 		// Delete previous recording
-		dispach(setHasRecording({
+		dispatch(setHasRecording({
 			puppetId: activePuppet.id,
 			hasRecording: false
 		}));
 
 		// Stop playing previous recording
-		dispach(setPlaying({
+		dispatch(setPlaying({
 			puppetId: activePuppet.id,
 			playing: false
 		}));
@@ -119,17 +124,21 @@ const LiveVideoInspect: FC<{}> = (): JSX.Element => {
 	}, [recordStep]);
 
 	const onDeletePuppet = (): void => {
-		dispach(setHasRecording({
+		dispatch(setHasRecording({
 			puppetId: activePuppet.id,
 			hasRecording: false
 		}));
 	}
 
 	const togglePlayRecording = (): void => {
-		dispach(setPlaying({
+		dispatch(setPlaying({
 			puppetId: activePuppet.id,
 			playing: !activePuppet.playing
 		}));
+	}
+
+	const onSetClosed = (): void => {
+		props.onClose();
 	}
 
 	return (
@@ -138,6 +147,9 @@ const LiveVideoInspect: FC<{}> = (): JSX.Element => {
 				<Typography>
 					Color
 				</Typography>
+				<IconButton onClick={onSetClosed} size='small'>
+					<CloseIcon fill='#ffffff' opacity='0.9' />
+				</IconButton>
 			</div>
 			<div className='inspect-row'>
 				<Typography variant='body2'>

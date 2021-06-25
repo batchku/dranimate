@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
 import { withStyles } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
@@ -21,6 +21,7 @@ import StopIcon from 'icons/stop-icon';
 import PlayIcon from 'icons/play-icon';
 import PauseIcon from 'icons/pause-icon';
 import DeleteIcon from 'icons/delete-icon';
+import CloseIcon from 'icons/close-icon';
 
 import './puppet-inspect.scss';
 
@@ -37,7 +38,11 @@ const ColorButton = withStyles(() => ({
 	},
 }))(Button);
 
-const PuppetInspect = (): JSX.Element => {
+interface PuppetInspectProps {
+	onClose: () => void;
+}
+
+const PuppetInspect: FC<PuppetInspectProps> = (props): JSX.Element => {
 	const dispatch = useAppDispatch();
 
 	const activePuppet = useAppSelector(selectActivePuppet);
@@ -125,12 +130,19 @@ const PuppetInspect = (): JSX.Element => {
 		setHandTrackingMenuOpen(!handTrackingMenuOpen);
 	}
 
+	const onSetClosed = (): void => {
+		props.onClose();
+	}
+
 	return (
 		<>
 			<div className='inspect-panel-header'>
 				<Typography>
 					Setup
 				</Typography>
+				<IconButton onClick={onSetClosed} size='small'>
+					<CloseIcon fill='#ffffff' opacity='0.9' />
+				</IconButton>
 			</div>
 			<div className='inspect-row'>
 				<ColorButton variant='contained' fullWidth>

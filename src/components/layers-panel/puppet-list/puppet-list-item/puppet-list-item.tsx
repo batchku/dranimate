@@ -15,8 +15,9 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import HiddenIcon from 'icons/hidden-icon';
 
-import { PuppetData, setSelected, deletePuppet, setVisible } from '../../../../redux-util/reducers/puppets';
-import { useAppDispatch } from '../../../../redux-util/hooks';
+import { PuppetData, setSelected, deletePuppet, setVisible, selectActivePuppet } from 'redux-util/reducers/puppets';
+import { useAppDispatch, useAppSelector } from 'redux-util/hooks';
+import { setInspectPanelOpen } from 'redux-util/reducers/ui';
 
 import RenamePuppetDialog from './rename-puppet-dialog/rename-puppet-dialog';
 
@@ -26,6 +27,8 @@ interface PuppetListItemProps {
 
 const PuppetListItem: FC<PuppetListItemProps> = ({puppet}) => {
 	const dispatch = useAppDispatch();
+
+	const selectedPuppet = useAppSelector(selectActivePuppet);
 
 	const menuButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -44,6 +47,9 @@ const PuppetListItem: FC<PuppetListItemProps> = ({puppet}) => {
 			puppetId: puppet.id,
 			selected: true,
 		}));
+		if (selectedPuppet?.id !== puppet.id) {
+			dispatch(setInspectPanelOpen(true));
+		}
 	}
 
 	const onMenuOpen = (event: React.MouseEvent): void => {

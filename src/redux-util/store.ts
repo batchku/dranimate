@@ -2,11 +2,13 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 
 import puppetsReducer from './reducers/puppets';
 import projectReducer from './reducers/project';
+import uiReducer from './reducers/ui';
 
 export const store = configureStore({
   reducer: {
     puppets: puppetsReducer,
-    project: projectReducer
+    project: projectReducer,
+    ui: uiReducer,
   },
 });
 
