@@ -16,8 +16,8 @@ import Divider from '@material-ui/core/Divider';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 
-import { useAppSelector } from "redux-util/hooks";
-import { selectCanvasSize } from "redux-util/reducers/project";
+import { useAppDispatch, useAppSelector } from "redux-util/hooks";
+import { selectCanvasSize, selectFps, setFps } from "redux-util/reducers/project";
 
 import { ColorButton } from '../../primitives/button-mui/button';
 
@@ -26,7 +26,10 @@ import dranimate from "services/dranimate/dranimate";
 import './create-gif.scss';
 
 const CreateGif: FC<{}> = () => {
+	const dispatch = useAppDispatch();
+
 	const canvasSize = useAppSelector(selectCanvasSize);
+	const fps = useAppSelector(selectFps);
 
 	const [open, setOpen] = useState(false);
 	const [loop, setLoop] = useState(true);
@@ -43,7 +46,7 @@ const CreateGif: FC<{}> = () => {
 	const onDownloadGif = (): void => {
 		const recorder = new GIF({
 			workers: 2,
-			quality: 30,
+			quality: Number(fps),
 			workerScript: '/assets/gif.worker.js',
 			repeat: loop ? 0 : -1
 		});
@@ -60,8 +63,7 @@ const CreateGif: FC<{}> = () => {
 		dranimate.exportCamera.bottom = canvasSize.y / 2;
 		dranimate.exportCamera.updateProjectionMatrix();
 
-		// Frames per second = 30
-		const frameCount = 30 * length;
+		const frameCount = Number(fps) * length;
 		for(let i = 0; i < frameCount; i++) {
 			dranimate.puppets.forEach((puppet) => {
 				puppet.renderFrame(i);
@@ -97,6 +99,10 @@ const CreateGif: FC<{}> = () => {
 
 	const decreaseLength = (): void => {
 		setLength(Math.max(1, length - 1));
+	}
+
+	const onFpsChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+		dispatch(setFps(event.target.value));
 	}
 
 	return (
@@ -138,6 +144,21 @@ const CreateGif: FC<{}> = () => {
 							</IconButton>
 						</div>
 					</div>
+					<Box m={2} />
+					<TextField
+						fullWidth
+						label='FPS'
+						variant='outlined'
+						type='number'
+						onChange={onFpsChange}
+						value={fps}
+						size='small'
+						inputProps={{
+							min: "5",
+							max: "30",
+							step: "1"
+						}}
+					/>
 					<Box m={2} />
 					<div className='create-gif-settings-row'>
 						<Typography variant='body2'>

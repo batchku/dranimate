@@ -7,6 +7,7 @@ export interface ProjectData {
 	name: string;
 	canvasSize: CanvasSizeData;
 	backgroundColor: BackgroundColorData;
+	fps: string;
 }
 
 interface CanvasSizeData {
@@ -30,6 +31,7 @@ const initialState: {data: ProjectData} = {
 			name: 'Black',
 			value: 0x000
 		},
+		fps: '30'
 	}
 };
 
@@ -49,18 +51,23 @@ export const projectSlice = createSlice({
 			dranimate.setBackgroundColor(action.payload.value);
 
 			state.data.backgroundColor = action.payload;
-		}
+		},
+		setFps: (state, action: PayloadAction<string>): void => {
+			state.data.fps = action.payload;
+		},
 	}
 });
 
 export const {
 	setCanvasSize,
 	setBackgroundColor,
-	setName
+	setName,
+	setFps
 } = projectSlice.actions;
 
 export const selectProjectName = (state: RootState): string => state.project.data.name;
 export const selectCanvasSize = (state: RootState): CanvasSizeData => state.project.data.canvasSize;
 export const selectBackgroundColor = (state: RootState): BackgroundColorData => state.project.data.backgroundColor;
+export const selectFps = (state: RootState): string => state.project.data.fps;
 
 export default projectSlice.reducer;

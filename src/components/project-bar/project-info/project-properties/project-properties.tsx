@@ -10,11 +10,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
+import TextField from '@material-ui/core/TextField';
 
 import { ColorButton } from 'components/primitives/button-mui/button';
 
 import { useAppDispatch, useAppSelector } from 'redux-util/hooks';
-import { selectBackgroundColor, selectCanvasSize, setBackgroundColor } from 'redux-util/reducers/project';
+import { selectBackgroundColor, selectCanvasSize, selectFps, setBackgroundColor, setFps } from 'redux-util/reducers/project';
 import { setCanvasSize } from 'redux-util/reducers/project';
 
 const availableCanvasSizes = [
@@ -44,6 +45,7 @@ interface ProjectPropertiesProps {
 const ProjectProperties: FC<ProjectPropertiesProps> = (props) => {
 	const canvasSize = useAppSelector(selectCanvasSize);
 	const backgroundColor = useAppSelector(selectBackgroundColor);
+	const fps = useAppSelector(selectFps);
 
 	const dispatch = useAppDispatch();
 
@@ -70,6 +72,10 @@ const ProjectProperties: FC<ProjectPropertiesProps> = (props) => {
 			name: selectedColorData.name,
 			value: selectedColorData.value
 		}));
+	}
+
+	const onFpsChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+		dispatch(setFps(event.target.value));
 	}
 
 	const onSave = (): void => {
@@ -138,6 +144,27 @@ const ProjectProperties: FC<ProjectPropertiesProps> = (props) => {
 						})}
 					</Select>
 				</FormControl>
+				
+				<Box m={1} />
+
+				{/* Animation (fps) */}
+				<DialogContentText>
+					Animation
+				</DialogContentText>
+				<TextField
+					fullWidth
+					label='FPS'
+					variant='outlined'
+					onChange={onFpsChange}
+					value={fps}
+					inputProps={{
+						min: "5",
+						max: "30",
+						step: "1",
+						type: 'number'
+					}}
+				/>
+
 			</DialogContent>
 			<DialogActions>
 			<ColorButton onClick={onSave}>
