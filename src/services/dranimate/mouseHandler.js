@@ -4,6 +4,8 @@ import { getPuppetAndControlPointFromPostion } from 'services/dranimate/util';
 
 import puppetSelectedEvent from './../eventManager/puppet-selected-event';
 
+import dranimate from './dranimate';
+
 const MOUSE_STATE = {
 	UP: 'UP',
 	DOWN: 'DOWN',
@@ -49,11 +51,6 @@ export default class DranimateMouseHandler {
 		this.updateMousePosition(event.clientX, event.clientY, zoom);
 		this.mouseState = MOUSE_STATE.DOWN;
 
-		if(this.panHandler.getPanEnabled()) {
-			this.panHandler.onMouseDown(this.mouseAbsolute.x, this.mouseAbsolute.y, zoom);
-			return;
-		}
-
 		if(this.activeControlPoint.hoveredOver) {
 			this.selectedPuppet = puppets[this.activeControlPoint.puppetIndex];
 			this.activeControlPoint.beingDragged = true;
@@ -92,6 +89,13 @@ export default class DranimateMouseHandler {
 		puppetSelectedEvent.emit({
 			puppet: this.selectedPuppet
 		});
+
+		if (!this.selectedPuppet) {
+			dranimate.setPanEnabled(true);
+
+			this.panHandler.onMouseDown(this.mouseAbsolute.x, this.mouseAbsolute.y, zoom);
+			return;
+		}
 	}
 
 	onMouseMove(event, puppets, zoom) {
@@ -159,9 +163,9 @@ export default class DranimateMouseHandler {
 	onMouseUp(event, puppets, zoom) {
 		this.updateMousePosition(event.clientX, event.clientY, zoom);
 		this.mouseState = MOUSE_STATE.UP;
-		if (this.panHandler.getPanEnabled()) {
-			return;
-		}
+		
+		dranimate.setPanEnabled(false);
+
 		this.activeControlPoint.beingDragged = false;
 		this.puppetRotationData.rotatingPuppet = false;
 		this.puppetScaleData.scalingPuppet = false;
