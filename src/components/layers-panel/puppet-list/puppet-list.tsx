@@ -1,9 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+
 import List from '@material-ui/core/List';
+import RootRef from '@material-ui/core/RootRef';
 
 import { useAppDispatch, useAppSelector } from 'redux-util/hooks';
-import { selectActivePuppet, selectPuppets, setSelected } from 'redux-util/reducers/puppets'
+import { selectActivePuppet, selectPuppets, setSelected, reorderPuppet } from 'redux-util/reducers/puppets'
 import { setInspectPanelOpen } from 'redux-util/reducers/ui';
 
 import generateUniqueId from 'services/util/uuid';
@@ -34,6 +37,18 @@ const PuppetList = (): JSX.Element => {
 		}
 	}
 
+	const onDragEnd = (result: DropResult): void => {
+		// dropped outside the list
+		if (!result.destination) {
+			return;
+		}
+	
+		dispatch(reorderPuppet({
+			from: result.source.index,
+			to: result.destination.index,
+		}));
+	}
+
 	useEffect(() => {
 		puppetSelectedEvent.subscribe({
 			id: puppetSelectedEventId.current,
@@ -46,13 +61,31 @@ const PuppetList = (): JSX.Element => {
 	}, [activePuppet]);
 
 	return (
-		<List>
-			{puppets.map((puppet) => {
-				return (
-					<PuppetListItem key={puppet.id} puppet={puppet} />
-				);
-			})}
-		</List>
+		<DragDropContext onDragEnd={onDragEnd}>
+			<Droppable droppableId='droppable'>
+				{(provided): JSX.Element => (
+					<RootRef rootRef={provided.innerRef}>
+						<List>
+							{puppets.map((puppet, index) => {
+								return (
+									<Draggable key={puppet.id} draggableId={puppet.id} index={index}>
+										{(provided, snapshot): JSX.Element => (
+											<PuppetListItem
+												key={puppet.id}
+												puppet={puppet}
+												provided={provided}
+												snapshot={snapshot}
+											/>
+										)}
+									</Draggable>
+								);
+							})}
+							{provided.placeholder}
+						</List>
+					</RootRef>
+				)}
+			</Droppable>
+		</DragDropContext>
 	)
 }
 export default PuppetList;

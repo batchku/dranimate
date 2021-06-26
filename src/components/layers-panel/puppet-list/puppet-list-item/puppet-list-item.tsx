@@ -1,5 +1,7 @@
 import React, { FC, useRef, useState } from 'react';
 
+import { DraggableProvided, DraggableStateSnapshot, DraggingStyle, NotDraggingStyle } from 'react-beautiful-dnd';
+
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -21,11 +23,20 @@ import { setInspectPanelOpen } from 'redux-util/reducers/ui';
 
 import RenamePuppetDialog from './rename-puppet-dialog/rename-puppet-dialog';
 
+const getItemStyle = (isDragging: boolean, draggableStyle: DraggingStyle | NotDraggingStyle): React.CSSProperties => ({
+		...draggableStyle,
+		...(isDragging && {
+			background: "rgba(255, 255, 255, 0.2)"
+		})
+});
+
 interface PuppetListItemProps {
 	puppet: PuppetData;
+	provided: DraggableProvided;
+	snapshot: DraggableStateSnapshot;
 }
 
-const PuppetListItem: FC<PuppetListItemProps> = ({puppet}) => {
+const PuppetListItem: FC<PuppetListItemProps> = ({puppet, provided, snapshot}) => {
 	const dispatch = useAppDispatch();
 
 	const selectedPuppet = useAppSelector(selectActivePuppet);
@@ -77,7 +88,19 @@ const PuppetListItem: FC<PuppetListItemProps> = ({puppet}) => {
 	}
 
 	return (
-		<ListItem button selected={puppet.selected} onClick={onSelectPuppet}>
+		<ListItem
+			ContainerComponent={(<li />).type}
+			ref={provided.innerRef}
+			{...provided.draggableProps}
+			{...provided.dragHandleProps}
+			style={getItemStyle(
+				snapshot.isDragging,
+				provided.draggableProps.style
+			)}
+			button
+			selected={puppet.selected}
+			onClick={onSelectPuppet}
+		>
 			<ListItemAvatar>
 				<Avatar>
 					<PersonIcon />

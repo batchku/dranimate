@@ -14,6 +14,7 @@
   "devDependencies": {
     "@types/gif.js": "^0.2.1",
     "@types/react": "^16.9.32",
+    "@types/react-beautiful-dnd": "^13.0.0",
     "@types/react-dom": "^16.9.6",
     "@types/uuid": "^7.0.2",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
@@ -51,6 +52,7 @@
     "gif.js": "^0.2.0",
     "prop-types": "^15.6.0",
     "react": "^16.1.0",
+    "react-beautiful-dnd": "^13.1.0",
     "react-dom": "^16.1.0",
     "react-redux": "^7.2.4",
     "redux": "^4.1.0",

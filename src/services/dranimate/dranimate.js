@@ -479,6 +479,19 @@ class Dranimate {
 		});
 	}
 
+	reorderPuppets = () => {
+		this.scene.children.forEach((obj) => {
+			if (obj.type !== 'Group') {
+				return;
+			}
+
+			const puppetIndex = this.puppets.findIndex(puppet => puppet.group === obj);
+			const renderIndex = this.puppets.length - (puppetIndex + 1);
+
+			obj.children.forEach(child => child.renderOrder = renderIndex);
+		});
+	}
+
 	zoomIn = () => {
 		if (this.zoom >= ZOOM.MAX) { return; }
 		this.zoom += 0.1;

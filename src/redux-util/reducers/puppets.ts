@@ -56,7 +56,7 @@ export const puppetsSlice = createSlice({
 	initialState,
 	reducers: {
 		addPuppet: (state, action: PayloadAction<Puppet>): void => {
-			state.data.push({
+			state.data.unshift({
 				name: action.payload.getName(),
 				id: action.payload.id,
 				visible: true,
@@ -69,7 +69,7 @@ export const puppetsSlice = createSlice({
 		addLiveVideo: (state): void => {
 			const puppet = createLiveVideoPuppet();
 
-			state.data.push({
+			state.data.unshift({
 				name: 'Live video',
 				id: puppet.id,
 				visible: true,
@@ -216,6 +216,19 @@ export const puppetsSlice = createSlice({
 				puppetUiData.name = action.payload.name;
 			}
 		},
+		reorderPuppet: (state, action: PayloadAction<{from: number; to: number}>): void => {
+			// Remove puppet from 'from' index
+			const [removed] = state.data.splice(action.payload.from, 1);
+
+			// Insert puppet to 'to' index
+			state.data.splice(action.payload.to, 0, removed);
+
+			// Update stage puppets as well
+			const [stagePuppet] = dranimate.puppets.splice(action.payload.from, 1);
+			dranimate.puppets.splice(action.payload.to, 0, stagePuppet);
+
+			dranimate.reorderPuppets();
+		}
 	}
 });
 
@@ -232,7 +245,8 @@ export const {
 	setHasRecording,
 	setPlaying,
 	setName,
-	setDisableEffects
+	setDisableEffects,
+	reorderPuppet
 } = puppetsSlice.actions;
 
 export const selectPuppets = (state: RootState): PuppetData[] => state.puppets.data;
