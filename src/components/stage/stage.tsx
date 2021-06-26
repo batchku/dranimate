@@ -264,6 +264,7 @@ class Stage extends React.Component<{}, StageState> {
 					onMouseUp={dranimate.onMouseUp}
 					onTouchStart={dranimate.onTouchStart}
 					onTouchEnd={dranimate.onTouchEnd}
+					onWheel={dranimate.onMouseWheel}
 					ref={(input): void => {
 						this.dranimateStageContainer = input;
 					}}

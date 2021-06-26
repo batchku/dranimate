@@ -174,6 +174,15 @@ export default class DranimateMouseHandler {
 		}
 	}
 
+	onMouseWheel(event) {
+		if (event.deltaY > 0) {
+			dranimate.zoomOut();
+		}
+		else if (event.deltaY < 0) {
+			dranimate.zoomIn();
+		}
+	}
+
 	getSelectedPuppet() {
 		return this.selectedPuppet;
 	}

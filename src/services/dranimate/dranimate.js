@@ -327,13 +327,7 @@ class Dranimate {
 		});
 	}
 
-	onMouseWheel = (event) => {
-		let d = ((typeof e.wheelDelta != "undefined")?(-e.wheelDelta):e.detail);
-		d *= 0.01;
-		this.zoom += d;
-		this.zoom = clamp(zoom, ZOOM.MIN, ZOOM.MAX);
-		this.refreshCamera();
-	};
+	onMouseWheel = event => this.mouseHandler.onMouseWheel(event);
 
 	onMouseDown = event => this.mouseHandler.onMouseDown(event, this.puppets, this.zoom);
 
