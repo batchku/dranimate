@@ -54,13 +54,13 @@ const CreateGif: FC<{}> = () => {
 		// dranimate.renderer.setViewport(0, 0, 800, 600);
 
 		// const renderer = new THREE.WebGLRenderer();
-		dranimate.renderer.setSize(canvasSize.x, canvasSize.y, true);
-		dranimate.renderer.setViewport(0, 0, canvasSize.x, canvasSize.y);
+		dranimate.renderer.setSize(Number(canvasSize.x), Number(canvasSize.y), true);
+		dranimate.renderer.setViewport(0, 0, Number(canvasSize.x), Number(canvasSize.y));
 
 		dranimate.exportCamera.left = -canvasSize.x / 2;
-		dranimate.exportCamera.right = canvasSize.x / 2;
+		dranimate.exportCamera.right = Number(canvasSize.x) / 2;
 		dranimate.exportCamera.top = -canvasSize.y / 2;
-		dranimate.exportCamera.bottom = canvasSize.y / 2;
+		dranimate.exportCamera.bottom = Number(canvasSize.y) / 2;
 		dranimate.exportCamera.updateProjectionMatrix();
 
 		const frameCount = Number(fps) * length;

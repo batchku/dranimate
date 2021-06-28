@@ -13,6 +13,7 @@ import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 
 import { ColorButton } from 'components/primitives/button-mui/button';
+import CanvasSizePicker from 'components/primitives/canvas-size-picker/canvas-size-picker';
 
 import { useAppDispatch, useAppSelector } from 'redux-util/hooks';
 import { selectBackgroundColor, selectCanvasSize, selectFps, setBackgroundColor, setFps } from 'redux-util/reducers/project';
@@ -52,12 +53,23 @@ const ProjectProperties: FC<ProjectPropertiesProps> = (props) => {
 	const onCanvasSizeChanged = (event: React.ChangeEvent<{
 		value: string;
 	}>): void => {
-		const x = Number(event.target.value.split('x')[0]);
-		const y = Number(event.target.value.split('x')[1]);
+		if (event.target.value === 'Custom') {
+			return;
+		}
+
+		const x = event.target.value.split('x')[0];
+		const y = event.target.value.split('x')[1];
 
 		dispatch(setCanvasSize({
 			x: x,
 			y: y,
+		}));
+	}
+
+	const onCustomCanvasSizeChanged = (width: string, height: string): void => {
+		dispatch(setCanvasSize({
+			x: width,
+			y: height,
 		}));
 	}
 
@@ -82,6 +94,10 @@ const ProjectProperties: FC<ProjectPropertiesProps> = (props) => {
 		// TODO - Add save to firebase
 	}
 
+	const isRegularSize = availableCanvasSizes.some((size) => {
+		return size.x === Number(canvasSize.x) && size.y === Number(canvasSize.y);
+	})
+
 	return (
 		<Dialog open={props.open} onClose={props.onClose} maxWidth='xs' fullWidth>
 			<DialogTitle>
@@ -98,7 +114,7 @@ const ProjectProperties: FC<ProjectPropertiesProps> = (props) => {
 					</InputLabel>
 					<Select
 						labelId="canvas-resolution"
-						value={`${canvasSize.x}x${canvasSize.y}`}
+						value={isRegularSize ?`${canvasSize.x}x${canvasSize.y}` : 'Custom'}
 						onChange={onCanvasSizeChanged}
 						label="Select a frame"
 						defaultValue={'Custom'}
@@ -113,10 +129,22 @@ const ProjectProperties: FC<ProjectPropertiesProps> = (props) => {
 								</MenuItem>
 							);
 						})}
+						<MenuItem
+							key='Custom'
+							value='Custom'
+						>
+							Custom
+						</MenuItem>
 					</Select>
 				</FormControl>
+				<Box m={2} />
+				<CanvasSizePicker
+					width={canvasSize.x}
+					height={canvasSize.y}
+					onChange={onCustomCanvasSizeChanged}
+				/>
 
-				<Box m={1} />
+				<Box m={2} />
 
 				{/* Background Color */}
 				<DialogContentText>

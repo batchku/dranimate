@@ -11,8 +11,8 @@ export interface ProjectData {
 }
 
 interface CanvasSizeData {
-	x: number;
-	y: number;
+	x: string;
+	y: string;
 }
 
 interface BackgroundColorData {
@@ -24,8 +24,8 @@ const initialState: {data: ProjectData} = {
 	data: {
 		name: 'Untitled Project',
 		canvasSize: {
-			x: 640,
-			y: 640,
+			x: '640',
+			y: '640',
 		},
 		backgroundColor: {
 			name: 'Black',

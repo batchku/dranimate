@@ -1,0 +1,22 @@
+
+
+
+import React, { FC } from 'react';
+
+import './icon-style.scss';
+
+interface LockClosedIconProps {
+	fill: string;
+	opacity: string;
+}
+
+const LockClosedIcon: FC<LockClosedIconProps> = (props) => {
+	return (
+		<div className='icon-container'>
+			<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M6.63039 9.39102V5.26098C6.63039 2.35552 9.19927 0 12.3697 0C15.5391 0 18.109 2.35755 18.109 5.26098V9.39102H19.2731C20.3589 9.39102 21.2393 10.3272 21.2393 11.4766V21.9144C21.2393 23.0658 20.3589 24 19.2731 24H5.46625C4.38043 24 3.5 23.0638 3.5 21.9144V11.4766C3.5 10.3252 4.3804 9.39102 5.46625 9.39102H6.63039ZM5.58759 11.4786V21.9124H19.1517V11.4786H5.58759ZM16.0214 9.39102V5.26098C16.0214 3.55201 14.4239 2.08756 12.3697 2.08756C10.3134 2.08756 8.71793 3.55001 8.71793 5.26098V9.39102H16.0214ZM11.3259 15.4268C11.3259 14.8506 11.7896 14.384 12.3697 14.384C12.9458 14.384 13.4134 14.8467 13.4134 15.4268V18.5582C13.4134 19.1343 12.9497 19.601 12.3697 19.601C11.7935 19.601 11.3259 19.1383 11.3259 18.5582V15.4268Z" fill={props.fill} fillOpacity={props.opacity} />
+			</svg>
+		</div>
+	);
+}
+export default LockClosedIcon;
