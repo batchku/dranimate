@@ -147,6 +147,7 @@ const CreateGif: FC<{}> = () => {
 					<Box m={2} />
 					<div className='flex-row'>
 						<TextField
+							fullWidth
 							size='small'
 							type='number'
 							label="Length (seconds)"
