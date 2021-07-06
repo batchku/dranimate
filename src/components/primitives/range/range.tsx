@@ -16,7 +16,7 @@ class Range extends React.Component<RangeProps, RangeState> {
 		super(props);
 
 		this.state = {
-			value: '30'
+			value: '15'
 		};
 	}
 
