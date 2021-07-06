@@ -1,8 +1,9 @@
 import React, { FC } from 'react';
 
-import Paper from '@material-ui/core/Paper';
+import { Paper, Box } from '@material-ui/core';
 
 import CreateGif from './create-gif/create-gif';
+import ZoomLabel from './zoom-label/zoom-label';
 import ProjectInfo from './project-info/project-info';
 
 import './project-bar.scss';
@@ -12,6 +13,8 @@ const ProjectBar: FC<{}> = () => {
 		<Paper square className='project-bar-container'>
 			<ProjectInfo />
 			<CreateGif />
+			<Box m={1} />
+			<ZoomLabel />
 		</Paper>
 	);
 }

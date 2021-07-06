@@ -495,6 +495,7 @@ class Dranimate {
 	zoomIn = () => {
 		if (this.zoom >= ZOOM.MAX) { return; }
 		this.zoom += 0.1;
+		this.zoom = Number(this.zoom.toFixed(2));
 		//panPosition.x -= (0.1)*window.innerWidth/2;
 		//panPosition.y -= (0.1)*window.innerHeight/2;
 		this.refreshCamera();
@@ -503,8 +504,15 @@ class Dranimate {
 	zoomOut = () => {
 		if (this.zoom <= ZOOM.MIN) { return; }
 		this.zoom -= 0.1;
+		this.zoom = Number(this.zoom.toFixed(2));
 		//panPosition.x += (0.1)*window.innerWidth/2;
 		//panPosition.y += (0.1)*window.innerHeight/2;
+		this.refreshCamera();
+	}
+
+	// Set zoom, provide value from 0 to 100
+	setZoom = (value) => {
+		this.zoom = (value / 100) + 0.5;
 		this.refreshCamera();
 	}
 
