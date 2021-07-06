@@ -17,8 +17,9 @@ import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 
 import { useAppDispatch, useAppSelector } from "redux-util/hooks";
-import { selectCanvasSize, selectFps, setFps } from "redux-util/reducers/project";
+import { selectCanvasSize, selectFps, setCanvasSize, setFps } from "redux-util/reducers/project";
 
+import CanvasSizePicker from './../../primitives/canvas-size-picker/canvas-size-picker';
 import { ColorButton } from '../../primitives/button-mui/button';
 
 import dranimate from "services/dranimate/dranimate";
@@ -105,6 +106,13 @@ const CreateGif: FC<{}> = () => {
 		dispatch(setFps(event.target.value));
 	}
 
+	const onCustomCanvasSizeChanged = (width: string, height: string): void => {
+		dispatch(setCanvasSize({
+			x: width,
+			y: height,
+		}));
+	}
+
 	return (
 		<>
 			<ColorButton onClick={onOpen}>
@@ -115,6 +123,20 @@ const CreateGif: FC<{}> = () => {
 					Create gif
 				</DialogTitle>
 				<DialogContent>
+					<Divider orientation='horizontal' />
+					<Box m={2} />
+					<div className='flex-row'>
+						<Typography variant='h6'>
+							Image dimensions
+						</Typography>
+					</div>
+					<Box m={2} />
+					<CanvasSizePicker
+						width={canvasSize.x}
+						height={canvasSize.y}
+						onChange={onCustomCanvasSizeChanged}
+					/>
+					<Box m={2} />
 					<Divider orientation='horizontal' />
 					<Box m={2} />
 					<div className='flex-row'>
