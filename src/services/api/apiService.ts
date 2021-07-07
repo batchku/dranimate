@@ -4,6 +4,9 @@ import GifDB from 'services/api/models/GifDB';
 import PuppetDB from 'services/api/models/PuppetDB';
 import userService from 'services/api/userService';
 import loadPuppetFromFile from 'services/storage/deserializer';
+import { ProjectData } from 'redux-util/reducers/project';
+import { PuppetData } from 'redux-util/reducers/puppets';
+import dranimate from 'services/dranimate/dranimate';
 
 const PUPPET_COLLECTION = 'puppets';
 const GIF_COLLECTION = 'gifs';
@@ -102,6 +105,8 @@ class ApiService {
 				.setUserId(userId)
 				.toJson();
 
+			puppetModel.id = puppet.id;
+
 			const docName = `${puppet.name}-${Math.random()}`;
 
 			return this._db.collection(PUPPET_COLLECTION).add(puppetModel);
@@ -109,6 +114,46 @@ class ApiService {
 			// TODO: use uuid for puppet creation, then use set
 			// return this.db.collection(PUPPET_COLLECTION).doc(PUPPET-UUID).set(data);
 		})
+	}
+
+	async saveProject(project: ProjectData, puppets: PuppetData[]): Promise<void> {
+		const userId = userService.getUserId();
+		
+		const puppetsIds: string[] = [];
+		puppets.forEach((puppet) => {
+			if (puppet.type === 'puppet') {
+				puppetsIds.push(puppet.id);
+			}
+		});
+
+		dranimate.puppets.forEach((puppet) => {
+			this.savePuppet(puppet);
+		});
+
+		return this._db.collection('projects').doc(project.id).set({
+			userId: userId || '',
+			name: project.name,
+			id: project.id,
+			canvasSize: project.canvasSize,
+			fps: project.fps,
+			backgroundColor: project.backgroundColor,
+			puppets: puppetsIds
+		}, {
+			merge: true
+		});
+	}
+
+	async getAllProjectsForUser(): Promise<ProjectData[]> {
+		const projects: ProjectData[] = [];
+
+		const userId = userService.getUserId();
+
+		const projectSnapshots = await this._db.collection('projects').where('userId', '==', userId).get();
+		projectSnapshots.forEach((snapshot) => {
+			projects.push(snapshot.data() as ProjectData);
+		});
+
+		return projects;
 	}
 
 	saveGif(gifBlob, gifName) {

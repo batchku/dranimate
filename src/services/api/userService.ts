@@ -34,7 +34,7 @@ class UserService {
 	}
 
 	public getUserId(): string {
-		return this._auth.currentUser.uid;
+		return this._auth.currentUser?.uid;
 	}
 
 	private onAuthStateChanged = (user: firebase.User): void => {

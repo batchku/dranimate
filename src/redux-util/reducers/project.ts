@@ -1,9 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { v1 as uuid } from 'uuid';
+
 import dranimate from "services/dranimate/dranimate";
 
 import { RootState } from "../store";
 
 export interface ProjectData {
+	id: string;
 	name: string;
 	canvasSize: CanvasSizeData;
 	backgroundColor: BackgroundColorData;
@@ -22,6 +25,7 @@ interface BackgroundColorData {
 
 const initialState: {data: ProjectData} = {
 	data: {
+		id: uuid(),
 		name: 'Untitled Project',
 		canvasSize: {
 			x: '640',
@@ -39,6 +43,9 @@ export const projectSlice = createSlice({
 	name: 'project-slice',
 	initialState,
 	reducers: {
+		setProject: (state, action: PayloadAction<ProjectData>): void => {
+			state.data = action.payload;
+		},
 		setName: (state, action: PayloadAction<string>): void => {
 			state.data.name = action.payload;
 		},
@@ -59,12 +66,14 @@ export const projectSlice = createSlice({
 });
 
 export const {
+	setProject,
 	setCanvasSize,
 	setBackgroundColor,
 	setName,
 	setFps
 } = projectSlice.actions;
 
+export const selectProject = (state: RootState): ProjectData => state.project.data;
 export const selectProjectName = (state: RootState): string => state.project.data.name;
 export const selectCanvasSize = (state: RootState): CanvasSizeData => state.project.data.canvasSize;
 export const selectBackgroundColor = (state: RootState): BackgroundColorData => state.project.data.backgroundColor;

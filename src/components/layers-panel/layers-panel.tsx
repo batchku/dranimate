@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -16,8 +16,9 @@ import eventManager from '../../services/eventManager/event-manager';
 
 import dranimate from 'services/dranimate/dranimate';
 
-import { useAppDispatch } from '../../redux-util/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux-util/hooks';
 import { addLiveVideo, addPuppet } from '../../redux-util/reducers/puppets';
+import { selectProject } from 'redux-util/reducers/project';
 
 import Puppet from 'services/puppet/puppet';
 
@@ -25,9 +26,11 @@ import LayersIcon from 'icons/layers-icon';
 import CloseIcon from 'icons/close-icon';
 
 import './layers-panel.scss';
+import apiService from 'services/api/apiService';
 
 const LayersPanel = (): JSX.Element => {
 	const dispatch = useAppDispatch();
+	const project = useAppSelector(selectProject);
 
 	const addPuppetButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -72,6 +75,32 @@ const LayersPanel = (): JSX.Element => {
 	const onSetClosed = (): void => {
 		setOpen(false);
 	}
+
+	const loadPuppetIntoScene = async (puppetData): Promise<void> => {
+		const puppet = await apiService.openPuppet(puppetData);
+		dranimate.addPuppet(puppet);
+		dispatch(addPuppet(puppet));
+	}
+
+	const loadProjectPuppets = async (): Promise<void> => {
+		const userPuppets = await apiService.getAllPuppetsForUser();
+
+		(project as any).puppets.forEach((projectPuppetId: string) => {
+			const puppetModel = userPuppets.find((userPuppet) => {
+				return userPuppet.id === projectPuppetId;
+			});
+			loadPuppetIntoScene(puppetModel);
+		});
+	}
+
+	useEffect(() => {
+		setTimeout(() => {
+			dranimate.setCanvasSize(project.canvasSize.x, project.canvasSize.y);
+			dranimate.setBackgroundColor(project.backgroundColor.value);
+
+			loadProjectPuppets();
+		}, 1000);
+	}, []);
 
 	return (
 		<Paper square className='layers-panel-container' style={{

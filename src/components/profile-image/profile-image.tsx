@@ -1,8 +1,6 @@
 import React from 'react';
 import { v1 as uuid } from 'uuid';
 
-import UserProfile from 'components/user-profile/user-profile';
-
 import openUserProfileEvent from 'services/eventManager/open-user-profile-event';
 
 import './profile-image.scss';
@@ -47,8 +45,8 @@ class ProfileImage extends React.Component<ProfileImageProps, ProfileImageState>
 				src={this.props.user.photoURL || this.DEFAULT_IMAGE_URL}
 				onClick={this.onOpenProfile}
 			/>,
-			this.state.profileOpen &&
-			<UserProfile key='user-profile' onClose={this.onCloseProfile} user={this.props.user} />
+			// this.state.profileOpen &&
+			// <UserProfile key='user-profile' onClose={this.onCloseProfile} user={this.props.user} />
 		]);
 	}
 

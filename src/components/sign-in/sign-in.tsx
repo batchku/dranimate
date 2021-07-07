@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Button from 'components/primitives/button-v2/button';
+import { ColorButton } from 'components/primitives/button-mui/button';
 
 import openSignInDialogEvent from './../../services/eventManager/open-sign-in-dialog-event';
 
@@ -10,7 +10,9 @@ class SignIn extends React.Component {
 	public render(): JSX.Element {
 		return (
 			<div className='sign-in-container'>
-				<Button label='Sign in' onClick={this.onSignIn}/>
+				<ColorButton onClick={this.onSignIn}>
+					Sign In
+				</ColorButton>
 			</div>
 		);
 	}
