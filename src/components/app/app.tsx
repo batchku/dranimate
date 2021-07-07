@@ -7,13 +7,14 @@ import ProjectBar from 'components/project-bar/project-bar';
 import LayersPanel from 'components/layers-panel/layers-panel';
 import InspectPanel from 'components/inspect-panel/inspect-panel';
 import LandingPage from 'components/landing-page/landing-page';
+
 class App extends React.Component<{}, {}> {
 	public render = (): JSX.Element => {
 		return (
 			<>
 				<BrowserRouter>
 					<Switch>
-						<Route path='/'>
+						<Route path='/editor'>
 							<Stage />
 							<ProjectBar />
 							<LayersPanel />

@@ -13,6 +13,8 @@ export const ColorButton = withStyles(() => ({
 		},
 		borderRadius: '16px',
 		boxShadow: 'none',
+		display: 'inline-flex',
+		justifyContent: 'flex-start'
 	},
 }))(Button);
 

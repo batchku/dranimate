@@ -1,0 +1,18 @@
+.project-list-item-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	height: 64px;
+	width: 100%;
+}
+
+.project-info {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.project-content-container {
+	display: flex;
+	align-items: center;
+}
