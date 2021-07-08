@@ -224,8 +224,15 @@ export const puppetsSlice = createSlice({
 			state.data.splice(action.payload.to, 0, removed);
 
 			// Update stage puppets as well
-			const [stagePuppet] = dranimate.puppets.splice(action.payload.from, 1);
-			dranimate.puppets.splice(action.payload.to, 0, stagePuppet);
+			const puppetIds = state.data.map((puppet) => {
+				return puppet.id;
+			});
+			dranimate.puppets.sort((puppetA, puppetB) => {
+				const puppetAIndex = puppetIds.indexOf(puppetA.id);
+				const puppetBIndex = puppetIds.indexOf(puppetB.id);
+
+				return puppetAIndex - puppetBIndex;
+			});
 
 			dranimate.reorderPuppets();
 		}

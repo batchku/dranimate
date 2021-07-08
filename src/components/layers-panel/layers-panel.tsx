@@ -85,12 +85,14 @@ const LayersPanel = (): JSX.Element => {
 	const loadProjectPuppets = async (): Promise<void> => {
 		const userPuppets = await apiService.getAllPuppetsForUser();
 
-		(project as any).puppets.forEach((projectPuppetId: string) => {
-			const puppetModel = userPuppets.find((userPuppet) => {
-				return userPuppet.id === projectPuppetId;
+		if ((project as any).puppets) {
+			(project as any).puppets.forEach((projectPuppetId: string) => {
+				const puppetModel = userPuppets.find((userPuppet) => {
+					return userPuppet.id === projectPuppetId;
+				});
+				loadPuppetIntoScene(puppetModel);
 			});
-			loadPuppetIntoScene(puppetModel);
-		});
+		}
 	}
 
 	useEffect(() => {

@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState, useRef } from 'react';
 import { v1 as uuid } from 'uuid';
 import { useHistory } from 'react-router';
 
-import { Typography } from '@material-ui/core';
+import { Typography, List } from '@material-ui/core';
 
 import { LabelButton } from 'components/primitives/button-mui/button';
 import ProjectListItem from './project-list-item/project-list-item';
@@ -65,11 +65,15 @@ const ProjectsList: FC<{}> = (): JSX.Element => {
 					New project
 				</LabelButton>
 			</div>
-			{projects.map((project) => {
-				return (
-					<ProjectListItem key={project.id} project={project} />
-				);
-			})}
+			<List style={{
+				width: '100%'
+			}}>
+				{projects.map((project) => {
+					return (
+						<ProjectListItem key={project.id} project={project} />
+					);
+				})}
+			</List>
 		</div>
 	);
 }

@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { IconButton, Typography } from '@material-ui/core';
+import { ListItem, ListItemAvatar, Avatar, ListItemText, ListItemSecondaryAction, IconButton } from '@material-ui/core';
 
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import { MoreHoriz } from '@material-ui/icons';
 
 import { useAppDispatch } from 'redux-util/hooks';
 import { ProjectData, setProject } from 'redux-util/reducers/project';
@@ -26,19 +26,19 @@ const ProjectListItem: FC<ProjectListItemProps> = (props): JSX.Element => {
 	}
 
 	return (
-		<div className='project-list-item-container'>
-			<div className='project-content-container' onClick={openProject}>
-				<img src='./assets/Paused 1.svg'/>
-				<div className='project-info'>
-					<Typography variant='body1'>
-						{props.project.name}
-					</Typography>
-				</div>
-			</div>
-			<IconButton>
-				<MoreHorizIcon />
-			</IconButton>
-		</div>
+		<ListItem button onClick={openProject}>
+			<ListItemAvatar>
+				<Avatar>
+					<img src='./assets/Paused 1.svg'/>
+				</Avatar>
+			</ListItemAvatar>
+			<ListItemText primary={props.project.name} />
+			<ListItemSecondaryAction>
+				<IconButton edge="end" aria-label="more">
+					<MoreHoriz />
+				</IconButton>
+			</ListItemSecondaryAction>
+		</ListItem>
 	);
 }
 export default ProjectListItem;

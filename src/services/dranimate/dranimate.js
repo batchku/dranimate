@@ -193,7 +193,12 @@ class Dranimate {
 				if (videoTracks[0]) {
 					const videoSettings = videoTracks[0].getSettings();
 					
-					this.liveFeedAspectRatio = videoSettings.aspectRatio;
+					if (videoSettings.aspectRatio) {
+						this.liveFeedAspectRatio = videoSettings.aspectRatio;
+					}
+					else {
+						this.liveFeedAspectRatio = videoSettings.width / videoSettings.height;
+					}
 				}
 			}
 			catch (e) {
@@ -331,7 +336,7 @@ class Dranimate {
 
 	onMouseDown = event => this.mouseHandler.onMouseDown(event, this.puppets, this.zoom);
 
-	onMouseMove = event => this.mouseHandler.onMouseMove(event, this.puppets, this.zoom);
+	onMouseMove = event => this.mouseHandler && this.mouseHandler.onMouseMove(event, this.puppets, this.zoom);
 
 	onMouseUp = event => this.mouseHandler.onMouseUp(event, this.puppets, this.zoom);
 
@@ -457,8 +462,10 @@ class Dranimate {
 		if(matchingIndex > -1) {
 			this.removePuppetByIndex(matchingIndex);
 		}
-		this.puppets.push(p);
+		this.puppets.unshift(p);
 		this.scene.add(p.group);
+
+		this.reorderPuppets();
 
 		puppetAddedOnStageEvent.emit();
 	}
@@ -480,15 +487,8 @@ class Dranimate {
 	}
 
 	reorderPuppets = () => {
-		this.scene.children.forEach((obj) => {
-			if (obj.type !== 'Group') {
-				return;
-			}
-
-			const puppetIndex = this.puppets.findIndex(puppet => puppet.group === obj);
-			const renderIndex = this.puppets.length - (puppetIndex + 1);
-
-			obj.children.forEach(child => child.renderOrder = renderIndex);
+		this.puppets.forEach((puppet, index) => {
+			puppet.group.children.forEach(child => child.renderOrder = this.puppets.length - index);
 		});
 	}
 
@@ -512,7 +512,7 @@ class Dranimate {
 
 	// Set zoom, provide value from 0 to 100
 	setZoom = (value) => {
-		this.zoom = (value / 100) + 0.5;
+		this.zoom = (value / 100);
 		this.refreshCamera();
 	}
 

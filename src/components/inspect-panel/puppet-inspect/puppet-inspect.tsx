@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux-util/hooks';
 import { selectActivePuppet, setHasRecording, setPlaying } from '../../../redux-util/reducers/puppets';
 
 import showToastEvent from 'services/eventManager/show-toast-event';
+import editPuppetEvent from 'services/eventManager/edit-puppet-event';
 
 import StopIcon from 'icons/stop-icon';
 import PlayIcon from 'icons/play-icon';
@@ -134,6 +135,12 @@ const PuppetInspect: FC<PuppetInspectProps> = (props): JSX.Element => {
 		props.onClose();
 	}
 
+	const onEditPuppet = (): void => {
+		editPuppetEvent.emit({
+			puppet: dranimate.getSelectedPuppet()
+		});
+	}
+
 	return (
 		<>
 			<div className='inspect-panel-header'>
@@ -145,12 +152,12 @@ const PuppetInspect: FC<PuppetInspectProps> = (props): JSX.Element => {
 				</IconButton>
 			</div>
 			<div className='inspect-row'>
-				<ColorButton variant='contained' fullWidth>
+				<ColorButton variant='contained' fullWidth onClick={onEditPuppet}>
 					Edit mask
 				</ColorButton>
 			</div>
 			<div className='inspect-row'>
-				<ColorButton variant='contained' fullWidth>
+				<ColorButton variant='contained' fullWidth onClick={onEditPuppet}>
 					Edit control points
 				</ColorButton>
 			</div>

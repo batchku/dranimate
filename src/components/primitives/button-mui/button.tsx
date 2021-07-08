@@ -29,5 +29,9 @@ export const LabelButton = withStyles(() => ({
 		},
 		borderRadius: '16px',
 		boxShadow: 'none',
+		fontFamily: 'Inter',
+		fontWeight: 700,
+		fontSize: '16px',
+		lineHeight: '20px'
 	},
 }))(Button);

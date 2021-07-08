@@ -7,3 +7,15 @@
 	border-radius: 48px;
 	cursor: pointer;
 }
+
+.user-info-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.user-info-popper {
+	padding-top: 16px;
+	padding-left: 16px;
+	padding-right: 16px;
+	box-sizing: border-box;
+}

@@ -9,3 +9,15 @@
 	justify-content: flex-end;
 	padding: 0px 24px 0px 24px;
 }
+
+.back-button-container {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 0px 24px 0px 24px;
+}

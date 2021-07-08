@@ -141,7 +141,7 @@ class PuppetDetails extends Component<PuppetDetailsProps, PuppetDetailsState> {
 				&& <div className='puppet-details-progress-backdrop'>
 					<CircularProgress />
 					<Spacer size={10} />
-					<Typography variant={TypographyVariant.HEADING_SMALL} color='#4A73E2' >
+					<Typography variant={TypographyVariant.HEADING_SMALL} color='rgba(255, 255, 255, 0.9)' >
 						Saving the puppet. This may take a while...
 					</Typography>
 				</div>}

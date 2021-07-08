@@ -10,7 +10,7 @@ import dranimate from 'services/dranimate/dranimate';
 import { useEffect } from 'react';
 
 const getZoomLabelValue = (): number => {
-	return Math.floor((dranimate.zoom - 0.5) * 100);
+	return Math.floor(dranimate.zoom * 100);
 }
 
 const ZoomLabel: FC<{}> = (): JSX.Element => {
@@ -53,6 +53,9 @@ const ZoomLabel: FC<{}> = (): JSX.Element => {
 				ref={zoomLabelButtonRef}
 				onClick={onMenuOpen}
 				endIcon={<ArrowDropDownIcon />}
+				style={{
+					width: '108px'
+				}}
 			>
 				{zoom}%
 			</LabelButton>
@@ -70,11 +73,11 @@ const ZoomLabel: FC<{}> = (): JSX.Element => {
 					horizontal: 'right'
 				}}
 			>
-				<MenuItem onClick={(): void => {setZoomLevel(100)}}>100%</MenuItem>
-				<MenuItem onClick={(): void => {setZoomLevel(80)}}>80%</MenuItem>
-				<MenuItem onClick={(): void => {setZoomLevel(60)}}>60%</MenuItem>
-				<MenuItem onClick={(): void => {setZoomLevel(40)}}>40%</MenuItem>
-				<MenuItem onClick={(): void => {setZoomLevel(20)}}>20%</MenuItem>
+				<MenuItem onClick={(): void => {setZoomLevel(150)}}>150%</MenuItem>
+				<MenuItem onClick={(): void => {setZoomLevel(130)}}>130%</MenuItem>
+				<MenuItem onClick={(): void => {setZoomLevel(110)}}>110%</MenuItem>
+				<MenuItem onClick={(): void => {setZoomLevel(90)}}>90%</MenuItem>
+				<MenuItem onClick={(): void => {setZoomLevel(70)}}>70%</MenuItem>
 			</Menu>
 		</>
 	);
