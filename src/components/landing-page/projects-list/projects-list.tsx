@@ -10,7 +10,7 @@ import ProjectListItem from './project-list-item/project-list-item';
 import apiService from 'services/api/apiService';
 import userService from 'services/api/userService';
 
-import userSignedInEvent from 'services/eventManager/user-signed-in-event';
+import userSignedInEvent, { UserSignedInEventData } from 'services/eventManager/user-signed-in-event';
 
 import { ProjectData } from 'redux-util/reducers/project';
 
@@ -22,6 +22,7 @@ const ProjectsList: FC<{}> = (): JSX.Element => {
 	const onUserSignedInEventId = useRef(uuid());
 
 	const [projects, setProjects] = useState<ProjectData[]>([]);
+	const [signedIn, setSignedIn] = useState(false);
 
 	const onNewProject = (): void => {
 		history.push('/editor');
@@ -36,7 +37,13 @@ const ProjectsList: FC<{}> = (): JSX.Element => {
 		setProjects(projects);
 	}
 
-	const onUserSignedIn = (): void => {
+	const onUserSignedIn = (data: UserSignedInEventData): void => {
+		if (!data.user) {
+			setSignedIn(false);
+			return;
+		}
+		setSignedIn(true);
+
 		loadProjects();
 	}
 
@@ -57,23 +64,30 @@ const ProjectsList: FC<{}> = (): JSX.Element => {
 
 	return (
 		<div className='projects-list-container'>
-			<div className='project-list-header'>
-				<Typography variant='h6'>
-					My projects ({projects.length})
-				</Typography>
-				<LabelButton onClick={onNewProject}>
-					New project
-				</LabelButton>
-			</div>
-			<List style={{
-				width: '100%'
-			}}>
-				{projects.map((project) => {
-					return (
-						<ProjectListItem key={project.id} project={project} />
-					);
-				})}
-			</List>
+			{signedIn &&
+			<>
+				<div className='project-list-header'>
+					<Typography variant='h6'>
+						My projects ({projects.length})
+					</Typography>
+					<LabelButton onClick={onNewProject}>
+						New project
+					</LabelButton>
+				</div>
+				<List style={{
+					width: '100%'
+				}}>
+					{projects.map((project) => {
+						return (
+							<ProjectListItem key={project.id} project={project} />
+						);
+					})}
+				</List>
+			</>}
+			{!signedIn &&
+			<Typography variant='body1'>
+				Please sign in to view your projects
+			</Typography>}
 		</div>
 	);
 }

@@ -109,7 +109,7 @@ class ApiService {
 
 			const docName = `${puppet.name}-${Math.random()}`;
 
-			return this._db.collection(PUPPET_COLLECTION).add(puppetModel);
+			return this._db.collection(PUPPET_COLLECTION).doc(puppetModel.id).set(puppetModel, {merge: true});
 
 			// TODO: use uuid for puppet creation, then use set
 			// return this.db.collection(PUPPET_COLLECTION).doc(PUPPET-UUID).set(data);

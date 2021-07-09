@@ -7,7 +7,7 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 
-import { createMuiTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core/styles';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 
 import App from './components/app/app';
@@ -16,13 +16,13 @@ import { store } from './redux-util/store';
 
 import './index.scss';
 
-const theme = createMuiTheme({
+const theme = createTheme({
 	palette: {
 		primary: {
 			main: 'rgba(255, 255, 255, 0.9)'
 		},
 		secondary: {
-			main: 'rgba(0, 0, 0, 0.9)'
+			main: 'rgba(255, 255, 255, 0.9)'
 		},
 		type: 'dark'
 	}

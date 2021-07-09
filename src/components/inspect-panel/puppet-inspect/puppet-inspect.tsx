@@ -50,7 +50,7 @@ const PuppetInspect: FC<PuppetInspectProps> = (props): JSX.Element => {
 
 	const [recordStep, setRecordStep] = useState(0);
 	const [handTrackingMenuOpen, setHandTrackingMenuOpen] = useState(false);
-	const [handTrackingEnabled, setHandTrackingEnabled] = useState(false);
+	const [handTrackingEnabled, setHandTrackingEnabled] = useState(dranimate.handTrackingEnabled);
 
 	const recordIntervalHandle = useRef<number>();
 	const handTrackingButtonRef = useRef<HTMLButtonElement>();
