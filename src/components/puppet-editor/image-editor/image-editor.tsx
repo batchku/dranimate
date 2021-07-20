@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Axios from 'axios';
 
 import Range from 'components/primitives/range/range';
 import ToggleButton from 'components/primitives/toggle-button/toggle-button';
@@ -11,6 +12,8 @@ import Typography, { TypographyVariant } from 'components/typography/typography'
 import ImageEditorService from 'services/imagetomesh/image-editor-service';
 
 import './image-editor.scss';
+import { getImageDataFromImage } from 'services/imagetomesh/ImageUtil';
+import { CircularProgress } from '@material-ui/core';
 
 interface ImageEditorProps {
 	imageSrc: any;
@@ -27,6 +30,7 @@ interface ImageEditorState {
 	canGoToNextStep: boolean;
 	exitPromptOpen: boolean;
 	brushActive: boolean;
+	autoCuttingPuppet: boolean;
 }
 
 class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
@@ -44,6 +48,7 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 			canGoToNextStep: false,
 			exitPromptOpen: false,
 			brushActive: true,
+			autoCuttingPuppet: false,
 		};
 
 		this.onKeyDown = this.onKeyDown.bind(this);
@@ -58,8 +63,49 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 			.then(() => this.runSlic())
 			.catch(error => console.log('error', error));
 
+		/*
+		Automatically remove background from image using U2-Net
+		*/
+		if (this._imageEditorService.autoDetectedPuppet === false) {
+			this.runU2Net();
+		}
+
 		window.addEventListener('keydown', this.onKeyDown);
 		window.addEventListener('keyup', this.onKeyUp);
+	}
+
+	private async runU2Net(): Promise<void> {
+		this.setState({
+			autoCuttingPuppet: true
+		})
+
+		const response = await Axios.post('http://localhost:3000/upload', {image: this.props.imageSrc});
+
+		const responseImage = new Image();
+		responseImage.src = `data:image/png;base64, ${response.data}`;
+
+		responseImage.onload = () => {
+			const canvas = document.createElement('canvas');
+			const context = canvas.getContext('2d');
+			canvas.width = this._imageEditorService.imageNoBackgroundData.width;
+			canvas.height = this._imageEditorService.imageNoBackgroundData.height;
+
+			context.drawImage(responseImage, 0, 0, responseImage.width, responseImage.height, 0, 0, canvas.width, canvas.height);
+			const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+			this._imageEditorService.updateBackgroundRemovalData(imageData);
+
+			this.setState({
+				autoCuttingPuppet: false,
+				canGoToNextStep: true
+			})
+			this._imageEditorService.autoDetectedPuppet = true;
+
+			// this._imageEditorService.image = imageData;
+		};
+
+		// this._imageEditorService.image = responseImage;
+		// this._imageEditorService.redraw();
 	}
 
 	private onKeyDown(event: KeyboardEvent): void {
@@ -215,6 +261,14 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 						</div>
 					</div>
 				</div>
+				{this.state.autoCuttingPuppet
+				&& <div className='puppet-details-progress-backdrop'>
+					<CircularProgress />
+					<Spacer size={10} />
+					<Typography variant={TypographyVariant.HEADING_SMALL} color='rgba(255, 255, 255, 0.9)' >
+						Cutting puppet from image, please wait...
+					</Typography>
+				</div>}
 			</div>
 		);
 	}

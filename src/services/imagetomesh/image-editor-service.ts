@@ -30,8 +30,8 @@ const HIGHLIGHTED_REGION_COLOR = {
 
 class ImageEditorService {
 	private context: CanvasRenderingContext2D;
-	private width: number;
-	private height: number;
+	public width: number;
+	public height: number;
 	private mouse = {
 		x: 0,
 		y: 0,
@@ -40,14 +40,14 @@ class ImageEditorService {
 		x: 0,
 		y: 0,
 	};
-	private image: any;
+	public image: any;
 	private originalImageData: any;
 	private slic: any;
 	private slicSegmentsCentroids: any;
 	private highlightData: any;
 	private highlightImage = new Image();
 	private highlightImageOutlined = new Image();
-	private imageNoBackgroundData: ImageData;
+	public imageNoBackgroundData: ImageData;
 	private imageNoBackgroundImage = new Image();
 	private imageNoBackgroundImageOutlined = new Image();
 	private dummyCanvas: HTMLCanvasElement;
@@ -60,6 +60,8 @@ class ImageEditorService {
 	private panHandler: PanHandler;
 	private mouseState: any;
 	private selectState: any;
+
+	public autoDetectedPuppet = false;
 
 	constructor() {
 		this.dummyCanvas = document.createElement('canvas');
@@ -271,6 +273,27 @@ class ImageEditorService {
 			// this.redraw();
 
 			this.imageNoBackgroundImage.onload = null;
+		};
+	}
+
+	public updateBackgroundRemovalData(imageData: ImageData) {
+		for (let i = 0; i < imageData.data.length; i += 4) {
+			if (imageData.data[i] !== 0 || imageData.data[i + 1] !== 0 || imageData.data[i + 2] !== 0) {
+				this.imageNoBackgroundData.data[i] = SELECTED_REGION_COLOR.red;
+				this.imageNoBackgroundData.data[i + 1] = SELECTED_REGION_COLOR.green;
+				this.imageNoBackgroundData.data[i + 2] = SELECTED_REGION_COLOR.blue;
+				this.imageNoBackgroundData.data[i + 3] = SELECTED_REGION_COLOR.alpha;
+			}
+		}
+
+		this.dummyContext.putImageData(this.imageNoBackgroundData, 0, 0);
+		this.imageNoBackgroundImage.src = this.dummyCanvas.toDataURL('image/png');
+		this.imageNoBackgroundImage.onload = (): void => {
+			this.createOutline(this.imageNoBackgroundImage, this.imageNoBackgroundImageOutlined);
+			// this.redraw();
+
+			this.imageNoBackgroundImage.onload = null;
+			this.redraw();
 		};
 	}
 
