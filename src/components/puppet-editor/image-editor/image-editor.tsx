@@ -79,7 +79,7 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 			autoCuttingPuppet: true
 		})
 
-		const response = await Axios.post('http://localhost:3000/upload', {image: this.props.imageSrc});
+		const response = await Axios.post('https://unet.dranimate.irl.studio/api/upload', {image: this.props.imageSrc});
 
 		const responseImage = new Image();
 		responseImage.src = `data:image/png;base64, ${response.data}`;
