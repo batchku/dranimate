@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 
-import { withStyles } from '@material-ui/core';
+import { Slider, withStyles } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -9,6 +9,7 @@ import Box from '@material-ui/core/Box';
 import Popper from '@material-ui/core/Popper';
 import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import dranimate from 'services/dranimate/dranimate';
 
@@ -27,195 +28,234 @@ import CloseIcon from 'icons/close-icon';
 import './puppet-inspect.scss';
 
 const ColorButton = withStyles(() => ({
-	root: {
-		color: '#ededed',
-		backgroundColor: '#474747',
-		'&:hover': {
-			backgroundColor: '#5c5c5c',
-			boxShadow: 'none'
-		},
-		borderRadius: '16px',
-		boxShadow: 'none',
-	},
+  root: {
+    color: '#ededed',
+    backgroundColor: '#474747',
+    '&:hover': {
+      backgroundColor: '#5c5c5c',
+      boxShadow: 'none'
+    },
+    borderRadius: '16px',
+    boxShadow: 'none',
+  },
 }))(Button);
 
 interface PuppetInspectProps {
-	onClose: () => void;
+  onClose: () => void;
 }
 
 const PuppetInspect: FC<PuppetInspectProps> = (props): JSX.Element => {
-	const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-	const activePuppet = useAppSelector(selectActivePuppet);
+  const activePuppet = useAppSelector(selectActivePuppet);
 
-	const [recordStep, setRecordStep] = useState(0);
-	const [handTrackingMenuOpen, setHandTrackingMenuOpen] = useState(false);
-	const [handTrackingEnabled, setHandTrackingEnabled] = useState(dranimate.handTrackingEnabled);
+  const [recordStep, setRecordStep] = useState(0);
+  const [handTrackingMenuOpen, setHandTrackingMenuOpen] = useState(false);
+  const [handTrackingEnabled, setHandTrackingEnabled] = useState(dranimate.handTrackingEnabled);
+  const [samplesCount, setSamplesCount] = useState(1);
+  const [overlayVisible, setOverlayVisible] = useState(false);
 
-	const recordIntervalHandle = useRef<number>();
-	const handTrackingButtonRef = useRef<HTMLButtonElement>();
+  const recordIntervalHandle = useRef<number>();
+  const handTrackingButtonRef = useRef<HTMLButtonElement>();
 
-	const incrementRecordStep = (): void => {
-		setRecordStep(recordStep + 1);
-	}
+  const incrementRecordStep = (): void => {
+    setRecordStep(recordStep + 1);
+  }
 
-	const onRecordPuppetToggle = (): void => {
-		if (recordStep > 0) {
-			if (recordIntervalHandle.current) {
-				window.clearInterval(recordIntervalHandle.current);
-			}
-			if (recordStep === 4) {
-				dranimate.setRecording(false);
-				dranimate.getSelectedPuppet().playing = true;
-				dispatch(setHasRecording({
-					puppetId: activePuppet.id,
-					hasRecording: true
-				}));
-				showToastEvent.emit({
-					text: 'Animation recording finished. Your puppet will keep playing the recording on loop.',
-					duration: 8,
-				});
-			}
-			setRecordStep(0);
-			return;
+  const onRecordPuppetToggle = (skipCountdown: boolean): void => {
+    if (recordStep > 0) {
+      if (recordIntervalHandle.current) {
+        window.clearInterval(recordIntervalHandle.current);
+      }
+      if (recordStep === 4) {
+        dranimate.setRecording(false);
+        dranimate.getSelectedPuppet().playing = true;
+        dispatch(setHasRecording({
+          puppetId: activePuppet.id,
+          hasRecording: true
+        }));
+        showToastEvent.emit({
+          text: 'Animation recording finished. Your puppet will keep playing the recording on loop.',
+          duration: 8,
+        });
+      }
+      setRecordStep(0);
+      return;
+    }
+
+    if (recordStep === 0 && skipCountdown) {
+      setRecordStep(4);
+    }
+    else {
+      setRecordStep(recordStep + 1);
+    }
+
+    // Delete previous recording
+    dispatch(setHasRecording({
+      puppetId: activePuppet.id,
+      hasRecording: false
+    }));
+
+    // Stop playing previous recording
+    dispatch(setPlaying({
+      puppetId: activePuppet.id,
+      playing: false
+    }));
+  }
+
+  const onKeyDown = (event: KeyboardEvent): void => {
+		if (event.key === 'r') {
+			onRecordPuppetToggle(true);
 		}
-
-		setRecordStep(recordStep + 1);
-
-		// Delete previous recording
-		dispatch(setHasRecording({
-			puppetId: activePuppet.id,
-			hasRecording: false
-		}));
-
-		// Stop playing previous recording
-		dispatch(setPlaying({
-			puppetId: activePuppet.id,
-			playing: false
-		}));
 	}
 
-	useEffect(() => {
-		if (recordStep < 4 && recordStep > 0) {
-			window.setTimeout(incrementRecordStep, 1000);
-		}
+  useEffect(() => {
+    addEventListener('keydown', onKeyDown);
 
-		if (recordStep === 4) {
-			window.clearInterval(recordIntervalHandle.current);
-			dranimate.setRecording(true);
-			showToastEvent.emit({
-				text: 'Animation recording has started.',
-				duration: 4,
-			});
-		}
-	}, [recordStep]);
+    return (): void => {
+      removeEventListener('keydown', onKeyDown)
+    }
+  });
 
-	const togglePlayRecording = (): void => {
-		dispatch(setPlaying({
-			puppetId: activePuppet.id,
-			playing: !activePuppet.playing
-		}));
-	}
+  useEffect(() => {
+    if (recordStep < 4 && recordStep > 0) {
+      window.setTimeout(incrementRecordStep, 1000);
+    }
 
-	const onDeleteAnimation = (): void => {
-		// Empty
-	}
+    if (recordStep === 4) {
+      window.clearInterval(recordIntervalHandle.current);
+      dranimate.setRecording(true);
+      showToastEvent.emit({
+        text: 'Animation recording has started.',
+        duration: 4,
+      });
+    }
+  }, [recordStep]);
 
-	const onHandTrackingChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-		setHandTrackingEnabled(event.target.checked);
+  const togglePlayRecording = (): void => {
+    dispatch(setPlaying({
+      puppetId: activePuppet.id,
+      playing: !activePuppet.playing
+    }));
+  }
 
-		dranimate.setHandTrackingEnabled(event.target.checked);
-	}
+  const onDeleteAnimation = (): void => {
+    // Empty
+  }
 
-	const onToggleHandTrackingMenu = (): void => {
-		setHandTrackingMenuOpen(!handTrackingMenuOpen);
-	}
+  const onHandTrackingChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    if (event.target.checked) {
+      setOverlayVisible(true);
+    }
 
-	const onSetClosed = (): void => {
-		props.onClose();
-	}
+    if (!dranimate.handposeModelLoadingPromiseResolve) {
+      const promise = new Promise((resolve) => {
+        dranimate.handposeModelLoadingPromiseResolve = resolve;
+      })
+      dranimate.handposeModelLoadingPromise = promise;
+    }
+    
+    setHandTrackingEnabled(event.target.checked);
 
-	const onEditPuppet = (): void => {
-		editPuppetEvent.emit({
-			puppet: dranimate.getSelectedPuppet()
-		});
-	}
+    dranimate.setHandTrackingEnabled(event.target.checked);
 
-	return (
-		<>
-			<div className='inspect-panel-header'>
-				<Typography>
-					Setup
-				</Typography>
-				<IconButton onClick={onSetClosed} size='small'>
-					<CloseIcon fill='#ffffff' opacity='0.9' />
-				</IconButton>
-			</div>
-			<div className='inspect-row'>
-				<ColorButton variant='contained' fullWidth onClick={onEditPuppet}>
-					Edit mask
-				</ColorButton>
-			</div>
-			<div className='inspect-row'>
-				<ColorButton variant='contained' fullWidth onClick={onEditPuppet}>
-					Edit control points
-				</ColorButton>
-			</div>
+    dranimate.handposeModelLoadingPromise.then(() => {
+      setOverlayVisible(false);
+    })
+  }
 
-			<Box m={2} />
+  const onToggleHandTrackingMenu = (): void => {
+    setHandTrackingMenuOpen(!handTrackingMenuOpen);
+  }
 
-			<Divider variant='fullWidth' orientation='horizontal' />
+  const onSetClosed = (): void => {
+    props.onClose();
+  }
 
-			<div className='inspect-panel-header'>
-				<Typography>
-					Animation
-				</Typography>
-			</div>
+  const onEditPuppet = (): void => {
+    editPuppetEvent.emit({
+      puppet: dranimate.getSelectedPuppet()
+    });
+  }
 
-			<div className='inspect-row'>
-				<ColorButton variant='contained' fullWidth ref={handTrackingButtonRef} onClick={onToggleHandTrackingMenu}>
-					Hand tracking
-				</ColorButton>
-			</div>
-			<Popper className='hand-tracking-menu' open={handTrackingMenuOpen} anchorEl={handTrackingButtonRef.current} placement='bottom-end'>
-				<Paper>
-					<div className='inspect-panel-header'>
-						<Typography>
-							Hand tracking
-						</Typography>
-					</div>
-					<Box m={1} />
-					<div className='inspect-row'>
-						<Typography>
-							Animate your puppet with your hands using a camera
-						</Typography>
-						<Switch
-							checked={handTrackingEnabled}
-							onChange={onHandTrackingChange}
-							name="hand-tracking"
-						/>
-					</div>
-					<Box m={1} />
-				</Paper>
-			</Popper>
+  const onSamplesCountChange = (event: React.ChangeEvent, value: number): void => {
+    setSamplesCount(value);
 
-			<div className='live-video-record-actions'>
-				<IconButton onClick={onRecordPuppetToggle} style={{minWidth: '48px'}}>
-					{recordStep === 0 && <img src='./assets/recorder.svg' />}
-					{recordStep === 1 && <img src='./assets/timer-3.svg' />}
-					{recordStep === 2 && <img src='./assets/timer-2.svg' />}
-					{recordStep === 3 && <img src='./assets/timer-1.svg' />}
-					{recordStep === 4 && <StopIcon opacity='1' fill='#FFFFFF' />}
-				</IconButton>
-				<IconButton onClick={togglePlayRecording} disabled={!activePuppet.hasRecording}>
-					{!activePuppet.playing && <PlayIcon fill='#c6c6c6' opacity={activePuppet.hasRecording ? '1' : '0.4'} />}
-					{activePuppet.playing && <PauseIcon fill='#c6c6c6' opacity='1' />}
-				</IconButton>
-				<IconButton onClick={onDeleteAnimation} disabled={!activePuppet.hasRecording}>
-					<DeleteIcon fill='#c6c6c6' opacity={activePuppet.hasRecording ? '1' : '0.4'} />
-				</IconButton>
-			</div>
-		</>
-	)
+    dranimate.handTrackingService.lowPassFilterSamplesSet(value);
+  }
+
+  return (
+    <>
+      <div className='inspect-panel-header'>
+        <Typography>
+          Setup
+        </Typography>
+        <IconButton onClick={onSetClosed} size='small'>
+          <CloseIcon fill='#ffffff' opacity='0.9' />
+        </IconButton>
+      </div>
+      <div className='inspect-row'>
+        <ColorButton variant='contained' fullWidth onClick={onEditPuppet}>
+          Edit mask
+        </ColorButton>
+      </div>
+      <div className='inspect-row'>
+        <ColorButton variant='contained' fullWidth onClick={onEditPuppet}>
+          Edit control points
+        </ColorButton>
+      </div>
+
+      <Box m={2} />
+
+      <Divider variant='fullWidth' orientation='horizontal' />
+
+      <div className='inspect-panel-header'>
+        <Typography>
+          Animation
+        </Typography>
+      </div>
+
+      <div className='inspect-row'>
+        <ColorButton variant='contained' fullWidth ref={handTrackingButtonRef} onClick={onToggleHandTrackingMenu}>
+          Hand tracking
+        </ColorButton>
+      </div>
+      <div className='inspect-row'>
+        <Typography variant='body2'>
+          Smoothing
+        </Typography>
+        <Slider value={samplesCount} onChange={onSamplesCountChange} style={{width: '100px'}} min={1} max={10} step={1}/>
+      </div>
+      <div className='inspect-row'>
+        <Typography variant='body2'>
+          Hand Tracking
+        </Typography>
+        {overlayVisible
+          ? <CircularProgress size={36} />
+          : <Switch
+          checked={handTrackingEnabled}
+          onChange={onHandTrackingChange}
+          name="hand-tracking"
+        />}
+      </div>
+
+      <div className='live-video-record-actions'>
+        <IconButton onClick={(): void => {onRecordPuppetToggle(false)}} style={{minWidth: '48px'}}>
+          {recordStep === 0 && <img src='./assets/recorder.svg' />}
+          {recordStep === 1 && <img src='./assets/timer-3.svg' />}
+          {recordStep === 2 && <img src='./assets/timer-2.svg' />}
+          {recordStep === 3 && <img src='./assets/timer-1.svg' />}
+          {recordStep === 4 && <StopIcon opacity='1' fill='#FFFFFF' />}
+        </IconButton>
+        <IconButton onClick={togglePlayRecording} disabled={!activePuppet.hasRecording}>
+          {!activePuppet.playing && <PlayIcon fill='#c6c6c6' opacity={activePuppet.hasRecording ? '1' : '0.4'} />}
+          {activePuppet.playing && <PauseIcon fill='#c6c6c6' opacity='1' />}
+        </IconButton>
+        <IconButton onClick={onDeleteAnimation} disabled={!activePuppet.hasRecording}>
+          <DeleteIcon fill='#c6c6c6' opacity={activePuppet.hasRecording ? '1' : '0.4'} />
+        </IconButton>
+      </div>
+    </>
+  )
 }
 export default PuppetInspect;

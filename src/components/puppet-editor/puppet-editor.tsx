@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import ImportOrCreate from './import-or-create/import-or-create';
 import ImageEditor from './image-editor/image-editor';
 import ControlPointEditor from './control-point-editor/control-point-editor';
 import PuppetDetailsEditor from './puppet-details-editor/puppet-details-editor';
@@ -20,6 +21,7 @@ import Puppet from 'services/puppet/puppet';
 import ControlPoint from 'services/puppet/control-point';
 
 enum EditorStep {
+	IMPORT_OR_CREATE = 'import-or-create',
 	IMAGE = 'image',
 	CONTROL_POINT = 'control-point',
 	DETAILS = 'details',
@@ -56,7 +58,7 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 		else {
 			this.state = {
 				imageSrc: puppetEditorStateService.getItem(),
-				step: EditorStep.IMAGE,
+				step: EditorStep.IMPORT_OR_CREATE,
 				backgroundRemovalData: null,
 				controlPoints: null,
 				zoom: 1,
@@ -75,6 +77,21 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 
 	private onClose = (): void => {
 		this.props.onClose();
+	}
+
+	onCreate = (): void => {
+		this.setState({
+			imageSrc: puppetEditorStateService.getItem(),
+			step: EditorStep.IMAGE
+		})
+	}
+
+	onImageEditorBack = (): void => {
+		this.setState({
+			step: EditorStep.IMPORT_OR_CREATE,
+			imageSrc: null,
+			backgroundRemovalData: null,
+		})
 	}
 
 	onImageEditorNext = (backgroundRemovalData, zoom): void => {
@@ -152,11 +169,17 @@ class PuppetEditor extends Component<PuppetEditorProps, PuppetEditorState> {
 	render(): JSX.Element {
 		return (
 			<div className='puppet-editor-backdrop'>
+				{this.state.step === EditorStep.IMPORT_OR_CREATE
+				&& <ImportOrCreate
+					onCancel={this.onClose}
+					onCreate={this.onCreate}
+				/>}
 				{this.state.step === EditorStep.IMAGE
 				&& <ImageEditor
 					imageSrc={this.state.imageSrc}
 					backgroundRemovalData={this.state.backgroundRemovalData}
 					onCancel={this.onClose}
+					onBack={this.onImageEditorBack}
 					onNext={this.onImageEditorNext}
 				/>}
 				{this.state.step === EditorStep.CONTROL_POINT

@@ -2,17 +2,26 @@ import React, { FC, useState } from 'react';
 
 import { Divider, List, ListItem, ListItemText } from '@material-ui/core';
 
+import { useAppDispatch } from 'redux-util/hooks';
+import { setLandingPageActiveScreen } from 'redux-util/reducers/ui';
+
 import './side-panel.scss';
 
 const SidePanel: FC<{}> = (): JSX.Element => {
+	const dispatch = useAppDispatch();
+
 	const [selectedIndex, setSelectedIndex] = useState(0);
 
 	const onOpenProjects = (): void => {
 		setSelectedIndex(0);
+		
+		dispatch(setLandingPageActiveScreen('projects'));
 	}
 
 	const onOpenPuppets = (): void => {
 		setSelectedIndex(1);
+
+		dispatch(setLandingPageActiveScreen('puppets'));
 	}
 
 	const onOpenAbout = (): void => {

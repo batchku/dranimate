@@ -12,17 +12,22 @@ import userService from 'services/api/userService';
 
 import userSignedInEvent, { UserSignedInEventData } from 'services/eventManager/user-signed-in-event';
 
+import { useAppDispatch, useAppSelector } from 'redux-util/hooks';
 import { ProjectData } from 'redux-util/reducers/project';
+import { selectUserSignedIn, setUserSignedIn } from 'redux-util/reducers/ui';
 
 import './projects-list.scss';
 
 const ProjectsList: FC<{}> = (): JSX.Element => {
 	const history = useHistory();
 
+	const dispatch = useAppDispatch();
+
+	const userSignedIn = useAppSelector(selectUserSignedIn);
+
 	const onUserSignedInEventId = useRef(uuid());
 
 	const [projects, setProjects] = useState<ProjectData[]>([]);
-	const [signedIn, setSignedIn] = useState(false);
 
 	const onNewProject = (): void => {
 		history.push('/editor');
@@ -39,10 +44,10 @@ const ProjectsList: FC<{}> = (): JSX.Element => {
 
 	const onUserSignedIn = (data: UserSignedInEventData): void => {
 		if (!data.user) {
-			setSignedIn(false);
+			dispatch(setUserSignedIn(false));
 			return;
 		}
-		setSignedIn(true);
+		dispatch(setUserSignedIn(true));
 
 		loadProjects();
 	}
@@ -64,7 +69,7 @@ const ProjectsList: FC<{}> = (): JSX.Element => {
 
 	return (
 		<div className='projects-list-container'>
-			{signedIn &&
+			{userSignedIn &&
 			<>
 				<div className='project-list-header'>
 					<Typography variant='h6'>
@@ -84,7 +89,7 @@ const ProjectsList: FC<{}> = (): JSX.Element => {
 					})}
 				</List>
 			</>}
-			{!signedIn &&
+			{!userSignedIn &&
 			<Typography variant='body1'>
 				Please sign in to view your projects
 			</Typography>}

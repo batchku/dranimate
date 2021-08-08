@@ -15,6 +15,13 @@
 	@include checkerBackground();
 }
 
+.image-editor-dialog-white {
+	border-radius: 10px;
+	max-height: 600px;
+	pointer-events: all;
+	background-color: white;
+}
+
 .image-editor-dialog-title {
 	box-shadow:
 		0px -1px 1px rgba(0, 0, 0, 0.08),

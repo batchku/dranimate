@@ -18,6 +18,7 @@ import { CircularProgress } from '@material-ui/core';
 interface ImageEditorProps {
 	imageSrc: any;
 	backgroundRemovalData: any;
+	onBack: () => void;
 	onNext: (imageForegroundSelection: any, imageEditorZoom: any) => void;
 	onCancel: () => void;
 }
@@ -244,8 +245,8 @@ class ImageEditor extends Component<ImageEditorProps, ImageEditorState> {
 						<div className='image-editor-bottom-bar-left-actions'>
 							<BorderButton
 								label='Previous'
-								disabled={true}
-								disabledColor='rgba(0, 0, 0, 0.3)'
+								disabled={false}
+								onClick={this.props.onBack}
 							/>
 							<Spacer size={8} />
 							<BorderButton

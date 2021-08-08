@@ -1,4 +1,5 @@
 import * as handpose from '@tensorflow-models/handpose';
+import dranimate from 'services/dranimate/dranimate';
 
 import eventManager from './../../services/eventManager/event-manager';
 
@@ -14,10 +15,12 @@ export default class HandTrackingService {
 	private onUpdatePosition = null;
 	private partPositionData = {};
 	private videoDataLoaded = false;
+	private loadingStarted = false;
 
-	private lowPassFilterEnabled = false;
-	private lowPassSamplesCount = 4;
+	private lowPassFilterEnabled = true;
 	private lowPassSamples: HandPoseAnnotation[] = [];
+	
+	public lowPassSamplesCount = 1;
 
 	constructor() {
 		eventManager.on('low-pass-filter-toggle', this.lowPassFilterToggle);
@@ -25,16 +28,26 @@ export default class HandTrackingService {
 	}
 
 	private async loadAsync(): Promise<void> {
+		if (this.loadingStarted) {
+			return;
+		}
+		this.loadingStarted = true;
+		console.log('loading model for hand pose');
+
 		this.model = await handpose.load();
 		await this.loadVideoAsync();
+
+		setTimeout(() => {
+			dranimate.handposeModelLoadingPromiseResolve();
+		}, 2000);
 	}
 
-	private lowPassFilterToggle = (enabled: boolean): void => {
+	public lowPassFilterToggle = (enabled: boolean): void => {
 		this.lowPassFilterEnabled = enabled;
 		this.lowPassSamples = [];
 	}
 
-	private lowPassFilterSamplesSet = (samples: number): void => {
+	public lowPassFilterSamplesSet = (samples: number): void => {
 		this.lowPassSamplesCount = samples;
 		this.lowPassSamples = [];
 	}
@@ -110,6 +123,10 @@ export default class HandTrackingService {
 		handParts.forEach((partName) => {
 			const partPositionData = this.palmPositionData[partName];
 				partPositionData.forEach((partData, index) => {
+					if (!this[`${partName}-${index}-average`]) {
+						return;
+					}
+
 					partData[0] = this[`${partName}-${index}-average`][0];
 					partData[1] = this[`${partName}-${index}-average`][1];
 					partData[2] = this[`${partName}-${index}-average`][2];
@@ -126,6 +143,7 @@ export default class HandTrackingService {
 	async trackAsync(): Promise<void> {
 		if (!this.model) {
 			await this.loadAsync();
+			return;
 		}
 		if (!this.video || !this.videoDataLoaded) {
 			return;

@@ -13,6 +13,7 @@ import HandTrackingService from 'services/hand-tracking/hand-tracking-service';
 import eventManager from '../eventManager/event-manager';
 import puppetAddedOnStageEvent from 'services/eventManager/puppet-added-on-stage-event';
 import showToastEvent from 'services/eventManager/show-toast-event';
+import apiService from 'services/api/apiService';
 
 const ZOOM = {
 	MIN: 0.5,
@@ -47,6 +48,11 @@ class Dranimate {
 
 		this.lastUpdateTimestamp = performance.now();
 		this.animationRequest;
+
+		this.handposeModelLoadingPromiseResolve = null;
+		this.handposeModelLoadingPromise = null;
+
+		this.addPuppetOnLoad = null;
 
 		this.isInRenderLoop = true;
 		this.gifRecording = new GifRecording(performance.now(), false);
@@ -324,6 +330,15 @@ class Dranimate {
 
 		this.refreshCamera();
 		this.animate();
+
+		if (this.addPuppetOnLoad !== '') {
+			const puppet = await apiService.openPuppet(this.addPuppetOnLoad);
+			this.addPuppet(puppet);
+	
+			this.puppetAddedCallbacks.forEach((callback) => {
+				callback(puppet);
+			});
+		}
 	}
 
 	getPuppetWithId = (id) => {
@@ -569,6 +584,8 @@ class Dranimate {
 	}
 
 	setHandTrackingEnabled = (enabled) => {
+		console.log('Hand tracking enabled!');
+
 		this.handTrackingEnabled = enabled;
 		this.handMeshGroup.visible = enabled;
 	}

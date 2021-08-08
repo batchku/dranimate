@@ -42,7 +42,7 @@ const PuppetList = (): JSX.Element => {
 		if (!result.destination) {
 			return;
 		}
-	
+
 		dispatch(reorderPuppet({
 			from: result.source.index,
 			to: result.destination.index,

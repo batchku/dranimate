@@ -113,8 +113,11 @@ class Stage extends React.Component<{}, StageState> {
 	}
 
 	private onFabClick = (): void => {
-		this.filePickerState = FILE_PICKER_STATE.DRANIMATE;
-		this.filePicker.click();
+		/*this.filePickerState = FILE_PICKER_STATE.DRANIMATE;
+		this.filePicker.click();*/
+		this.setState({
+			editorIsOpen: true
+		});
 	}
 
 	private onZoomSelect = (isZoomIn: boolean): void => {

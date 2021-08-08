@@ -86,7 +86,7 @@ class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
 							Puppets ({this.state.userPuppets.length})
 						</Typography>
 						<Spacer size={12} />
-						<div className='user-profile-puppets-list-grid'>
+						<div className='user-profile-projects-list-grid'>
 							{this.state.userPuppets.map((puppet) => {
 								return (
 									<PuppetCard
