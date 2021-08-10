@@ -6,6 +6,7 @@ export interface UiData {
 	inspectPanelOpen: boolean;
 	landingPageActiveScreen: string;
 	userSignedIn: boolean;
+	inputCameraList: string[];
 }
 
 const initialState: {data: UiData} = {
@@ -13,6 +14,7 @@ const initialState: {data: UiData} = {
 		inspectPanelOpen: false,
 		landingPageActiveScreen: 'projects',
 		userSignedIn: false,
+		inputCameraList: []
 	}
 };
 
@@ -29,17 +31,22 @@ export const uiDataSlice = createSlice({
 		setUserSignedIn: (state, action: PayloadAction<boolean>): void => {
 			state.data.userSignedIn = action.payload;
 		},
+		setListOfAvailableInputCameras: (state, action: PayloadAction<string[]>): void => {
+			state.data.inputCameraList = action.payload;
+		},
 	}
 });
 
 export const {
 	setInspectPanelOpen,
 	setLandingPageActiveScreen,
-	setUserSignedIn
+	setUserSignedIn,
+	setListOfAvailableInputCameras
 } = uiDataSlice.actions;
 
 export const selectInspectPanelOpen = (state: RootState): boolean => state.ui.data.inspectPanelOpen;
 export const selectActiveLandingPageScreen = (state: RootState): string => state.ui.data.landingPageActiveScreen;
 export const selectUserSignedIn = (state: RootState): boolean => state.ui.data.userSignedIn;
+export const selectInputCameraList = (state: RootState): string[] => state.ui.data.inputCameraList;
 
 export default uiDataSlice.reducer;

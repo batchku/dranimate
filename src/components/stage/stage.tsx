@@ -19,298 +19,342 @@ import editPuppetEvent, { EditPuppetEventData } from 'services/eventManager/edit
 import './styles.scss';
 
 enum FILE_PICKER_STATE {
-	DRANIMATE = 'DRANIMATE',
-	BACKGROUND = 'BACKGROUND'
+  DRANIMATE = 'DRANIMATE',
+  BACKGROUND = 'BACKGROUND'
 }
 
 interface StageState {
-	editorIsOpen: boolean;
-	profileIsOpen: boolean;
-	controllerIsOpen: boolean;
-	selectedPuppet: any;
-	loaderIsVisible: boolean;
-	loaderMessage: string;
-	gifPreviewBlob: any;
-	backgroundColor: string;
-	hasBackgroundImage: boolean;
+  editorIsOpen: boolean;
+  profileIsOpen: boolean;
+  controllerIsOpen: boolean;
+  selectedPuppet: any;
+  loaderIsVisible: boolean;
+  loaderMessage: string;
+  gifPreviewBlob: any;
+  backgroundColor: string;
+  hasBackgroundImage: boolean;
+  videoDevices: MediaDeviceInfo[];
 }
 
 class Stage extends React.Component<{}, StageState> {
-	private filePickerState: FILE_PICKER_STATE = FILE_PICKER_STATE.DRANIMATE;
-	private dranimateStageContainer: HTMLDivElement;
-	private filePicker: HTMLInputElement;
-	private colorPicker: HTMLInputElement;
+  private filePickerState: FILE_PICKER_STATE = FILE_PICKER_STATE.DRANIMATE;
+  private dranimateStageContainer: HTMLDivElement;
+  private filePicker: HTMLInputElement;
+  private colorPicker: HTMLInputElement;
 
-	private onAddPuppetEventId: string;
-	private onOpenLoaderEventId: string;
-	private onCloseLoaderEventId: string;
-	private onEditPuppetEventId = uuid();
+  private onAddPuppetEventId: string;
+  private onOpenLoaderEventId: string;
+  private onCloseLoaderEventId: string;
+  private onEditPuppetEventId = uuid();
 
-	private videoElementRef = React.createRef<HTMLVideoElement>();
+  private videoElementRef: React.RefObject<HTMLVideoElement>[] = [];
 
-	constructor(props: {}) {
-		super(props);
+  constructor(props: {}) {
+    super(props);
 
-		this.state = {
-			editorIsOpen: false,
-			profileIsOpen: false,
-			controllerIsOpen: false,
-			selectedPuppet: null,
-			loaderIsVisible: false,
-			loaderMessage: '',
-			gifPreviewBlob: null,
-			backgroundColor: '#66FF66',
-			hasBackgroundImage: false,
-		};
-	}
+    this.state = {
+      editorIsOpen: false,
+      profileIsOpen: false,
+      controllerIsOpen: false,
+      selectedPuppet: null,
+      loaderIsVisible: false,
+      loaderMessage: '',
+      gifPreviewBlob: null,
+      backgroundColor: '#66FF66',
+      hasBackgroundImage: false,
+      videoDevices: [],
+    };
+  }
 
-	public componentDidMount = async (): Promise<void> => {
-		await dranimate.getCameraFeed(this.videoElementRef.current);
+  public componentDidMount = async (): Promise<void> => {
+    await this.setVideoDevices();
 
-		dranimate.setup(this.dranimateStageContainer, 'dranimate-canvas-background', this.videoElementRef.current);
+    const promises = [];
+    this.videoElementRef.forEach((videoElementRef) => {
+      promises.push(dranimate.getCameraFeed(videoElementRef.current));
+    });
+    await Promise.all(promises);
 
-		this.onAddPuppetEventId = eventManager.on('on-add-puppet', this.onFabClick);
-		this.onOpenLoaderEventId = eventManager.on('open-loader', this.openLoader);
-		this.onCloseLoaderEventId = eventManager.on('close-loader', this.closeLoader);
+    dranimate.setup(this.dranimateStageContainer, 'dranimate-canvas-background', this.videoElementRef);
 
-		editPuppetEvent.subscribe({
-			callback: this.onEditPuppet,
-			id: this.onEditPuppetEventId,
-		});
-	}
+    this.onAddPuppetEventId = eventManager.on('on-add-puppet', this.onFabClick);
+    this.onOpenLoaderEventId = eventManager.on('open-loader', this.openLoader);
+    this.onCloseLoaderEventId = eventManager.on('close-loader', this.closeLoader);
 
-	public componentWillUnmount = (): void => {
-		eventManager.remove(this.onAddPuppetEventId);
-		eventManager.remove(this.onOpenLoaderEventId);
-		eventManager.remove(this.onCloseLoaderEventId);
+    editPuppetEvent.subscribe({
+      callback: this.onEditPuppet,
+      id: this.onEditPuppetEventId,
+    });
+  }
 
-		editPuppetEvent.unsubscribe(this.onEditPuppetEventId);
-	}
+  public setVideoDevices = async (): Promise<void> => {
+    return new Promise((resolve) => {
+      navigator.mediaDevices.enumerateDevices().then((devices) => {
+        devices = devices.filter((device) => {
+          return device.kind === 'videoinput';
+        });
+        this.setState({
+          videoDevices: devices
+        }, () => {
+          resolve();
+        })
+      });
+    });
+  }
 
-	private onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-		dranimate.onMouseDown(event);
+  public componentWillUnmount = (): void => {
+    eventManager.remove(this.onAddPuppetEventId);
+    eventManager.remove(this.onOpenLoaderEventId);
+    eventManager.remove(this.onCloseLoaderEventId);
 
-		const selectedPuppet = dranimate.getSelectedPuppet();
-		this.setState({
-			selectedPuppet: selectedPuppet
-		});
-	}
+    editPuppetEvent.unsubscribe(this.onEditPuppetEventId);
+  }
 
-	private closeEditor = (): void => {
-		dranimate.startRenderLoop();
+  private onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+    dranimate.onMouseDown(event);
 
-		this.setState({
-			editorIsOpen: false
-		});
-	}
+    const selectedPuppet = dranimate.getSelectedPuppet();
+    this.setState({
+      selectedPuppet: selectedPuppet
+    });
+  }
 
-	private closeProfile = (): void => {
-		dranimate.startRenderLoop();
+  private closeEditor = (): void => {
+    dranimate.startRenderLoop();
 
-		this.setState({
-			profileIsOpen: false
-		});
-	}
+    this.setState({
+      editorIsOpen: false
+    });
+  }
 
-	private onFabClick = (): void => {
-		/*this.filePickerState = FILE_PICKER_STATE.DRANIMATE;
-		this.filePicker.click();*/
-		this.setState({
-			editorIsOpen: true
-		});
-	}
+  private closeProfile = (): void => {
+    dranimate.startRenderLoop();
 
-	private onZoomSelect = (isZoomIn: boolean): void => {
-		isZoomIn ? dranimate.zoomIn() : dranimate.zoomOut();
-	}
+    this.setState({
+      profileIsOpen: false
+    });
+  }
 
-	private onPanSelect = (isPanSelected): void => {
-		dranimate.setPanEnabled(isPanSelected);
-	}
+  private onFabClick = (): void => {
+    /*this.filePickerState = FILE_PICKER_STATE.DRANIMATE;
+    this.filePicker.click();*/
+    this.setState({
+      editorIsOpen: true
+    });
+  }
 
-	public onDeleteSelectedPuppet = (): void => {
-		dranimate.deleteSelectedPuppet();
-		if (!dranimate.hasPuppet()) {
-			dranimate.stopRenderLoop();
-		}
-		this.setState({
-			selectedPuppet: null
-		});
-	}
+  private onZoomSelect = (isZoomIn: boolean): void => {
+    isZoomIn ? dranimate.zoomIn() : dranimate.zoomOut();
+  }
 
-	private onEditPuppet = (data: EditPuppetEventData): void => {
-		puppetEditorStateService.setItem(data.puppet);
-		this.setState({
-			editorIsOpen: true
-		});
-		dranimate.stopRenderLoop();
-	}
+  private onPanSelect = (isPanSelected): void => {
+    dranimate.setPanEnabled(isPanSelected);
+  }
 
-	private openLoader = (message: string): void => {
-		this.setState({
-			loaderIsVisible: true,
-			loaderMessage: message
-		});
-		dranimate.stopRenderLoop();
-	}
+  public onDeleteSelectedPuppet = (): void => {
+    dranimate.deleteSelectedPuppet();
+    if (!dranimate.hasPuppet()) {
+      dranimate.stopRenderLoop();
+    }
+    this.setState({
+      selectedPuppet: null
+    });
+  }
 
-	private closeLoader = (): void => {
-		this.setState({
-			loaderIsVisible: false,
-			loaderMessage: ''
-		});
-		dranimate.startRenderLoop();
-	}
+  private onEditPuppet = (data: EditPuppetEventData): void => {
+    puppetEditorStateService.setItem(data.puppet);
+    this.setState({
+      editorIsOpen: true
+    });
+    dranimate.stopRenderLoop();
+  }
 
-	private gifPreviewAvailable = (gifPreviewBlob): void => {
-		this.setState({
-			gifPreviewBlob
-		});
-		dranimate.stopRenderLoop();
-	}
+  private openLoader = (message: string): void => {
+    this.setState({
+      loaderIsVisible: true,
+      loaderMessage: message
+    });
+    dranimate.stopRenderLoop();
+  }
 
-	private closeGifPreview = (): void => {
-		this.setState({
-			gifPreviewBlob: null
-		});
-		dranimate.startRenderLoop();
-	}
+  private closeLoader = (): void => {
+    this.setState({
+      loaderIsVisible: false,
+      loaderMessage: ''
+    });
+    dranimate.startRenderLoop();
+  }
 
-	private onFileChange = (): void => {
-		if (this.filePickerState === FILE_PICKER_STATE.DRANIMATE) {
-			this.loadDranimateFile();
-			return;
-		}
-		if (this.filePickerState === FILE_PICKER_STATE.BACKGROUND) {
-			this.loadBackgroundFile();
-			return;
-		}
-	}
+  private gifPreviewAvailable = (gifPreviewBlob): void => {
+    this.setState({
+      gifPreviewBlob
+    });
+    dranimate.stopRenderLoop();
+  }
 
-	private loadDranimateFile = async(): Promise<void> => {
-		const file = await loadDranimateFile(this.filePicker)
+  private closeGifPreview = (): void => {
+    this.setState({
+      gifPreviewBlob: null
+    });
+    dranimate.startRenderLoop();
+  }
 
-		const isPuppet = !!file.id;
-		if (isPuppet) {
-			dranimate.addPuppet(file);
-			dranimate.startRenderLoop();
-		}
-		else {
-			puppetEditorStateService.setItem(file);
-			this.setState({
-				editorIsOpen: true
-			});
-		}
-	}
+  private onFileChange = (): void => {
+    if (this.filePickerState === FILE_PICKER_STATE.DRANIMATE) {
+      this.loadDranimateFile();
+      return;
+    }
+    if (this.filePickerState === FILE_PICKER_STATE.BACKGROUND) {
+      this.loadBackgroundFile();
+      return;
+    }
+  }
 
-	private loadBackgroundFile = async(): Promise<void> => {
-		const imageFile = await loadImageFile(this.filePicker)
-		dranimate.setBackgroundImage(imageFile);
+  private loadDranimateFile = async(): Promise<void> => {
+    const file = await loadDranimateFile(this.filePicker)
 
-		this.setState({
-			hasBackgroundImage: true
-		});
-	}
+    const isPuppet = !!file.id;
+    if (isPuppet) {
+      dranimate.addPuppet(file);
+      dranimate.startRenderLoop();
+    }
+    else {
+      puppetEditorStateService.setItem(file);
+      this.setState({
+        editorIsOpen: true
+      });
+    }
+  }
 
-	private onBackgroundImage = (): void => {
-		this.filePickerState = FILE_PICKER_STATE.BACKGROUND;
-		this.filePicker.click();
-	}
+  private loadBackgroundFile = async(): Promise<void> => {
+    const imageFile = await loadImageFile(this.filePicker)
+    dranimate.setBackgroundImage(imageFile);
 
-	private onBackgroundColorChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-		const backgroundColor = event.target.value;
-		dranimate.setBackgroundColor(backgroundColor);
-		this.setState({
-			backgroundColor
-		});
-	}
+    this.setState({
+      hasBackgroundImage: true
+    });
+  }
 
-	private clearBackground = (): void => {
-		dranimate.clearBackground();
-		this.setState({
-			hasBackgroundImage: false
-		});
-	}
+  private onBackgroundImage = (): void => {
+    this.filePickerState = FILE_PICKER_STATE.BACKGROUND;
+    this.filePicker.click();
+  }
 
-	private onBackgroundImageSizeChange = (value: number): void => {
-		const normalizedValue = value / 100;
-		dranimate.setBackgroundImageSize(normalizedValue);
-	};
+  private onBackgroundColorChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const backgroundColor = event.target.value;
+    dranimate.setBackgroundColor(backgroundColor);
+    this.setState({
+      backgroundColor
+    });
+  }
 
-	private onProfileClick = (): void => {
-		this.setState({
-			profileIsOpen: true
-		});
-		dranimate.stopRenderLoop();
-	};
+  private clearBackground = (): void => {
+    dranimate.clearBackground();
+    this.setState({
+      hasBackgroundImage: false
+    });
+  }
 
-	public render(): JSX.Element {
-		return (
-			<div className='stage'>
-				<video style={{display: 'none', position: 'fixed'}} id="video" width={'auto'} height={'auto'} playsInline></video>
-				<video
-					id='live-feed'
-					ref={this.videoElementRef}
-					autoPlay
-					playsInline
-					muted
-					style={{
-						width: '100px',
-						height: '100px',
-						opacity: 0
-					}}
-				/>
-				<div
-					className='dranimateCanvas'
-					onMouseDown={this.onMouseDown}
-					onMouseMove={dranimate.onMouseMove}
-					onMouseUp={dranimate.onMouseUp}
-					onTouchStart={dranimate.onTouchStart}
-					onTouchEnd={dranimate.onTouchEnd}
-					onWheel={dranimate.onMouseWheel}
-					ref={(input): void => {
-						this.dranimateStageContainer = input;
-					}}
-				/>
-				<input
-					type='file'
-					ref={(input): void => {
-						this.filePicker = input
-					}}
-					value=''
-					onChange={this.onFileChange}
-					className='hiddenFilePicker'
-				/>
-				<input
-					type='color'
-					ref={(element): void => {
-						this.colorPicker = element
-					}}
-					value={this.state.backgroundColor}
-					onChange={this.onBackgroundColorChange}
-				/>
-				{
-					this.state.editorIsOpen ?
-						<PuppetEditor
-							onClose={this.closeEditor}
-						/> :
-						null
-				}
-				{ this.state.gifPreviewBlob ?
-					<GifPreview
-						gifBlob={this.state.gifPreviewBlob}
-						closeGifPreview={this.closeGifPreview}
-						openLoader={this.openLoader}
-						closeLoader={this.closeLoader}
-					/> : null
-				}
-				<Loader
-					isVisible={this.state.loaderIsVisible}
-					message={this.state.loaderMessage}
-				/>
-				<Toast />
-			</div>
-		);
-	}
+  private onBackgroundImageSizeChange = (value: number): void => {
+    const normalizedValue = value / 100;
+    dranimate.setBackgroundImageSize(normalizedValue);
+  };
+
+  private onProfileClick = (): void => {
+    this.setState({
+      profileIsOpen: true
+    });
+    dranimate.stopRenderLoop();
+  };
+
+  public render(): JSX.Element {
+    return (
+      <div className='stage'>
+      
+        {this.state.videoDevices.map((videoDevice) => {
+          return (
+            <video
+              key={videoDevice.deviceId}
+              style={{display: 'none', position: 'fixed'}}
+              id={`hand-pose-${videoDevice.label}`}
+              width={'auto'}
+              height={'auto'}
+              playsInline>
+            </video>
+          )
+        })}
+
+        {this.state.videoDevices.map((videoDevice) => {
+          const videoRef = React.createRef<HTMLVideoElement>();
+          this.videoElementRef.push(videoRef);
+
+          return (
+            <video
+              key={videoDevice.deviceId}
+              id={videoDevice.label}
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              style={{
+                width: '100px',
+                height: '100px',
+                opacity: 0
+              }}
+            />
+          )
+        })}
+        <div
+          className='dranimateCanvas'
+          onMouseDown={this.onMouseDown}
+          onMouseMove={dranimate.onMouseMove}
+          onMouseUp={dranimate.onMouseUp}
+          onTouchStart={dranimate.onTouchStart}
+          onTouchEnd={dranimate.onTouchEnd}
+          onWheel={dranimate.onMouseWheel}
+          ref={(input): void => {
+            this.dranimateStageContainer = input;
+          }}
+        />
+        <input
+          type='file'
+          ref={(input): void => {
+            this.filePicker = input
+          }}
+          value=''
+          onChange={this.onFileChange}
+          className='hiddenFilePicker'
+        />
+        <input
+          type='color'
+          ref={(element): void => {
+            this.colorPicker = element
+          }}
+          value={this.state.backgroundColor}
+          onChange={this.onBackgroundColorChange}
+        />
+        {
+          this.state.editorIsOpen ?
+            <PuppetEditor
+              onClose={this.closeEditor}
+            /> :
+            null
+        }
+        { this.state.gifPreviewBlob ?
+          <GifPreview
+            gifBlob={this.state.gifPreviewBlob}
+            closeGifPreview={this.closeGifPreview}
+            openLoader={this.openLoader}
+            closeLoader={this.closeLoader}
+          /> : null
+        }
+        <Loader
+          isVisible={this.state.loaderIsVisible}
+          message={this.state.loaderMessage}
+        />
+        <Toast />
+      </div>
+    );
+  }
 }
 export default Stage;
