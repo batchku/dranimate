@@ -100,6 +100,11 @@ const LayersPanel = (): JSX.Element => {
 			dranimate.setCanvasSize(project.canvasSize.x, project.canvasSize.y);
 			dranimate.setBackgroundColor(project.backgroundColor.value);
 
+			// Callback workaround - replace with redux state once UI for puppet editor is updated
+			if (dranimate.puppetAddedCallbacks.length === 0) {
+				dranimate.puppetAddedCallbacks.push(puppetAddedCallback);
+			}
+
 			loadProjectPuppets();
 		}, 1000);
 	}, []);
