@@ -235,7 +235,13 @@ export const puppetsSlice = createSlice({
 			});
 
 			dranimate.reorderPuppets();
-		}
+		},
+		clearAllPuppets: (state, action: PayloadAction): void => {
+			state.data = [];
+
+			dranimate.puppets = [];
+			dranimate.addPuppetOnLoad = false;
+		},
 	}
 });
 
@@ -253,7 +259,8 @@ export const {
 	setPlaying,
 	setName,
 	setDisableEffects,
-	reorderPuppet
+	reorderPuppet,
+	clearAllPuppets
 } = puppetsSlice.actions;
 
 export const selectPuppets = (state: RootState): PuppetData[] => state.puppets.data;

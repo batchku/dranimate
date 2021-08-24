@@ -9,17 +9,16 @@ interface HandPoseAnnotation {
 
 export default class HandTrackingService {
 	private model: handpose.HandPose;
-	private video = null;
 	private tracking = false;
 	private palmPositionData = null;
 	private onUpdatePosition = null;
 	private partPositionData = {};
 	private videoDataLoaded = false;
 	private loadingStarted = false;
-
 	private lowPassFilterEnabled = true;
 	private lowPassSamples: HandPoseAnnotation[] = [];
 	
+	public video = null;
 	public lowPassSamplesCount = 1;
 
 	constructor() {
@@ -56,7 +55,12 @@ export default class HandTrackingService {
 	 * Requests access to user camera and returns a handle to video element
 	 */
 	private async setupCameraAsync(): Promise<HTMLVideoElement> {
-		const videoElement = document.getElementById('video') as HTMLVideoElement;
+		const mediaDevices = await navigator.mediaDevices.enumerateDevices();
+    const videoDevices = mediaDevices.filter((device) => {
+      return device.kind === 'videoinput';
+    });
+
+		const videoElement = document.getElementById(`hand-pose-${videoDevices[0].label}`) as HTMLVideoElement;
 		const stream = await navigator.mediaDevices.getUserMedia({
 			'audio': false,
 			'video': {

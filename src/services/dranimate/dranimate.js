@@ -98,8 +98,8 @@ class Dranimate {
 	}
 
 	createJointMesh = (name) => {
-		var geometry = new THREE.BoxBufferGeometry(10, 10, 10);
-		var material = new THREE.MeshBasicMaterial({
+		const geometry = new THREE.BoxBufferGeometry(10, 10, 10);
+		const material = new THREE.MeshBasicMaterial({
 			color: 0xAAAAAA,
 			depthTest: false,
 			depthWrite: false,
@@ -213,7 +213,7 @@ class Dranimate {
 		}
 	}
 
-	setup = async (canvasContainer, cssClass, videoElement) => {
+	setup = async (canvasContainer, cssClass, videoElementRefs) => {
 		/**
 		 * Initialize livedraw camera feed scene
 		*/
@@ -222,7 +222,7 @@ class Dranimate {
 		this.liveFeedRenderTarget = new THREE.WebGLRenderTarget(512, 512, {
 			depthBuffer: false,
 		});
-		const texture = new THREE.VideoTexture(videoElement);
+		const texture = new THREE.VideoTexture(videoElementRefs[0].current);
 
 		const geometry = new THREE.PlaneBufferGeometry(512, 512, 1, 1);
 		const material = new THREE.MeshBasicMaterial({
@@ -265,8 +265,6 @@ class Dranimate {
 
 		const renderAreaSize = 1000;
 		const scaleMultiplier = 2000;
-		const halfSize = renderAreaSize / 2;
-		const halfScale = scaleMultiplier / 2;
 
 		const backgroundGeometry = new THREE.PlaneGeometry(renderAreaSize, renderAreaSize);
 		const backgroundColorMaterial = new THREE.MeshBasicMaterial({color: 0xFFFFFF, side: THREE.BackSide});
@@ -304,14 +302,13 @@ class Dranimate {
 		this.backgroundImageMesh.scale.y = -1;
 		this.scene.add(this.backgroundImageMesh);
 
-		const outlineSize = 10;
-		const geometry = new THREE.PlaneGeometry(1, 1);
-		const material = new THREE.MeshBasicMaterial({color: 0x666666, side: THREE.BackSide});
+		const geometryPlane = new THREE.PlaneGeometry(1, 1);
+		const materialPlane = new THREE.MeshBasicMaterial({color: 0x666666, side: THREE.BackSide});
 
-		const topPlane = new THREE.Mesh(geometry.clone(), material);
-		const rightPlane = new THREE.Mesh(geometry.clone(), material);
-		const bottomPlane = new THREE.Mesh(geometry.clone(), material);
-		const leftPlane = new THREE.Mesh(geometry.clone(), material);
+		const topPlane = new THREE.Mesh(geometryPlane.clone(), materialPlane);
+		const rightPlane = new THREE.Mesh(geometryPlane.clone(), materialPlane);
+		const bottomPlane = new THREE.Mesh(geometryPlane.clone(), materialPlane);
+		const leftPlane = new THREE.Mesh(geometryPlane.clone(), materialPlane);
 
 		topPlane.scale.x = renderAreaSize * scaleMultiplier;
 		topPlane.scale.y = renderAreaSize * 2;

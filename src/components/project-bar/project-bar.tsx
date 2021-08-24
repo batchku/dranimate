@@ -10,12 +10,19 @@ import ZoomLabel from './zoom-label/zoom-label';
 import ProjectInfo from './project-info/project-info';
 import SaveProject from './save-project/save-project';
 
+import { useAppDispatch } from 'redux-util/hooks';
+import { clearAllPuppets } from 'redux-util/reducers/puppets';
+
 import './project-bar.scss';
 
 const ProjectBar: FC<{}> = () => {
 	const history = useHistory();
-	
+	const dispatch = useAppDispatch();
+
+
 	const goBackToLanding = (): void => {
+		dispatch(clearAllPuppets());
+
 		history.push('/');
 	}
 

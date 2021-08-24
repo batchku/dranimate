@@ -10,16 +10,19 @@ import { LabelButton } from 'components/primitives/button-mui/button';
 import ProjectProperties from './project-properties/project-properties';
 import RenameProjectDialog from './project-rename-dialog/project-rename-dialog';
 
-import { useAppSelector } from 'redux-util/hooks';
+import { useAppDispatch, useAppSelector } from 'redux-util/hooks';
 import { selectProjectName } from 'redux-util/reducers/project';
+import { selectProjectPropertiesOpen, setProjectPropertiesOpen } from 'redux-util/reducers/ui';
 
 import './project-info.scss';
 
 const ProjectInfo: FC<{}> = () => {
+	const dispatch = useAppDispatch();
+
 	const projectName = useAppSelector(selectProjectName);
+	const projectPropertiesOpen = useAppSelector(selectProjectPropertiesOpen);
 
 	const [menuOpen, setMenuOpen] = useState(false);
-	const [propertiesOpen, setPropertiesOpen] = useState(false);
 	const [renameDialogOpen, setRenameDialogOpen] = useState(false);
 
 	const projectNameButtonRef = useRef<HTMLButtonElement>();
@@ -33,12 +36,12 @@ const ProjectInfo: FC<{}> = () => {
 	}
 
 	const onOpenProperties = (): void => {
-		setPropertiesOpen(true);
+		dispatch(setProjectPropertiesOpen(true));
 		setMenuOpen(false);
 	}
 
 	const onCloseProperties = (): void => {
-		setPropertiesOpen(false);
+		dispatch(setProjectPropertiesOpen(false));
 	}
 
 	const onOpenRenameDialog = (): void => {
@@ -76,8 +79,8 @@ const ProjectInfo: FC<{}> = () => {
 				<MenuItem onClick={onOpenProperties}>Properties</MenuItem>
 				<MenuItem onClick={onOpenRenameDialog}>Rename</MenuItem>
 			</Menu>
-			{propertiesOpen &&
-			<ProjectProperties open={propertiesOpen} onClose={onCloseProperties} />}
+			{projectPropertiesOpen &&
+			<ProjectProperties open={projectPropertiesOpen} onClose={onCloseProperties} />}
 			<RenameProjectDialog open={renameDialogOpen} onClose={onCloseRenameDialog} />
 		</div>
 	);

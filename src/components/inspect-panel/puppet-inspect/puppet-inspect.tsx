@@ -6,8 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
-import Popper from '@material-ui/core/Popper';
-import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -15,6 +13,7 @@ import dranimate from 'services/dranimate/dranimate';
 
 import { useAppDispatch, useAppSelector } from '../../../redux-util/hooks';
 import { selectActivePuppet, setHasRecording, setPlaying } from '../../../redux-util/reducers/puppets';
+import { setProjectPropertiesOpen } from 'redux-util/reducers/ui';
 
 import showToastEvent from 'services/eventManager/show-toast-event';
 import editPuppetEvent from 'services/eventManager/edit-puppet-event';
@@ -50,13 +49,11 @@ const PuppetInspect: FC<PuppetInspectProps> = (props): JSX.Element => {
   const activePuppet = useAppSelector(selectActivePuppet);
 
   const [recordStep, setRecordStep] = useState(0);
-  const [handTrackingMenuOpen, setHandTrackingMenuOpen] = useState(false);
   const [handTrackingEnabled, setHandTrackingEnabled] = useState(dranimate.handTrackingEnabled);
   const [samplesCount, setSamplesCount] = useState(1);
   const [overlayVisible, setOverlayVisible] = useState(false);
 
   const recordIntervalHandle = useRef<number>();
-  const handTrackingButtonRef = useRef<HTMLButtonElement>();
 
   const incrementRecordStep = (): void => {
     setRecordStep(recordStep + 1);
@@ -164,8 +161,8 @@ const PuppetInspect: FC<PuppetInspectProps> = (props): JSX.Element => {
     })
   }
 
-  const onToggleHandTrackingMenu = (): void => {
-    setHandTrackingMenuOpen(!handTrackingMenuOpen);
+  const onTogglePropertiesMenu = (): void => {
+    dispatch(setProjectPropertiesOpen(true));
   }
 
   const onSetClosed = (): void => {
@@ -211,21 +208,16 @@ const PuppetInspect: FC<PuppetInspectProps> = (props): JSX.Element => {
 
       <div className='inspect-panel-header'>
         <Typography>
-          Animation
+          Hand animation
         </Typography>
       </div>
 
       <div className='inspect-row'>
-        <ColorButton variant='contained' fullWidth ref={handTrackingButtonRef} onClick={onToggleHandTrackingMenu}>
-          Hand tracking
+        <ColorButton variant='contained' fullWidth onClick={onTogglePropertiesMenu}>
+          Select camera...
         </ColorButton>
       </div>
-      <div className='inspect-row'>
-        <Typography variant='body2'>
-          Smoothing
-        </Typography>
-        <Slider value={samplesCount} onChange={onSamplesCountChange} style={{width: '100px'}} min={1} max={10} step={1}/>
-      </div>
+
       <div className='inspect-row'>
         <Typography variant='body2'>
           Hand Tracking
@@ -237,6 +229,13 @@ const PuppetInspect: FC<PuppetInspectProps> = (props): JSX.Element => {
           onChange={onHandTrackingChange}
           name="hand-tracking"
         />}
+      </div>
+      
+      <div className='inspect-row'>
+        <Typography variant='body2'>
+          Smoothing
+        </Typography>
+        <Slider value={samplesCount} onChange={onSamplesCountChange} style={{width: '100px'}} min={1} max={10} step={1}/>
       </div>
 
       <div className='live-video-record-actions'>

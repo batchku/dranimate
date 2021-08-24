@@ -33,6 +33,7 @@ interface StageState {
   gifPreviewBlob: any;
   backgroundColor: string;
   hasBackgroundImage: boolean;
+  videoDevices: MediaDeviceInfo[];
 }
 
 class Stage extends React.Component<{}, StageState> {
@@ -46,7 +47,7 @@ class Stage extends React.Component<{}, StageState> {
   private onCloseLoaderEventId: string;
   private onEditPuppetEventId = uuid();
 
-  private videoElementRef = React.createRef<HTMLVideoElement>();
+  private videoElementRef: React.RefObject<HTMLVideoElement>[] = [];
 
   constructor(props: {}) {
     super(props);
@@ -61,13 +62,20 @@ class Stage extends React.Component<{}, StageState> {
       gifPreviewBlob: null,
       backgroundColor: '#66FF66',
       hasBackgroundImage: false,
+      videoDevices: [],
     };
   }
 
   public componentDidMount = async (): Promise<void> => {
-    await dranimate.getCameraFeed(this.videoElementRef.current);
+    await this.setVideoDevices();
 
-    dranimate.setup(this.dranimateStageContainer, 'dranimate-canvas-background', this.videoElementRef.current);
+    const promises = [];
+    this.videoElementRef.forEach((videoElementRef) => {
+      promises.push(dranimate.getCameraFeed(videoElementRef.current));
+    });
+    await Promise.all(promises);
+
+    dranimate.setup(this.dranimateStageContainer, 'dranimate-canvas-background', this.videoElementRef);
 
     this.onAddPuppetEventId = eventManager.on('on-add-puppet', this.onFabClick);
     this.onOpenLoaderEventId = eventManager.on('open-loader', this.openLoader);
@@ -76,6 +84,21 @@ class Stage extends React.Component<{}, StageState> {
     editPuppetEvent.subscribe({
       callback: this.onEditPuppet,
       id: this.onEditPuppetEventId,
+    });
+  }
+
+  public setVideoDevices = async (): Promise<void> => {
+    return new Promise((resolve) => {
+      navigator.mediaDevices.enumerateDevices().then((devices) => {
+        devices = devices.filter((device) => {
+          return device.kind === 'videoinput';
+        });
+        this.setState({
+          videoDevices: devices
+        }, () => {
+          resolve();
+        })
+      });
     });
   }
 
@@ -247,19 +270,39 @@ class Stage extends React.Component<{}, StageState> {
   public render(): JSX.Element {
     return (
       <div className='stage'>
-        <video style={{display: 'none', position: 'fixed'}} id="video" width={'auto'} height={'auto'} playsInline></video>
-        <video
-          id='live-feed'
-          ref={this.videoElementRef}
-          autoPlay
-          playsInline
-          muted
-          style={{
-            width: '100px',
-            height: '100px',
-            opacity: 0
-          }}
-        />
+        {this.state.videoDevices.map((videoDevice) => {
+          return (
+            <video
+              key={videoDevice.deviceId}
+              style={{display: 'none', position: 'fixed'}}
+              id={`hand-pose-${videoDevice.label}`}
+              width={'auto'}
+              height={'auto'}
+              playsInline>
+            </video>
+          )
+        })}
+
+        {this.state.videoDevices.map((videoDevice) => {
+          const videoRef = React.createRef<HTMLVideoElement>();
+          this.videoElementRef.push(videoRef);
+
+          return (
+            <video
+              key={videoDevice.deviceId}
+              id={videoDevice.label}
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              style={{
+                width: '100px',
+                height: '100px',
+                opacity: 0
+              }}
+            />
+          )
+        })}
         <div
           className='dranimateCanvas'
           onMouseDown={this.onMouseDown}

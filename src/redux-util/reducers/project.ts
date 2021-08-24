@@ -11,6 +11,8 @@ export interface ProjectData {
 	canvasSize: CanvasSizeData;
 	backgroundColor: BackgroundColorData;
 	fps: string;
+	livedrawInputCameraId: string;
+	handposeInputCameraId: string;
 }
 
 interface CanvasSizeData {
@@ -35,7 +37,9 @@ const initialState: {data: ProjectData} = {
 			name: 'Black',
 			value: 0x000
 		},
-		fps: '30'
+		fps: '30',
+		livedrawInputCameraId: '',
+		handposeInputCameraId: '',
 	}
 };
 
@@ -62,6 +66,12 @@ export const projectSlice = createSlice({
 		setFps: (state, action: PayloadAction<string>): void => {
 			state.data.fps = action.payload;
 		},
+		setLivedrawInputCamera: (state, action: PayloadAction<string>): void => {
+			state.data.livedrawInputCameraId = action.payload;
+		},
+		setHandposeInputCamera: (state, action: PayloadAction<string>): void => {
+			state.data.handposeInputCameraId = action.payload;
+		},
 	}
 });
 
@@ -70,7 +80,9 @@ export const {
 	setCanvasSize,
 	setBackgroundColor,
 	setName,
-	setFps
+	setFps,
+	setLivedrawInputCamera,
+	setHandposeInputCamera
 } = projectSlice.actions;
 
 export const selectProject = (state: RootState): ProjectData => state.project.data;
@@ -78,5 +90,7 @@ export const selectProjectName = (state: RootState): string => state.project.dat
 export const selectCanvasSize = (state: RootState): CanvasSizeData => state.project.data.canvasSize;
 export const selectBackgroundColor = (state: RootState): BackgroundColorData => state.project.data.backgroundColor;
 export const selectFps = (state: RootState): string => state.project.data.fps;
+export const selectLivedrawInputCamera = (state: RootState): string => state.project.data.livedrawInputCameraId;
+export const selectHandposeInputCamera = (state: RootState): string => state.project.data.handposeInputCameraId;
 
 export default projectSlice.reducer;
