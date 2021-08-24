@@ -121,7 +121,7 @@ class Stage extends React.Component<{}, StageState> {
 	}
 
 	private onZoomSelect = (isZoomIn: boolean): void => {
-		isZoomIn ? dranimate.zoomIn() : dranimate.zoomOut();
+		// isZoomIn ? dranimate.zoomIn() : dranimate.zoomOut();
 	}
 
 	private onPanSelect = (isPanSelected): void => {

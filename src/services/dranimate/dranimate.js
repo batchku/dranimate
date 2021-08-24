@@ -285,6 +285,19 @@ class Dranimate {
 		this.scene.add(this.virtualCanvasMesh);
 		////
 
+		/**
+	  * Initialize ray-cast plane for zoom-pan
+	  */
+		const zoomPanPlaneGeometry = new THREE.PlaneBufferGeometry(100000, 100000, 1, 1);
+		const zoomPanPlaneMaterial = new THREE.MeshBasicMaterial({
+			opacity: 0,
+			transparent: true
+		});
+
+		this.zoomPanPlane = new THREE.Mesh(zoomPanPlaneGeometry, zoomPanPlaneMaterial);
+		this.scene.add(this.zoomPanPlane);
+		////
+
 		const backgroundImageMaterial = new THREE.MeshBasicMaterial({side: THREE.BackSide, transparent: true});
 		this.backgroundImageMesh = new THREE.Mesh(backgroundGeometry.clone(), backgroundImageMaterial);
 		this.backgroundImageMesh.visible = false;
@@ -507,22 +520,18 @@ class Dranimate {
 		});
 	}
 
-	zoomIn = () => {
+	zoomIn = (event) => {
 		if (this.zoom >= ZOOM.MAX) { return; }
 		this.zoom += 0.1;
 		this.zoom = Number(this.zoom.toFixed(2));
-		//panPosition.x -= (0.1)*window.innerWidth/2;
-		//panPosition.y -= (0.1)*window.innerHeight/2;
-		this.refreshCamera();
+		this.refreshCamera(event);
 	}
 
-	zoomOut = () => {
+	zoomOut = (event) => {
 		if (this.zoom <= ZOOM.MIN) { return; }
 		this.zoom -= 0.1;
 		this.zoom = Number(this.zoom.toFixed(2));
-		//panPosition.x += (0.1)*window.innerWidth/2;
-		//panPosition.y += (0.1)*window.innerHeight/2;
-		this.refreshCamera();
+		this.refreshCamera(event);
 	}
 
 	// Set zoom, provide value from 0 to 100
@@ -610,17 +619,51 @@ class Dranimate {
 		Draw/update loop
 *****************************/
 
-	refreshCamera = () => {
+	refreshCamera = (event) => {
+		let prevWorldPosition;
+		if (event) {
+			prevWorldPosition = this.getMouseWorldPosition(event);
+		}
+		
 		const width = window.innerWidth / 2 / this.zoom;
 		const height = window.innerHeight / 2 / this.zoom
 		this.camera.left = -width;
 		this.camera.right = width;
 		this.camera.top = -height;
 		this.camera.bottom = height;
+
 		this.camera.updateProjectionMatrix();
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+		if (event) {
+			const currentWorldPosition = this.getMouseWorldPosition(event);
+
+			const direction = new THREE.Vector3().subVectors(prevWorldPosition, currentWorldPosition);
+
+			this.panHandler.panPosition.x -= direction.x;
+			this.panHandler.panPosition.y -= direction.y;
+
+			this.camera.position.x = -this.panHandler.panPosition.x;
+			this.camera.position.y = -this.panHandler.panPosition.y;
+		}
+
 		if (!this.isInRenderLoop) {
 			this.animate();
+		}
+	}
+
+	getMouseWorldPosition(event) {
+		const raycaster = new THREE.Raycaster();
+		const mouse = new THREE.Vector2();
+
+		mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+		mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+		raycaster.setFromCamera(mouse, this.camera);
+
+		const intersects = raycaster.intersectObject(this.zoomPanPlane);
+		if (intersects[0]) {
+			return intersects[0].point;
 		}
 	}
 

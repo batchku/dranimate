@@ -176,10 +176,10 @@ export default class DranimateMouseHandler {
 
 	onMouseWheel(event) {
 		if (event.deltaY > 0) {
-			dranimate.zoomOut();
+			dranimate.zoomOut(event);
 		}
 		else if (event.deltaY < 0) {
-			dranimate.zoomIn();
+			dranimate.zoomIn(event);
 		}
 	}
 

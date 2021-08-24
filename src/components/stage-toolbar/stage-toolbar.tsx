@@ -45,11 +45,11 @@ class StageToolbar extends React.Component<{}, StageToolbarState> {
 	}
 
 	private onZoomIn = (): void => {
-		dranimate.zoomIn();
+		// dranimate.zoomIn();
 	}
 
 	private onZoomOut = (): void => {
-		dranimate.zoomOut();
+		// dranimate.zoomOut();
 	}
 }
 export default StageToolbar;
